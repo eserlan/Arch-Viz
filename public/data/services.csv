@@ -1,0 +1,7 @@
+id,label,domain,tier,depends_on,owner,repo_url
+payment-api,Payment Gateway,Finance,1,fraud-check;ledger-db,Team Money,https://bitbucket.example.com/projects/FIN/repos/payment-api
+fraud-check,Fraud Detection,Security,1,,Team Security,https://bitbucket.example.com/projects/SEC/repos/fraud-check
+ledger-db,Ledger Database,Finance,1,,Data Platform,
+user-auth-svc,User Authentication,Identity,1,user-directory,Team Identity,
+user-directory,User Directory,Identity,2,,Platform Directory,
+notifications-svc,Notifications,Engagement,2,user-auth-svc;payment-api,Team Comms,
