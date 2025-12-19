@@ -60,6 +60,20 @@
               <span id="editModeLabel">Enter Edit Mode</span>
             </button>
           </div>
+          <div id="dirtyStateContainer" class="flex flex-col gap-1 hidden">
+            <label class="text-[10px] uppercase tracking-widest text-amber-400 font-bold flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              Unsaved Changes
+            </label>
+            <button id="downloadCsvBtn"
+              class="bg-emerald-600 border border-emerald-500 text-white text-xs rounded px-3 py-1.5 hover:bg-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-colors flex items-center gap-2">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download CSV
+            </button>
+          </div>
           <div class="text-right text-xs text-slate-400">
             <p>Status: Draft / POC</p>
             <p>Target: GitHub Pages / MWA</p>

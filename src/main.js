@@ -4,7 +4,7 @@ import fcose from 'cytoscape-fcose';
 import { parseCSV } from './logic/parser';
 import { layoutConfig, stylesheet } from './logic/graphConfig';
 import { initAccordion } from './logic/accordion';
-import { loadGraphData, saveGraphData, clearGraphData } from './logic/storage';
+import { loadGraphData, saveGraphData, clearGraphData, getDirtyState, downloadCSV } from './logic/storage';
 import { initPanel, showPanel, hidePanel } from './logic/panel';
 import { initFilters, populateDomainFilter } from './logic/filters';
 import { initUploader } from './logic/uploader';
@@ -21,6 +21,30 @@ const updateStatus = (message) => {
 };
 
 let cy;
+
+// Dirty state UI management
+const dirtyStateContainer = document.getElementById('dirtyStateContainer');
+const updateDirtyUI = (isDirty) => {
+  if (dirtyStateContainer) {
+    dirtyStateContainer.classList.toggle('hidden', !isDirty);
+  }
+};
+
+// Listen for dirty state changes
+window.addEventListener('dirty-state-change', (e) => {
+  updateDirtyUI(e.detail.isDirty);
+});
+
+// Download CSV button
+const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+if (downloadCsvBtn) {
+  downloadCsvBtn.addEventListener('click', () => {
+    if (cy) {
+      downloadCSV(cy, 'services-export.csv');
+      updateStatus('Downloaded services-export.csv');
+    }
+  });
+}
 
 const renderGraph = (elements, skipped) => {
   updateStatus('Rendering graph…');
@@ -44,6 +68,8 @@ const renderGraph = (elements, skipped) => {
       `Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` +
       (skipped ? ` (skipped ${skipped} invalid rows)` : ''),
     );
+    // Update dirty UI on initial load
+    updateDirtyUI(getDirtyState());
   });
 
   cy.on('tap', 'node', (evt) => {
