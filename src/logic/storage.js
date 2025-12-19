@@ -69,10 +69,11 @@ export const downloadCSV = (cy) => {
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
 
-    // Generate timestamped filename: services-YYYY-MM-DD.csv
+    // Generate timestamped filename: services-YYYY-MM-DD-HHmmss.csv
     const now = new Date();
-    const datestamp = now.toISOString().split('T')[0]; // e.g., 2025-12-19
-    const filename = `services-${datestamp}.csv`;
+    const pad = (n) => n.toString().padStart(2, '0');
+    const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    const filename = `services-${timestamp}.csv`;
 
     const link = document.createElement('a');
     link.href = url;
