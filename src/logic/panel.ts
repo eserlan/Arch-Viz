@@ -2,6 +2,7 @@ import { NodeSingular, EdgeSingular } from 'cytoscape';
 import { saveGraphData } from './storage';
 import { deleteNode } from './nodeOperations';
 import { updateStatus } from './ui';
+import { populateLabelFilter, populateTeamFilter } from './filters';
 import { CyInstance } from '../types';
 
 const TIER_LABELS: Record<number, string> = {
@@ -341,6 +342,10 @@ const handleSave = (): void => {
     // Save to localStorage
     const elements = cyRef.elements().jsons();
     saveGraphData(elements as any);
+
+    // Refresh filter panels with new labels/teams
+    populateLabelFilter(cyRef.nodes().toArray());
+    populateTeamFilter(cyRef.nodes().toArray());
 
     if (updateStatusRef) {
         updateStatusRef(`Saved changes to ${newData.name || newData.label || currentSelectedNode.id()}`);
