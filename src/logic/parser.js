@@ -45,7 +45,8 @@ export const parseCSV = (csvString) => {
     const owner = row.owner?.trim();
     const repoUrl = row.repo_url?.trim();
 
-    const domainClass = slugify(domain);
+    const domains = domain.split(';').map((d) => d.trim()).filter(Boolean);
+    const domainClasses = domains.map((d) => `domain-${slugify(d)}`).join(' ');
     const tierClass = slugify(`tier-${tier}`);
     const isDatabase = /\b(db|database)\b/i.test(id) || /\b(db|database)\b/i.test(label);
     const databaseClass = isDatabase ? 'is-database' : '';
@@ -55,12 +56,13 @@ export const parseCSV = (csvString) => {
       data: {
         id,
         label,
-        domain,
+        domain: domains.join(', '), // For display in panel
+        domains, // For filtering logic
         tier,
         owner,
         repoUrl,
       },
-      classes: `${tierClass} domain-${domainClass} ${databaseClass}`.trim(),
+      classes: `${tierClass} ${domainClasses} ${databaseClass}`.trim(),
     });
 
     if (row.depends_on) {

@@ -15,6 +15,28 @@
         <h1 class="text-2xl font-semibold">Service Map Visualization Kit</h1>
         <div class="flex items-center gap-4">
           <div class="flex flex-col gap-1">
+            <label for="searchInput" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Search
+              Services</label>
+            <div class="relative">
+              <input type="text" id="searchInput" placeholder="Search by name..."
+                class="w-48 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 pl-8">
+              <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-500" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="domainFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
+              Domain</label>
+            <select id="domainFilter"
+              class="w-32 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+              <option value="all">All Domains</option>
+              <!-- Populated by JS -->
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
             <label for="layoutSelect" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Graph
               Layout</label>
             <select id="layoutSelect"

@@ -105,6 +105,16 @@ saveBtn?.addEventListener('click', () => {
   });
 
   // Update Cytoscape node
+  if (newData.domain) {
+    const domains = newData.domain.split(',').map(d => d.trim()).filter(Boolean);
+    newData.domains = domains;
+    // We don't want to mess with classes too much here without slugifying correctly, 
+    // but for simple persistence it's fine. 
+    // Ideally we should update the 'classes' of the node too.
+    const newDomainClasses = domains.map(d => `domain-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`).join(' ');
+    currentSelectedNode.classes(currentSelectedNode.classes().replace(/domain-\S+/g, '').trim() + ' ' + newDomainClasses);
+  }
+
   currentSelectedNode.data(newData);
 
   // Persist to localStorage
@@ -154,7 +164,71 @@ const renderGraph = (elements, skipped) => {
       cy.elements().removeClass('dimmed');
     }
   });
+
+  populateDomainFilter(elements);
 };
+
+const searchInput = document.getElementById('searchInput');
+const domainFilter = document.getElementById('domainFilter');
+
+const applyFilters = () => {
+  if (!cy) return;
+  const searchTerm = searchInput?.value.toLowerCase() || '';
+  const selectedDomain = domainFilter?.value || 'all';
+
+  cy.batch(() => {
+    cy.nodes().forEach(node => {
+      const label = (node.data('label') || '').toLowerCase();
+      const id = node.id().toLowerCase();
+      const domains = node.data('domains') || [];
+
+      const matchesSearch = label.includes(searchTerm) || id.includes(searchTerm);
+      const matchesDomain = selectedDomain === 'all' || domains.includes(selectedDomain);
+
+      if (matchesSearch && matchesDomain) {
+        node.style('display', 'element');
+      } else {
+        node.style('display', 'none');
+      }
+    });
+
+    // Handle edges: show if both source and target are visible
+    cy.edges().forEach(edge => {
+      if (edge.source().style('display') === 'element' && edge.target().style('display') === 'element') {
+        edge.style('display', 'element');
+      } else {
+        edge.style('display', 'none');
+      }
+    });
+  });
+};
+
+const populateDomainFilter = (elements) => {
+  const domains = new Set();
+  elements.forEach(el => {
+    // elements from cy.elements().jsons() or raw elements array
+    const data = el.data || el;
+    const nodeDomains = data.domains;
+    if (nodeDomains) {
+      nodeDomains.forEach(d => domains.add(d));
+    }
+  });
+
+  if (domainFilter) {
+    const currentDomain = domainFilter.value;
+    domainFilter.innerHTML = '<option value="all">All Domains</option>';
+    Array.from(domains).sort().forEach(domain => {
+      const option = document.createElement('option');
+      option.value = domain;
+      option.textContent = domain;
+      domainFilter.appendChild(option);
+    });
+    domainFilter.value = currentDomain || 'all';
+  }
+};
+
+searchInput?.addEventListener('input', applyFilters);
+domainFilter?.addEventListener('change', applyFilters);
 
 const layoutSelect = document.getElementById('layoutSelect');
 if (layoutSelect) {
