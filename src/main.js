@@ -1,6 +1,7 @@
 import './styles/main.css';
 import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
+import dagre from 'cytoscape-dagre';
 import { parseCSV } from './logic/parser';
 import { layoutConfig, stylesheet } from './logic/graphConfig';
 import { initAccordion } from './logic/accordion';
@@ -11,6 +12,7 @@ import { initUploader } from './logic/uploader';
 import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor';
 
 cytoscape.use(fcose);
+cytoscape.use(dagre);
 
 const cyContainer = document.getElementById('cy');
 const toastContainer = document.getElementById('toastContainer');
