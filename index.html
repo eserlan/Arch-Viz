@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
   <title>Arch Viz - Mapping the Chaos</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-DxHxJSvZ.js"></script>
-  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-C-3uOixQ.css">
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-Db61kjhX.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-DFRYbjjz.css">
 </head>
 
 <body class="bg-slate-950 text-slate-100">
@@ -74,12 +74,10 @@
 
       <!-- Label Filter -->
       <div class="flex flex-col gap-2">
-        <label for="labelFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
-          Labels <span class="text-slate-600 font-normal">(Ctrl+click)</span></label>
-        <select id="labelFilter" multiple size="5"
-          class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter Labels</label>
+        <div id="labelFilterContainer" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
           <!-- Populated by JS -->
-        </select>
+        </div>
       </div>
 
       <!-- Team Filter -->
