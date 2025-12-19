@@ -1,4 +1,4 @@
-id,label,domain,tier,depends_on,owner,repo_url
+id,name,labels,tier,depends_on,owner,repo_url
 auth-srv,Authentication Service,Identity,1,user-db;session-store,Identity Team,https://github.com/org/auth-srv
 user-db,User Database,Database,1,,DB Team,https://github.com/org/user-db
 session-store,Session Redis,Database,1,,DB Team,https://github.com/org/session-store

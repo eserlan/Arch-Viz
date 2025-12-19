@@ -25,8 +25,9 @@ describe('Panel Module', () => {
     const createMockNode = (data = {}) => {
         const nodeData = {
             id: 'test-id',
-            label: 'Test Label',
-            domain: 'Test Domain',
+            name: 'Test Name',
+            label: 'Test Name',
+            labelsDisplay: 'Test Label',
             tier: '1',
             owner: 'Test Owner',
             repoUrl: 'http://test.com',
@@ -62,7 +63,7 @@ describe('Panel Module', () => {
         const panel = document.getElementById('servicePanel');
 
         expect(content.innerHTML).toContain('test-id');
-        expect(content.innerHTML).toContain('Test Label');
+        expect(content.innerHTML).toContain('Test Name');
         expect(panel.classList.contains('active')).toBe(true);
     });
 
@@ -79,12 +80,12 @@ describe('Panel Module', () => {
         const mockEdge = {
             id: () => 'edge-1',
             target: () => ({
-                data: (key) => key === 'label' ? 'Target Service' : 'target-id',
+                data: (key) => key === 'name' ? 'Target Service' : (key === 'label' ? 'Target Service' : 'target-id'),
                 id: () => 'target-id'
             })
         };
         const mockNode = {
-            data: () => ({ id: 'source-id', label: 'Source' }),
+            data: () => ({ id: 'source-id', name: 'Source', label: 'Source' }),
             outgoers: () => ({ map: (fn) => [mockEdge].map(fn) })
         };
 
@@ -146,11 +147,11 @@ describe('Panel Module', () => {
         editBtn.click();
 
         // Find an input and change its value
-        const labelInput = document.querySelector('input[data-key="label"]');
-        expect(labelInput).toBeTruthy();
+        const nameInput = document.querySelector('input[data-key="name"]');
+        expect(nameInput).toBeTruthy();
 
-        labelInput.value = 'Changed Label';
-        labelInput.dispatchEvent(new Event('input', { bubbles: true }));
+        nameInput.value = 'Changed Name';
+        nameInput.dispatchEvent(new Event('input', { bubbles: true }));
 
         // Save button should now be enabled
         const saveBtn = document.getElementById('saveBtn');
@@ -159,11 +160,11 @@ describe('Panel Module', () => {
     });
 
     it('should store original data for dirty comparison', () => {
-        const mockNode = createMockNode({ label: 'Original Label' });
+        const mockNode = createMockNode({ name: 'Original Name' });
 
         showPanel(mockNode);
 
         const content = document.getElementById('panelContent');
-        expect(content.innerHTML).toContain('Original Label');
+        expect(content.innerHTML).toContain('Original Name');
     });
 });

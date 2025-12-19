@@ -6,7 +6,7 @@ import { layoutConfig, stylesheet } from './logic/graphConfig';
 import { initAccordion } from './logic/accordion';
 import { loadGraphData, saveGraphData, clearGraphData, getDirtyState, downloadCSV } from './logic/storage';
 import { initPanel, showPanel, hidePanel } from './logic/panel';
-import { initFilters, populateDomainFilter } from './logic/filters';
+import { initFilters, populateLabelFilter } from './logic/filters';
 import { initUploader } from './logic/uploader';
 import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor';
 
@@ -93,7 +93,7 @@ const renderGraph = (elements, skipped) => {
   initFilters(cy);
   initPanel(cy, updateStatus);
   initEdgeEditor(cy, updateStatus);
-  populateDomainFilter(elements);
+  populateLabelFilter(elements);
 };
 
 // Edit Mode Toggle Button

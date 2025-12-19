@@ -44,14 +44,14 @@ export const showPanel = (node) => {
   const outgoingEdges = node.outgoers('edge');
   const connections = outgoingEdges.map(edge => ({
     id: edge.id(),
-    target: edge.target().data('label') || edge.target().id(),
+    target: edge.target().data('name') || edge.target().data('label') || edge.target().id(),
     targetId: edge.target().id()
   }));
 
   // Store original data for dirty checking
   originalData = {
-    label: data.label || '',
-    domain: data.domain || '',
+    name: data.name || data.label || '',
+    labels: data.labelsDisplay || '',
     tier: data.tier || '',
     owner: data.owner || '',
     repoUrl: data.repoUrl || ''
@@ -63,12 +63,12 @@ export const showPanel = (node) => {
       <div class="info-value text-slate-500 font-mono">${data.id}</div>
     </div>
     <div class="info-item">
-      <label>Label</label>
-      <div class="info-value" data-key="label">${data.label || ''}</div>
+      <label>Name</label>
+      <div class="info-value" data-key="name">${data.name || data.label || ''}</div>
     </div>
     <div class="info-item">
-      <label>Domain</label>
-      <div class="info-value" data-key="domain">${data.domain || ''}</div>
+      <label>Labels</label>
+      <div class="info-value" data-key="labels">${data.labelsDisplay || ''}</div>
     </div>
     <div class="info-item">
       <label>Tier</label>
@@ -227,15 +227,22 @@ const handleSave = () => {
     }
   });
 
-  if (newData.domain) {
-    const domains = newData.domain.split(',').map(d => d.trim()).filter(Boolean);
-    newData.domains = domains;
-    const newDomainClasses = domains.map(d => `domain-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
-    // Get current classes as array, filter out old domain classes, add new ones
+  // Handle 'name' field - also update 'label' for Cytoscape display
+  if (newData.name) {
+    newData.label = newData.name;
+  }
+
+  // Handle 'labels' field - parse semicolon or comma separated values
+  if (newData.labels) {
+    const labels = newData.labels.split(/[;,]/).map(d => d.trim()).filter(Boolean);
+    newData.labelsDisplay = labels.join(', ');
+    newData.labels = labels;
+    const newLabelClasses = labels.map(d => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+    // Get current classes as array, filter out old label classes, add new ones
     const currentClasses = currentSelectedNode.classes();
     const classArray = Array.isArray(currentClasses) ? currentClasses : [];
-    const filteredClasses = classArray.filter(c => !c.startsWith('domain-'));
-    currentSelectedNode.classes([...filteredClasses, ...newDomainClasses]);
+    const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
+    currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
   }
 
   // Update node data
@@ -246,7 +253,7 @@ const handleSave = () => {
   saveGraphData(elements);
 
   if (updateStatusRef) {
-    updateStatusRef(`Saved changes to ${newData.label || currentSelectedNode.id()}`);
+    updateStatusRef(`Saved changes to ${newData.name || newData.label || currentSelectedNode.id()}`);
   }
 
   // Refresh panel to show saved state

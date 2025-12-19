@@ -35,7 +35,7 @@ export const exportToCSV = (cy) => {
     const edges = cy.edges();
 
     // Build header
-    const headers = ['id', 'label', 'domain', 'tier', 'depends_on', 'owner', 'repo_url'];
+    const headers = ['id', 'name', 'labels', 'tier', 'depends_on', 'owner', 'repo_url'];
 
     // Build rows from nodes
     const rows = nodes.map(node => {
@@ -46,8 +46,8 @@ export const exportToCSV = (cy) => {
 
         return [
             data.id || '',
-            data.label || '',
-            Array.isArray(data.domains) ? data.domains.join(';') : (data.domain || ''),
+            data.name || data.label || '',
+            Array.isArray(data.labels) ? data.labels.join(';') : (data.labelsDisplay || ''),
             data.tier || '',
             dependsOn,
             data.owner || '',

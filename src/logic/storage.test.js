@@ -82,11 +82,11 @@ describe('Storage Module', () => {
         const mockCy = {
             nodes: () => [
                 {
-                    data: () => ({ id: 'svc-a', label: 'Service A', domain: 'Core', tier: '1', owner: 'Team A', repoUrl: 'http://example.com' }),
+                    data: () => ({ id: 'svc-a', name: 'Service A', labels: ['Core'], tier: '1', owner: 'Team A', repoUrl: 'http://example.com' }),
                     id: () => 'svc-a'
                 },
                 {
-                    data: () => ({ id: 'svc-b', label: 'Service B', domain: 'Auth', tier: '2', owner: 'Team B', repoUrl: '' }),
+                    data: () => ({ id: 'svc-b', name: 'Service B', labels: ['Auth'], tier: '2', owner: 'Team B', repoUrl: '' }),
                     id: () => 'svc-b'
                 }
             ],
@@ -101,7 +101,7 @@ describe('Storage Module', () => {
         const csv = exportToCSV(mockCy);
         const lines = csv.split('\n');
 
-        expect(lines[0]).toBe('id,label,domain,tier,depends_on,owner,repo_url');
+        expect(lines[0]).toBe('id,name,labels,tier,depends_on,owner,repo_url');
         expect(lines[1]).toContain('svc-a');
         expect(lines[1]).toContain('Service A');
         expect(lines[1]).toContain('svc-b'); // depends_on

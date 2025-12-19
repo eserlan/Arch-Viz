@@ -1,25 +1,25 @@
 const getElements = () => ({
     searchInput: document.getElementById('searchInput'),
-    domainFilter: document.getElementById('domainFilter'),
+    labelFilter: document.getElementById('labelFilter'),
 });
 
 export const applyFilters = (cy) => {
     if (!cy) return;
-    const { searchInput, domainFilter } = getElements();
+    const { searchInput, labelFilter } = getElements();
 
     const searchTerm = searchInput?.value.toLowerCase() || '';
-    const selectedDomain = domainFilter?.value || 'all';
+    const selectedLabel = labelFilter?.value || 'all';
 
     cy.batch(() => {
         cy.nodes().forEach(node => {
-            const label = (node.data('label') || '').toLowerCase();
+            const name = (node.data('name') || node.data('label') || '').toLowerCase();
             const id = node.id().toLowerCase();
-            const domains = node.data('domains') || [];
+            const labels = node.data('labels') || [];
 
-            const matchesSearch = label.includes(searchTerm) || id.includes(searchTerm);
-            const matchesDomain = selectedDomain === 'all' || domains.includes(selectedDomain);
+            const matchesSearch = name.includes(searchTerm) || id.includes(searchTerm);
+            const matchesLabel = selectedLabel === 'all' || labels.includes(selectedLabel);
 
-            if (matchesSearch && matchesDomain) {
+            if (matchesSearch && matchesLabel) {
                 node.removeClass('filtered');
             } else {
                 node.addClass('filtered');
@@ -39,33 +39,33 @@ export const applyFilters = (cy) => {
     });
 };
 
-export const populateDomainFilter = (elements) => {
-    const { domainFilter } = getElements();
-    if (!domainFilter) return;
+export const populateLabelFilter = (elements) => {
+    const { labelFilter } = getElements();
+    if (!labelFilter) return;
 
-    const domains = new Set();
+    const labels = new Set();
     elements.forEach(el => {
         const data = el.data || el;
-        const nodeDomains = data.domains;
-        if (nodeDomains) {
-            nodeDomains.forEach(d => domains.add(d));
+        const nodeLabels = data.labels;
+        if (nodeLabels) {
+            nodeLabels.forEach(d => labels.add(d));
         }
     });
 
-    const currentDomain = domainFilter.value;
-    domainFilter.innerHTML = '<option value="all">All Domains</option>';
-    Array.from(domains).sort().forEach(domain => {
+    const currentLabel = labelFilter.value;
+    labelFilter.innerHTML = '<option value="all">All Labels</option>';
+    Array.from(labels).sort().forEach(label => {
         const option = document.createElement('option');
-        option.value = domain;
-        option.textContent = domain;
-        domainFilter.appendChild(option);
+        option.value = label;
+        option.textContent = label;
+        labelFilter.appendChild(option);
     });
-    domainFilter.value = currentDomain || 'all';
+    labelFilter.value = currentLabel || 'all';
 };
 
 export const initFilters = (cy) => {
-    const { searchInput, domainFilter } = getElements();
+    const { searchInput, labelFilter } = getElements();
 
     searchInput?.addEventListener('input', () => applyFilters(cy));
-    domainFilter?.addEventListener('change', () => applyFilters(cy));
+    labelFilter?.addEventListener('change', () => applyFilters(cy));
 };
