@@ -74,12 +74,10 @@
 
       <!-- Team Filter -->
       <div class="flex flex-col gap-2">
-        <label for="teamFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
-          Teams <span class="text-slate-600 font-normal">(Ctrl+click)</span></label>
-        <select id="teamFilter" multiple size="5"
-          class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter Teams</label>
+        <div id="teamFilterContainer" class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
           <!-- Populated by JS -->
-        </select>
+        </div>
       </div>
 
       <!-- Divider -->
