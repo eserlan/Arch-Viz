@@ -106,4 +106,36 @@ describe('Storage Module', () => {
         expect(lines[1]).toContain('Service A');
         expect(lines[1]).toContain('svc-b'); // depends_on
     });
+
+    it('should generate timestamped filename in downloadCSV', () => {
+        // Mock document.createElement and URL methods
+        const mockLink = {
+            href: '',
+            download: '',
+            click: vi.fn()
+        };
+        const originalCreateElement = document.createElement.bind(document);
+        vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+            if (tag === 'a') return mockLink;
+            return originalCreateElement(tag);
+        });
+        vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
+        vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
+
+        const mockCy = {
+            nodes: () => [],
+            edges: () => []
+        };
+
+        // Import and call downloadCSV
+        const { downloadCSV } = require('./storage');
+        downloadCSV(mockCy);
+
+        // Verify filename format: services-YYYY-MM-DD.csv
+        expect(mockLink.download).toMatch(/^services-\d{4}-\d{2}-\d{2}\.csv$/);
+        expect(mockLink.click).toHaveBeenCalled();
+
+        // Cleanup
+        vi.restoreAllMocks();
+    });
 });

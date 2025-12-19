@@ -40,8 +40,9 @@ const downloadCsvBtn = document.getElementById('downloadCsvBtn');
 if (downloadCsvBtn) {
   downloadCsvBtn.addEventListener('click', () => {
     if (cy) {
-      downloadCSV(cy, 'services-export.csv');
-      updateStatus('Downloaded services-export.csv');
+      downloadCSV(cy);
+      const datestamp = new Date().toISOString().split('T')[0];
+      updateStatus(`Downloaded services-${datestamp}.csv`);
     }
   });
 }

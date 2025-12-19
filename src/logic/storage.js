@@ -64,10 +64,16 @@ export const exportToCSV = (cy) => {
     return [headers.join(','), ...rows].join('\n');
 };
 
-export const downloadCSV = (cy, filename = 'services.csv') => {
+export const downloadCSV = (cy) => {
     const csv = exportToCSV(cy);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
+
+    // Generate timestamped filename: services-YYYY-MM-DD.csv
+    const now = new Date();
+    const datestamp = now.toISOString().split('T')[0]; // e.g., 2025-12-19
+    const filename = `services-${datestamp}.csv`;
+
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
