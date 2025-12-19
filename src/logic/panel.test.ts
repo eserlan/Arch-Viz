@@ -111,7 +111,8 @@ describe('Panel Module', () => {
         };
         const mockNode = {
             data: () => ({ id: 'source-id', name: 'Source', label: 'Source' }),
-            outgoers: () => ({ map: (fn: any) => [mockEdge].map(fn) })
+            outgoers: () => ({ map: (fn: any) => [mockEdge].map(fn) }),
+            cy: () => mockCy
         } as any;
 
         showPanel(mockNode);

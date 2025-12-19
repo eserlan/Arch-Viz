@@ -1,6 +1,7 @@
 import { CyInstance, ServiceData, Tier } from '../types';
 import { addNode } from './nodeOperations';
 import { showToast, updateStatus } from './ui';
+import { toggleEditMode } from './edgeEditor';
 
 /**
  * Add Service Form Handling
@@ -10,6 +11,28 @@ export const initServiceForm = (cy: CyInstance, onNodeAdded?: () => void): void 
     const addServiceBtnSidebar = document.getElementById('addServiceBtnSidebar');
     const cancelAddServiceBtn = document.getElementById('cancelAddServiceBtn');
     const addServiceForm = document.getElementById('addServiceForm') as HTMLFormElement | null;
+
+    const editModeBtn = document.getElementById('editModeBtn');
+
+    if (editModeBtn) {
+        // Remove existing listeners to avoid multiple attachments
+        const newEditBtn = editModeBtn.cloneNode(true) as HTMLElement;
+        editModeBtn.parentNode?.replaceChild(newEditBtn, editModeBtn);
+        const newEditLabel = newEditBtn.querySelector('#editModeLabel') || newEditBtn;
+
+        newEditBtn.addEventListener('click', () => {
+            const active = toggleEditMode(updateStatus);
+            if (active) {
+                newEditBtn.className = 'w-full bg-amber-600 border border-amber-500 text-white text-xs rounded px-3 py-2 flex items-center justify-center gap-2 transition-colors';
+                newEditLabel.textContent = 'Exit Edit Mode';
+                addServiceBtnSidebar?.classList.remove('hidden');
+            } else {
+                newEditBtn.className = 'w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-2 hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors flex items-center justify-center gap-2';
+                newEditLabel.textContent = 'Enter Edit Mode';
+                addServiceBtnSidebar?.classList.add('hidden');
+            }
+        });
+    }
 
     if (addServiceBtnSidebar) {
         addServiceBtnSidebar.addEventListener('click', () => {

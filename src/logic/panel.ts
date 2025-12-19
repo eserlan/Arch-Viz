@@ -1,6 +1,7 @@
 import { NodeSingular, EdgeSingular } from 'cytoscape';
 import { saveGraphData } from './storage';
 import { deleteNode } from './nodeOperations';
+import { updateStatus } from './ui';
 import { CyInstance } from '../types';
 
 const TIER_LABELS: Record<number, string> = {
@@ -58,6 +59,12 @@ const updateSaveButtonState = (): void => {
 export const showPanel = (node: NodeSingular): void => {
     const { servicePanel, panelContent, editBtn, editActions } = getElements();
     if (!panelContent || !servicePanel) return;
+
+    // Auto-initialize listeners if cy instance changed
+    const cy = node.cy() as CyInstance;
+    if (cyRef !== cy) {
+        initPanel(cy, updateStatus);
+    }
 
     currentSelectedNode = node;
     const data = node.data();

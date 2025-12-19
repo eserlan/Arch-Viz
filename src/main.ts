@@ -10,7 +10,7 @@ import { initAccordion } from './logic/accordion';
 import { loadGraphData, getDirtyState, clearGraphData, downloadCSV } from './logic/storage';
 import { initFilters, populateLabelFilter, populateTeamFilter } from './logic/filters';
 import { initUploader } from './logic/uploader';
-import { initEdgeEditor, toggleEditMode } from './logic/edgeEditor';
+import { initEdgeEditor } from './logic/edgeEditor';
 import { calculateDynamicZoom } from './logic/zoom';
 import { showToast, updateStatus, initFloatingPanel, initModal } from './logic/ui';
 import { copyImageToClipboard, saveImageAsPng } from './logic/exports';
@@ -97,26 +97,6 @@ const renderGraph = (elements: ElementsDefinition | ElementDefinition[], skipped
     populateLabelFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
     populateTeamFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
 };
-
-// Edit Mode UI
-const editModeBtn = document.getElementById('editModeBtn');
-const editModeLabel = document.getElementById('editModeLabel');
-editModeBtn?.addEventListener('click', () => {
-    const active = toggleEditMode(updateStatus);
-    const addServiceBtn = document.getElementById('addServiceBtnSidebar');
-
-    if (editModeBtn && editModeLabel) {
-        if (active) {
-            editModeBtn.className = 'w-full bg-amber-600 border border-amber-500 text-white text-xs rounded px-3 py-2 flex items-center justify-center gap-2 transition-colors';
-            editModeLabel.textContent = 'Exit Edit Mode';
-            addServiceBtn?.classList.remove('hidden');
-        } else {
-            editModeBtn.className = 'w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-2 hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors flex items-center justify-center gap-2';
-            editModeLabel.textContent = 'Enter Edit Mode';
-            addServiceBtn?.classList.add('hidden');
-        }
-    }
-});
 
 const loadData = async (): Promise<void> => {
     try {
