@@ -55,12 +55,9 @@ export const stylesheet: any[] = [
             'shape': 'barrel',
             'border-style': 'double',
             'border-width': 4,
-            'width': 60,
-            'height': 70,
             // Ellipse lines to simulate a stacked cylinder (DB) look
             'background-image': 'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Cellipse%20cx%3D%2250%22%20cy%3D%2215%22%20rx%3D%2245%22%20ry%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.4)%22%20stroke-width%3D%222%22%2F%3E%3Cellipse%20cx%3D%2250%22%20cy%3D%2250%22%20rx%3D%2245%22%20ry%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.25)%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E',
             'background-fit': 'cover',
-            'padding': '12px',
         } as any,
     },
     {
@@ -69,12 +66,9 @@ export const stylesheet: any[] = [
             'shape': 'barrel',
             'border-style': 'dashed',
             'border-width': 3,
-            'width': 80,
-            'height': 45,
             // Horizontal lines for queue/stream effect
             'background-image': 'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Cpath%20d%3D%22M15%2040%20L85%2040%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.4)%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%225%2C3%22%2F%3E%3Cpath%20d%3D%22M15%2060%20L85%2060%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.4)%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%225%2C3%22%2F%3E%3Cpath%20d%3D%22M70%2030%20L85%2050%20L70%2070%22%20fill%3D%22none%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.5)%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E',
             'background-fit': 'cover',
-            'padding': '10px',
             'background-color': '#7c3aed',
             'border-color': '#a78bfa',
         } as any,
