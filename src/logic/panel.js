@@ -80,7 +80,9 @@ export const showPanel = (node) => {
     </div>
     <div class="info-item">
       <label>Repo URL</label>
-      <div class="info-value" data-key="repoUrl">${data.repoUrl || ''}</div>
+      <div class="info-value" data-key="repoUrl">${data.repoUrl
+      ? `<a href="${data.repoUrl}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline break-all">${data.repoUrl}</a>`
+      : '<span class="text-slate-500 italic">Not set</span>'}</div>
     </div>
     <div class="info-item">
       <label>Depends On</label>
