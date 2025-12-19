@@ -3,21 +3,33 @@ const getElements = () => ({
     labelFilter: document.getElementById('labelFilter'),
 });
 
+/**
+ * Get selected values from a multi-select element
+ */
+const getSelectedLabels = (selectElement) => {
+    if (!selectElement) return [];
+    return Array.from(selectElement.selectedOptions).map(opt => opt.value);
+};
+
 export const applyFilters = (cy) => {
     if (!cy) return;
     const { searchInput, labelFilter } = getElements();
 
     const searchTerm = searchInput?.value.toLowerCase() || '';
-    const selectedLabel = labelFilter?.value || 'all';
+    const selectedLabels = getSelectedLabels(labelFilter);
+
+    // If no selection or only 'all' selected, show everything
+    const filterByLabels = selectedLabels.length > 0 && !selectedLabels.includes('all');
 
     cy.batch(() => {
         cy.nodes().forEach(node => {
             const name = (node.data('name') || node.data('label') || '').toLowerCase();
             const id = node.id().toLowerCase();
-            const labels = node.data('labels') || [];
+            const nodeLabels = node.data('labels') || [];
 
             const matchesSearch = name.includes(searchTerm) || id.includes(searchTerm);
-            const matchesLabel = selectedLabel === 'all' || labels.includes(selectedLabel);
+            // Service matches if it has ANY of the selected labels
+            const matchesLabel = !filterByLabels || selectedLabels.some(selected => nodeLabels.includes(selected));
 
             if (matchesSearch && matchesLabel) {
                 node.removeClass('filtered');
@@ -52,15 +64,20 @@ export const populateLabelFilter = (elements) => {
         }
     });
 
-    const currentLabel = labelFilter.value;
-    labelFilter.innerHTML = '<option value="all">All Labels</option>';
+    // Store currently selected values
+    const currentSelections = getSelectedLabels(labelFilter);
+
+    labelFilter.innerHTML = '';
     Array.from(labels).sort().forEach(label => {
         const option = document.createElement('option');
         option.value = label;
         option.textContent = label;
+        // Restore selection state
+        if (currentSelections.includes(label)) {
+            option.selected = true;
+        }
         labelFilter.appendChild(option);
     });
-    labelFilter.value = currentLabel || 'all';
 };
 
 export const initFilters = (cy) => {
