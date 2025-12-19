@@ -5,8 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Service Map Visualization Kit</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-Beu1Oskd.js"></script>
-  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-p_5llGBs.css">
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-CsR-qwLT.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-CEdVI_tj.css">
 </head>
 
 <body class="bg-slate-950 text-slate-100">
@@ -86,11 +86,7 @@
             <div class="p-6 pt-0 grid gap-6 md:grid-cols-3">
               <div class="md:col-span-2 space-y-3 text-left">
                 <h2 class="text-lg font-semibold text-emerald-400 text-left">How it works</h2>
-                <p class="text-sm text-slate-300 leading-relaxed text-left">The graph renders client-side from a static
-                  CSV registry (<code>public/data/services.csv</code>). Cytoscape.js + fCoSE handles the layout;
-                  PapaParse converts CSV rows into nodes and edges.</p>
-                <p class="text-sm text-slate-300 text-left">Drop an updated CSV in <code>public/data/</code> and rebuild
-                  to publish a fresh "living diagram." All processing happens in your browser.</p>
+                <p class="text-sm text-slate-300 text-left">Drag and drop your CSV on the diagram and it'll render.</p>
               </div>
               <div
                 class="text-sm text-slate-200 bg-slate-800/50 rounded-lg border border-slate-700 p-4 space-y-2 text-left">
@@ -103,7 +99,9 @@
                   <li><span class="font-semibold text-slate-100">tier</span>: 1 (Critical) → 3 (Internal)</li>
                 </ul>
                 <p class="text-xs text-slate-400 pt-2 border-t border-slate-700 flex items-center justify-between">
-                  <span>Source: <code>./public/data/services.csv</code></span>
+                  <span class="flex flex-col gap-1"><span class="font-semibold">Example CSV:</span><code
+                      class="text-[10px] leading-tight block whitespace-pre bg-slate-900 p-1.5 rounded">id,label,domain,tier,depends_on,owner,repo_url
+auth-srv,Auth Service,Identity,1,user-db,Identity Team,https://...</code></span>
                   <button id="resetDataBtn"
                     class="bg-red-500/20 hover:bg-red-500/40 text-red-300 text-[10px] px-2 py-0.5 rounded transition-colors border border-red-500/30">Reset
                     to Default</button>
