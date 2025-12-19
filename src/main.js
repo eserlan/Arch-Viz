@@ -192,17 +192,12 @@ const renderGraph = (elements, skipped) => {
     updateDirtyUI(getDirtyState());
   });
 
-  cy.on('tap', 'node', (evt) => {
-    const node = evt.target;
-    showPanel(node);
-
-    // Get depth setting
+  // Helper for highlighting connections
+  const highlightConnections = (node) => {
     const depthVal = document.getElementById('depthSelect')?.value || '1';
-
     let highlightCollection = node;
 
     if (depthVal === 'all') {
-      // Highlight the entire connected component (undirected)
       const components = cy.elements().components();
       const component = components.find(c => c.contains(node));
       if (component) highlightCollection = component;
@@ -215,7 +210,31 @@ const renderGraph = (elements, skipped) => {
 
     cy.elements().addClass('dimmed');
     highlightCollection.removeClass('dimmed');
+  };
+
+  cy.on('tap', 'node', (evt) => {
+    const node = evt.target;
+    showPanel(node);
+    highlightConnections(node);
   });
+
+  // Handle depth change immediately
+  const depthSelect = document.getElementById('depthSelect');
+  if (depthSelect) {
+    // Clone to remove old listeners (simple cleanup)
+    const newSelect = depthSelect.cloneNode(true);
+    depthSelect.parentNode.replaceChild(newSelect, depthSelect);
+
+    newSelect.addEventListener('change', () => {
+      // Find currently selected/active node
+      // We check cy :selected or look for active class?
+      // Cytoscape handles selection state on tap by default
+      const selected = cy.nodes(':selected');
+      if (selected.length > 0) {
+        highlightConnections(selected[0]);
+      }
+    });
+  }
 
   cy.on('tap', (evt) => {
     if (evt.target === cy) {

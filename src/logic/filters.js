@@ -1,5 +1,6 @@
 const getElements = () => ({
     searchInput: document.getElementById('searchInput'),
+    clearSearchBtn: document.getElementById('clearSearchBtn'),
     labelFilter: document.getElementById('labelFilter'),
     teamFilter: document.getElementById('teamFilter'),
 });
@@ -113,9 +114,28 @@ export const populateTeamFilter = (elements) => {
 };
 
 export const initFilters = (cy) => {
-    const { searchInput, labelFilter, teamFilter } = getElements();
+    const { searchInput, labelFilter, teamFilter, clearSearchBtn } = getElements();
 
-    searchInput?.addEventListener('input', () => applyFilters(cy));
+    const handleSearchInput = () => {
+        const val = searchInput.value;
+        if (val.length > 0) {
+            clearSearchBtn?.classList.remove('hidden');
+        } else {
+            clearSearchBtn?.classList.add('hidden');
+        }
+        applyFilters(cy);
+    };
+
+    searchInput?.addEventListener('input', handleSearchInput);
+
+    clearSearchBtn?.addEventListener('click', () => {
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
+            handleSearchInput();
+        }
+    });
+
     labelFilter?.addEventListener('change', () => applyFilters(cy));
     teamFilter?.addEventListener('change', () => applyFilters(cy));
 };
