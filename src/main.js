@@ -454,6 +454,20 @@ const panelMenu = document.getElementById('panelMenu');
 const movePanelBtn = document.getElementById('movePanelBtn');
 const floatingPanel = document.getElementById('floatingFilterPanel');
 
+// Restore panel position
+const savedPos = localStorage.getItem('panel-pos');
+if (savedPos && floatingPanel) {
+  try {
+    const { left, top } = JSON.parse(savedPos);
+    floatingPanel.style.left = left;
+    floatingPanel.style.top = top;
+    floatingPanel.classList.remove('-translate-x-1/2', 'left-1/2', 'top-6');
+    floatingPanel.style.transform = 'none';
+  } catch (e) {
+    console.error("Error loading panel position", e);
+  }
+}
+
 if (panelMenuBtn && panelMenu) {
   panelMenuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -487,17 +501,29 @@ if (movePanelBtn && floatingPanel) {
       floatingPanel.style.transform = 'none';
     }
 
+    let rafId = null;
     const moveHandler = (evt) => {
-      // center on cursor
-      let left = evt.clientX - (floatingPanel.offsetWidth / 2);
-      let top = evt.clientY - 20;
+      const cx = evt.clientX;
+      const cy = evt.clientY;
 
-      // basic bounds checking
-      left = Math.max(0, Math.min(window.innerWidth - floatingPanel.offsetWidth, left));
-      top = Math.max(0, Math.min(window.innerHeight - floatingPanel.offsetHeight, top));
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          const width = floatingPanel.offsetWidth;
+          const height = floatingPanel.offsetHeight;
+          let left = cx - (width / 2);
+          let top = cy - 20;
 
-      floatingPanel.style.left = left + 'px';
-      floatingPanel.style.top = top + 'px';
+          const maxW = window.innerWidth - width;
+          const maxH = window.innerHeight - height;
+
+          left = Math.max(0, Math.min(maxW, left));
+          top = Math.max(0, Math.min(maxH, top));
+
+          floatingPanel.style.left = `${left}px`;
+          floatingPanel.style.top = `${top}px`;
+          rafId = null;
+        });
+      }
     };
 
     // Attach move handler
@@ -508,10 +534,16 @@ if (movePanelBtn && floatingPanel) {
       evt.preventDefault();
       evt.stopPropagation();
       document.removeEventListener('mousemove', moveHandler);
+      if (rafId) cancelAnimationFrame(rafId);
 
       floatingPanel.style.cursor = '';
       floatingPanel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
       showToast('Panel placed', 'success');
+
+      localStorage.setItem('panel-pos', JSON.stringify({
+        left: floatingPanel.style.left,
+        top: floatingPanel.style.top
+      }));
     };
 
     setTimeout(() => {

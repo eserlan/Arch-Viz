@@ -5,6 +5,8 @@ const getElements = () => ({
     teamFilter: document.getElementById('teamFilter'),
 });
 
+let cyRef = null;
+
 /**
  * Get selected values from a filter element (select or container)
  */
@@ -30,7 +32,9 @@ const updateLabelButtonStyle = (btn, selected) => {
 };
 
 export const applyFilters = (cy) => {
-    if (!cy) return;
+    const cyInstance = cy || cyRef;
+    if (!cyInstance) return;
+
     const { searchInput, labelFilterContainer, teamFilter } = getElements();
 
     const searchTerm = searchInput?.value.toLowerCase() || '';
@@ -40,8 +44,8 @@ export const applyFilters = (cy) => {
     const filterByLabels = selectedLabels.length > 0;
     const filterByTeams = selectedTeams.length > 0;
 
-    cy.batch(() => {
-        cy.nodes().forEach(node => {
+    cyInstance.batch(() => {
+        cyInstance.nodes().forEach(node => {
             const name = (node.data('name') || node.data('label') || '').toLowerCase();
             const id = node.id().toLowerCase();
             const nodeLabels = node.data('labels') || [];
@@ -60,7 +64,7 @@ export const applyFilters = (cy) => {
             }
         });
 
-        cy.edges().forEach(edge => {
+        cyInstance.edges().forEach(edge => {
             const sourceFiltered = edge.source().hasClass('filtered');
             const targetFiltered = edge.target().hasClass('filtered');
 
@@ -105,6 +109,14 @@ export const populateLabelFilter = (elements) => {
         const isSelected = currentSelections.has(label);
         updateLabelButtonStyle(btn, isSelected);
 
+        // Attach direct listener to ensure reliability
+        btn.onclick = (e) => {
+            e.stopPropagation(); // Prevent propagation to drag handlers etc
+            const selected = btn.dataset.selected === 'true';
+            updateLabelButtonStyle(btn, !selected);
+            if (cyRef) applyFilters(cyRef);
+        };
+
         labelFilterContainer.appendChild(btn);
     });
 };
@@ -137,7 +149,8 @@ export const populateTeamFilter = (elements) => {
 };
 
 export const initFilters = (cy) => {
-    const { searchInput, labelFilterContainer, teamFilter, clearSearchBtn } = getElements();
+    cyRef = cy;
+    const { searchInput, teamFilter, clearSearchBtn } = getElements();
 
     const handleSearchInput = () => {
         const val = searchInput.value;
@@ -159,15 +172,7 @@ export const initFilters = (cy) => {
         }
     });
 
-    // Delegate click event for dynamic label buttons
-    labelFilterContainer?.addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-
-        const selected = btn.dataset.selected === 'true';
-        updateLabelButtonStyle(btn, !selected);
-        applyFilters(cy);
-    });
+    // NOTE: Label filter container listener removed in favor of direct button listeners in populateLabelFilter
 
     teamFilter?.addEventListener('change', () => applyFilters(cy));
 };
