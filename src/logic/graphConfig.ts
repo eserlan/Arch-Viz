@@ -139,4 +139,28 @@ export const stylesheet: any[] = [
             'border-style': 'solid',
         } as any,
     },
+    {
+        selector: ':parent',
+        style: {
+            'shape': 'roundrectangle',
+            'background-color': '#1e293b',
+            'background-opacity': 0.7,
+            'border-color': '#475569',
+            'border-width': 2,
+            'border-style': 'dashed',
+            'padding': '30px',
+            'text-valign': 'top',
+            'text-halign': 'center',
+            'font-size': 14,
+            'font-weight': 'bold',
+            'color': '#94a3b8',
+            'text-margin-y': 10,
+        } as any,
+    },
+    {
+        selector: '.team-group',
+        style: {
+            'label': 'data(label)',
+        } as any,
+    },
 ];

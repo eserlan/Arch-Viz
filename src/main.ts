@@ -17,6 +17,7 @@ import { copyImageToClipboard, saveImageAsPng } from './logic/exports';
 import { initLayoutManager } from './logic/layoutManager';
 import { initGraphEvents } from './logic/graphEvents';
 import { initServiceForm } from './logic/serviceForm';
+import { initGrouping } from './logic/grouping';
 import { CyInstance } from './types';
 
 cytoscape.use(fcose);
@@ -93,6 +94,7 @@ const renderGraph = (elements: ElementsDefinition | ElementDefinition[], skipped
     initLayoutManager(cy);
     initGraphEvents(cy);
     initServiceForm(cy, () => updateDirtyUI(true));
+    initGrouping(cy);
 
     populateLabelFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
     populateTeamFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
