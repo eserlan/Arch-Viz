@@ -1,3 +1,6 @@
+import { HELP_CONTENT_HTML } from './constants';
+import { ICONS } from './icons';
+
 /**
  * UI Utilities and Shared Components
  */
@@ -43,19 +46,46 @@ export const updateStatus = (message) => {
 export function initFloatingPanel(config) {
     const {
         panelId,
+        title,
+        iconKey,
         menuBtnId,
         menuId,
         moveBtnId,
+        containerId,
         storageKey,
         defaultClasses = []
     } = config;
 
     const panel = document.getElementById(panelId);
+    if (!panel) return;
+
+    // Inject Structure
+    panel.innerHTML = `
+        <div class="flex justify-between items-center mb-3 select-none">
+          <div class="flex items-center gap-2">
+            ${ICONS[iconKey] || ''}
+            <label class="text-[11px] uppercase tracking-widest text-slate-300 font-bold">${title}</label>
+          </div>
+          <div class="relative">
+            <button id="${menuBtnId}" class="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors focus:outline-none">
+              ${ICONS.MENU}
+            </button>
+            <div id="${menuId}" class="hidden absolute right-0 top-full mt-1 w-32 bg-slate-800 border border-slate-700 rounded shadow-xl z-50 overflow-hidden">
+              <button id="${moveBtnId}" class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2 transition-colors">
+                ${ICONS.MOVE}
+                Move
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="${containerId}" class="flex flex-wrap justify-center gap-2 max-h-[120px] overflow-y-auto px-1 custom-scrollbar">
+          <!-- Populated by JS -->
+        </div>
+    `;
+
     const menuBtn = document.getElementById(menuBtnId);
     const menu = document.getElementById(menuId);
     const moveBtn = document.getElementById(moveBtnId);
-
-    if (!panel) return;
 
     // Restore panel position
     const savedPos = localStorage.getItem(storageKey);
@@ -166,12 +196,18 @@ export function initFloatingPanel(config) {
 /**
  * Initialize a simple modal (Help, etc.)
  */
-export function initModal(modalId, openBtnId, closeBtnId) {
+export function initModal(modalId, openBtnId, closeBtnId, contentId = null) {
     const modal = document.getElementById(modalId);
     const openBtn = document.getElementById(openBtnId);
     const closeBtn = document.getElementById(closeBtnId);
 
     if (!modal || !openBtn || !closeBtn) return;
+
+    // Inject Help Content if applicable
+    if (modalId === 'helpModal' && contentId) {
+        const target = document.getElementById(contentId);
+        if (target) target.innerHTML = HELP_CONTENT_HTML;
+    }
 
     openBtn.addEventListener('click', () => modal.showModal());
     closeBtn.addEventListener('click', () => modal.close());

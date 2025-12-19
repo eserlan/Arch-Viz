@@ -164,75 +164,13 @@
         <!-- Floating Label Filter -->
         <div id="floatingFilterPanel"
           class="opacity-0 absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl z-30 min-w-[320px] max-w-lg transition-colors transition-opacity duration-300 hover:bg-slate-900/95 hover:border-slate-600 group">
-          <div id="filterDragHandle" class="flex justify-between items-center mb-3 select-none">
-            <div class="flex items-center gap-2">
-              <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-              <label class="text-[11px] uppercase tracking-widest text-slate-300 font-bold">Labels</label>
-            </div>
-            <div class="relative">
-              <button id="panelMenuBtn"
-                class="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors focus:outline-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-              <div id="panelMenu"
-                class="hidden absolute right-0 top-full mt-1 w-32 bg-slate-800 border border-slate-700 rounded shadow-xl z-50 overflow-hidden">
-                <button id="movePanelBtn"
-                  class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2 transition-colors">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                  Move
-                </button>
-              </div>
-            </div>
-          </div>
-          <div id="labelFilterContainer"
-            class="flex flex-wrap justify-center gap-2 max-h-[120px] overflow-y-auto px-1 custom-scrollbar">
-            <!-- Populated by JS -->
-          </div>
+          <!-- Structure injected by JS -->
         </div>
 
         <!-- Floating Team Filter -->
         <div id="floatingTeamPanel"
           class="opacity-0 absolute top-6 right-6 bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl z-30 min-w-[280px] max-w-sm transition-colors transition-opacity duration-300 hover:bg-slate-900/95 hover:border-slate-600 group">
-          <div id="teamFilterDragHandle" class="flex justify-between items-center mb-3 select-none">
-            <div class="flex items-center gap-2">
-              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <label class="text-[11px] uppercase tracking-widest text-slate-300 font-bold">Teams</label>
-            </div>
-            <div class="relative">
-              <button id="teamPanelMenuBtn"
-                class="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors focus:outline-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-              <div id="teamPanelMenu"
-                class="hidden absolute right-0 top-full mt-1 w-32 bg-slate-800 border border-slate-700 rounded shadow-xl z-50 overflow-hidden">
-                <button id="moveTeamPanelBtn"
-                  class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2 transition-colors">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                  Move
-                </button>
-              </div>
-            </div>
-          </div>
-          <div id="teamFilterContainer"
-            class="flex flex-wrap justify-center gap-2 max-h-[120px] overflow-y-auto px-1 custom-scrollbar">
-            <!-- Populated by JS -->
-          </div>
+          <!-- Structure injected by JS -->
         </div>
         <div id="cy" class="absolute inset-0"></div>
         <!-- Drop Zone Overlay -->
@@ -301,80 +239,8 @@
       </button>
     </div>
 
-    <div class="space-y-6 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">
-      <div>
-        <h3 class="text-lg font-semibold mb-2 text-white">How it Works</h3>
-        <p class="text-sm text-slate-300 leading-relaxed">Drag and drop your <code>services.csv</code> file onto the
-          canvas to visualize your architecture. The graph automatically updates and layout readjusts based on the new
-          data.</p>
-      </div>
-
-      <div>
-        <h3 class="text-lg font-semibold mb-2 text-white">CSV Format</h3>
-        <p class="text-sm text-slate-300 mb-2">Your CSV must have the following headers:</p>
-        <div class="bg-slate-800 rounded p-3 overflow-x-auto border border-slate-700">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr class="text-slate-400 border-b border-slate-600">
-                <th class="py-2 px-2">Column</th>
-                <th class="py-2 px-2">Req</th>
-                <th class="py-2 px-2">Description</th>
-              </tr>
-            </thead>
-            <tbody class="text-slate-300 font-mono">
-              <tr class="border-b border-slate-700/50">
-                <td class="py-2 px-2 text-emerald-300">id</td>
-                <td class="py-2 px-2 text-emerald-500">Yes</td>
-                <td class="py-2 px-2 font-sans text-slate-400">Unique identifier (no spaces).</td>
-              </tr>
-              <tr class="border-b border-slate-700/50">
-                <td class="py-2 px-2 text-emerald-300">name</td>
-                <td class="py-2 px-2 text-emerald-500">Yes</td>
-                <td class="py-2 px-2 font-sans text-slate-400">Display name of the service.</td>
-              </tr>
-              <tr class="border-b border-slate-700/50">
-                <td class="py-2 px-2 text-emerald-300">labels</td>
-                <td class="py-2 px-2 text-slate-500">No</td>
-                <td class="py-2 px-2 font-sans text-slate-400">Values separated by <code>;</code></td>
-              </tr>
-              <tr class="border-b border-slate-700/50">
-                <td class="py-2 px-2 text-emerald-300">tier</td>
-                <td class="py-2 px-2 text-slate-500">No</td>
-                <td class="py-2 px-2 font-sans text-slate-400">Number 1-3 for visual hierarchy.</td>
-              </tr>
-              <tr class="border-b border-slate-700/50">
-                <td class="py-2 px-2 text-emerald-300">owner</td>
-                <td class="py-2 px-2 text-slate-500">No</td>
-                <td class="py-2 px-2 font-sans text-slate-400">Team or person responsible.</td>
-              </tr>
-              <tr class="border-b border-slate-700/50">
-                <td class="py-2 px-2 text-emerald-300">repoUrl</td>
-                <td class="py-2 px-2 text-slate-500">No</td>
-                <td class="py-2 px-2 font-sans text-slate-400">Link to source code.</td>
-              </tr>
-              <tr>
-                <td class="py-2 px-2 text-emerald-300">depends_on</td>
-                <td class="py-2 px-2 text-slate-500">No</td>
-                <td class="py-2 px-2 font-sans text-slate-400">Semicolon-sep list of target <code>id</code>s.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div>
-        <h3 class="text-lg font-semibold mb-2 text-white">Interactive Features</h3>
-        <ul class="list-disc list-inside text-sm text-slate-300 space-y-1 ml-1">
-          <li><strong class="text-emerald-400">Click</strong> a node to see details and highlight neighbors.</li>
-          <li><strong class="text-emerald-400">Edit / Delete</strong>: Buttons in selected service panel.</li>
-          <li><strong class="text-emerald-400">Add Service</strong>: Button in sidebar to create new nodes.</li>
-          <li><strong class="text-emerald-400">Edit Connections</strong>: Toggle mode to drag new connections between
-            nodes.</li>
-          <li><strong class="text-emerald-400">Ctrl + Click</strong> filters to select multiple items.</li>
-          <li><strong class="text-emerald-400">Trace Depth</strong>: Expand connection highlighting distance.</li>
-          <li><strong class="text-emerald-400">Export</strong>: Save your graph as an image.</li>
-        </ul>
-      </div>
+    <div id="helpContent" class="space-y-6 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">
+      <!-- Injected by JS -->
     </div>
   </dialog>
 

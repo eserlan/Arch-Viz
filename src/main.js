@@ -139,23 +139,29 @@ document.getElementById('resetDataBtn')?.addEventListener('click', () => {
 });
 
 // Setup Modals
-initModal('helpModal', 'openHelpBtn', 'closeHelpBtn');
+initModal('helpModal', 'openHelpBtn', 'closeHelpBtn', 'helpContent');
 
 // Initialize Floating Panels
 initFloatingPanel({
   panelId: 'floatingFilterPanel',
+  title: 'Labels',
+  iconKey: 'LABEL',
   menuBtnId: 'panelMenuBtn',
   menuId: 'panelMenu',
   moveBtnId: 'movePanelBtn',
+  containerId: 'labelFilterContainer',
   storageKey: 'panel-pos',
   defaultClasses: ['-translate-x-1/2', 'left-1/2', 'top-6']
 });
 
 initFloatingPanel({
   panelId: 'floatingTeamPanel',
+  title: 'Teams',
+  iconKey: 'TEAM',
   menuBtnId: 'teamPanelMenuBtn',
   menuId: 'teamPanelMenu',
   moveBtnId: 'moveTeamPanelBtn',
+  containerId: 'teamFilterContainer',
   storageKey: 'team-panel-pos',
   defaultClasses: ['right-6', 'top-6']
 });
