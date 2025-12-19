@@ -43,8 +43,10 @@ export const stylesheet = [
       'shape': 'barrel',
       'border-style': 'solid',
       'border-width': 3,
-      'height': 60,
-      'width': 50,
+      // Add two horizontal lines to simulate a stacked cylinder look
+      'background-image': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><line x1="0" y1="33" x2="100" y2="33" stroke="rgba(255,255,255,0.3)" stroke-width="2"/><line x1="0" y1="66" x2="100" y2="66" stroke="rgba(255,255,255,0.3)" stroke-width="2"/></svg>',
+      'background-fit': 'cover',
+      'padding': '12px',
     },
   },
   {
