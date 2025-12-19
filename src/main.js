@@ -468,6 +468,13 @@ if (savedPos && floatingPanel) {
   }
 }
 
+// Reveal panel after potential position update to avoid jump
+if (floatingPanel) {
+  requestAnimationFrame(() => {
+    floatingPanel.classList.remove('opacity-0');
+  });
+}
+
 if (panelMenuBtn && panelMenu) {
   panelMenuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
