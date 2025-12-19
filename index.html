@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
   <title>Arch Viz - Mapping the Chaos</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-BxtC6Oqr.js"></script>
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-gc8EI7Oq.js"></script>
   <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-R4d3l0qH.css">
 </head>
 
@@ -49,6 +49,19 @@
           <option value="circle">Circular View</option>
           <option value="concentric">Concentric Layers</option>
           <option value="breadthfirst">Breadth-First</option>
+        </select>
+      </div>
+
+      <!-- Connection Depth -->
+      <div class="flex flex-col gap-2">
+        <label for="depthSelect" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Trace
+          Depth</label>
+        <select id="depthSelect"
+          class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+          <option value="1" selected>1 Level (Direct)</option>
+          <option value="2">2 Levels</option>
+          <option value="3">3 Levels</option>
+          <option value="all">All Connected</option>
         </select>
       </div>
 
