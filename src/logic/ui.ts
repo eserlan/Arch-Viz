@@ -78,7 +78,7 @@ export function initFloatingPanel(config: PanelConfig): void {
             </div>
           </div>
         </div>
-        <div id="${containerId}" class="flex flex-wrap justify-center gap-2 max-h-[120px] overflow-y-auto px-1 custom-scrollbar">
+        <div id="${containerId}" class="grid grid-flow-col grid-rows-2 auto-cols-max gap-2 max-w-[600px] overflow-x-auto px-1 custom-scrollbar">
           <!-- Populated by JS -->
         </div>
     `;
