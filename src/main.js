@@ -13,7 +13,6 @@ import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor
 import { calculateDynamicZoom } from './logic/zoom';
 import { getNodesAtDepth } from './logic/graphUtils';
 import { addNode } from './logic/nodeOperations';
-import { makeDraggable } from './logic/draggable';
 
 cytoscape.use(fcose);
 cytoscape.use(dagre);
@@ -449,11 +448,76 @@ if (addServiceForm) {
   });
 }
 
-// Draggable Filter Panel
+// Filter Panel Menu & Move Logic
+const panelMenuBtn = document.getElementById('panelMenuBtn');
+const panelMenu = document.getElementById('panelMenu');
+const movePanelBtn = document.getElementById('movePanelBtn');
 const floatingPanel = document.getElementById('floatingFilterPanel');
-const dragHandle = document.getElementById('filterDragHandle');
-if (floatingPanel && dragHandle) {
-  makeDraggable(floatingPanel, dragHandle);
+
+if (panelMenuBtn && panelMenu) {
+  panelMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panelMenu.classList.toggle('hidden');
+  });
+
+  // Close menu on outside click
+  document.addEventListener('click', (e) => {
+    if (!panelMenu.contains(e.target) && e.target !== panelMenuBtn) {
+      panelMenu.classList.add('hidden');
+    }
+  });
+}
+
+if (movePanelBtn && floatingPanel) {
+  movePanelBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panelMenu.classList.add('hidden');
+
+    // Enter Move Mode
+    floatingPanel.style.cursor = 'move';
+    floatingPanel.classList.add('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
+    showToast('Click anywhere to place the panel', 'info');
+
+    // Initial setup to absolute positioning if centered
+    if (floatingPanel.classList.contains('-translate-x-1/2')) {
+      const rect = floatingPanel.getBoundingClientRect();
+      floatingPanel.style.left = rect.left + 'px';
+      floatingPanel.style.top = rect.top + 'px';
+      floatingPanel.classList.remove('-translate-x-1/2', 'left-1/2');
+      floatingPanel.style.transform = 'none';
+    }
+
+    const moveHandler = (evt) => {
+      // center on cursor
+      let left = evt.clientX - (floatingPanel.offsetWidth / 2);
+      let top = evt.clientY - 20;
+
+      // basic bounds checking
+      left = Math.max(0, Math.min(window.innerWidth - floatingPanel.offsetWidth, left));
+      top = Math.max(0, Math.min(window.innerHeight - floatingPanel.offsetHeight, top));
+
+      floatingPanel.style.left = left + 'px';
+      floatingPanel.style.top = top + 'px';
+    };
+
+    // Attach move handler
+    document.addEventListener('mousemove', moveHandler);
+
+    // Click to drop
+    const clickHandler = (evt) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+      document.removeEventListener('mousemove', moveHandler);
+
+      floatingPanel.style.cursor = '';
+      floatingPanel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
+      showToast('Panel placed', 'success');
+    };
+
+    setTimeout(() => {
+      document.addEventListener('click', clickHandler, { capture: true, once: true });
+    }, 50);
+  });
 }
 
 // Bootstrap
