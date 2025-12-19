@@ -98,7 +98,12 @@ const populateContainer = (container: HTMLElement | null, items: Set<string>, cu
         return;
     }
 
-    Array.from(items).sort().forEach(item => {
+    const sortedItems = Array.from(items).sort();
+    const half = Math.ceil(sortedItems.length / 2);
+    const row1Items = sortedItems.slice(0, half);
+    const row2Items = sortedItems.slice(half);
+
+    const createButton = (item: string): HTMLButtonElement => {
         const btn = document.createElement('button');
         btn.textContent = item;
         btn.dataset.value = item;
@@ -113,8 +118,22 @@ const populateContainer = (container: HTMLElement | null, items: Set<string>, cu
             if (cyRef) applyFilters(cyRef);
         };
 
-        container.appendChild(btn);
-    });
+        return btn;
+    };
+
+    // Create two row containers
+    const row1 = document.createElement('div');
+    row1.className = 'flex gap-2 justify-center';
+    row1Items.forEach(item => row1.appendChild(createButton(item)));
+
+    const row2 = document.createElement('div');
+    row2.className = 'flex gap-2 justify-center';
+    row2Items.forEach(item => row2.appendChild(createButton(item)));
+
+    container.appendChild(row1);
+    if (row2Items.length > 0) {
+        container.appendChild(row2);
+    }
 };
 
 export const populateLabelFilter = (elements: any[]): void => {
