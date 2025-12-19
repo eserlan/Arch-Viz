@@ -149,11 +149,43 @@ const renderGraph = (elements, skipped) => {
     elements,
     layout: layoutConfig,
     style: stylesheet,
-    wheelSensitivity: 0.2,
+    userZoomingEnabled: false, // We'll handle zoom manually
     selectionType: 'single',
     minZoom: 0.1, // Allow more zoom out for large graphs
     maxZoom: 2.5,
   });
+
+  // Custom wheel zoom handler for dynamic sensitivity
+  cyContainer.addEventListener('wheel', (e) => {
+    // Only handle if no other modifiers are pressed (to avoid conflicting with browser zoom etc)
+    if (!cy) return;
+
+    e.preventDefault();
+
+    const zoom = cy.zoom();
+    const minZoom = cy.minZoom();
+    const maxZoom = cy.maxZoom();
+
+    // Dynamic sensitivity:
+    // When zoomed out (low zoom), we want higher sensitivity (move faster)
+    // When zoomed in (high zoom), we want lower sensitivity (more precision)
+    // Formula: basic_sensitivity / current_zoom
+    const baseSensitivity = 0.001;
+    const dynamicFactor = Math.max(0.1, 1 / Math.max(0.1, zoom)); // Cap factor
+    const delta = e.deltaY * baseSensitivity * dynamicFactor;
+
+    const newZoom = Math.max(minZoom, Math.min(maxZoom, zoom * Math.pow(10, -delta)));
+
+    // Zoom towards the mouse pointer
+    const rect = cyContainer.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    cy.zoom({
+      level: newZoom,
+      renderedPosition: { x, y }
+    });
+  }, { passive: false });
 
   window.cy = cy; // Export for debugging
 
