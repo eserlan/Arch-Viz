@@ -6,8 +6,9 @@ describe('CSV Parser', () => {
         const csv = `id,name,labels,tier,depends_on,owner,repo_url
 service-a,Service A,Label A,1,service-b,Owner A,http://repo-a`;
 
-        const { elements, skipped } = parseCSV(csv);
+        const { elements, skipped, error } = parseCSV(csv);
 
+        expect(error).toBeUndefined();
         expect(skipped).toBe(0);
         expect(elements).toHaveLength(2); // 1 node, 1 edge
 
@@ -72,11 +73,43 @@ service-a,A,D,1,service-b;service-c`;
         const csv = `id,label,domain,tier,depends_on
 legacy-srv,Legacy Service,OldDomain,2,`;
 
-        const { elements, skipped } = parseCSV(csv);
+        const { elements, skipped, error } = parseCSV(csv);
 
+        expect(error).toBeUndefined();
         expect(skipped).toBe(0);
         const node = elements[0];
         expect(node.data.name).toBe('Legacy Service');
         expect(node.data.labels).toEqual(['OldDomain']);
+    });
+
+    it('should return error for empty CSV', () => {
+        const { error, hints } = parseCSV('');
+
+        expect(error).toBe('Empty or invalid file');
+        expect(hints).toContain('The file appears to be empty.');
+    });
+
+    it('should return error for missing required columns', () => {
+        const csv = `foo,bar,baz
+1,2,3`;
+
+        const { error, hints, elements } = parseCSV(csv);
+
+        expect(error).toBe('Missing required columns');
+        expect(hints).toContain("Missing 'id' column - each service needs a unique identifier.");
+        expect(hints).toContain("Missing 'name' (or 'label') column - each service needs a display name.");
+        expect(elements).toHaveLength(0);
+    });
+
+    it('should return error when all rows are skipped', () => {
+        const csv = `id,name,labels,tier
+,,NoId,1
+,NoName,,2`;
+
+        const { error, hints, skipped } = parseCSV(csv);
+
+        expect(error).toBe('No valid services found');
+        expect(skipped).toBe(2);
+        expect(hints).toContain("Each row needs at least 'id' and 'name' values.");
     });
 });

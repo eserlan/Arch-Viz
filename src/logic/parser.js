@@ -15,17 +15,56 @@ const slugify = (value) =>
  * id,name,labels,tier,depends_on,owner,repo_url
  *
  * @param {string} csvString
- * @returns {{ elements: import('cytoscape').ElementsDefinition, skipped: number }}
+ * @returns {{ elements: import('cytoscape').ElementsDefinition, skipped: number, error?: string, hints?: string[] }}
  */
 export const parseCSV = (csvString) => {
-  const { data, errors } = Papa.parse(csvString, {
+  const hints = [];
+
+  // Basic validation
+  if (!csvString || typeof csvString !== 'string' || csvString.trim().length === 0) {
+    return { elements: [], skipped: 0, error: 'Empty or invalid file', hints: ['The file appears to be empty.'] };
+  }
+
+  const { data, errors, meta } = Papa.parse(csvString, {
     header: true,
     skipEmptyLines: true,
   });
 
   if (errors?.length) {
-    // PapaParse surfaces malformed rows here; keep going but log for visibility
     console.warn('CSV parse warnings', errors);
+    hints.push(`CSV parsing had ${errors.length} warning(s).`);
+  }
+
+  // Check if we have any data rows
+  if (!data || data.length === 0) {
+    return {
+      elements: [],
+      skipped: 0,
+      error: 'No data rows found',
+      hints: ['The CSV file has no data rows, only headers or is empty.']
+    };
+  }
+
+  // Check for required columns
+  const headers = meta.fields || [];
+  const hasId = headers.includes('id');
+  const hasName = headers.includes('name') || headers.includes('label');
+
+  if (!hasId) {
+    hints.push("Missing 'id' column - each service needs a unique identifier.");
+  }
+  if (!hasName) {
+    hints.push("Missing 'name' (or 'label') column - each service needs a display name.");
+  }
+
+  if (!hasId || !hasName) {
+    const foundHeaders = headers.length > 0 ? `Found columns: ${headers.join(', ')}` : 'No headers found';
+    return {
+      elements: [],
+      skipped: data.length,
+      error: 'Missing required columns',
+      hints: [...hints, foundHeaders, "Required: id, name (or label)"]
+    };
   }
 
   const elements = [];
@@ -88,5 +127,20 @@ export const parseCSV = (csvString) => {
     }
   });
 
-  return { elements, skipped };
+  // Check if we got any valid nodes
+  const nodes = elements.filter(e => e.group === 'nodes');
+  if (nodes.length === 0) {
+    return {
+      elements: [],
+      skipped,
+      error: 'No valid services found',
+      hints: [
+        `All ${data.length} row(s) were skipped.`,
+        "Each row needs at least 'id' and 'name' values.",
+        "Check that your data rows have values in these columns."
+      ]
+    };
+  }
+
+  return { elements, skipped, hints: hints.length > 0 ? hints : undefined };
 };

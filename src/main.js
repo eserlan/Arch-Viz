@@ -228,5 +228,5 @@ resetDataBtn?.addEventListener('click', () => {
 
 // Bootstrap
 initAccordion();
-initUploader(renderGraph, updateStatus, () => cy);
+initUploader(renderGraph, updateStatus, () => cy, showToast);
 loadData();
