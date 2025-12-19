@@ -143,4 +143,21 @@ describe('Storage Module', () => {
         // Cleanup
         vi.restoreAllMocks();
     });
+
+    it('should reset dirty state after downloading CSV', () => {
+        const mockLink = { href: '', download: '', click: vi.fn() };
+        vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
+        vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
+        vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
+
+        const mockCy = { nodes: () => [], edges: () => [] } as unknown as CyInstance;
+
+        setDirty(true);
+        expect(getDirtyState()).toBe(true);
+
+        downloadCSV(mockCy);
+
+        expect(getDirtyState()).toBe(false);
+        vi.restoreAllMocks();
+    });
 });

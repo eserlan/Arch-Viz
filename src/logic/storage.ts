@@ -84,4 +84,7 @@ export const downloadCSV = (cy: CyInstance): void => {
     link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
+
+    // After successful download, reset the dirty state
+    setDirty(false);
 };
