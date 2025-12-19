@@ -2,13 +2,13 @@
 
 **Status:** Draft / Proof of Concept  
 **Owner:** Architecture Team  
-**Environment:** Google Cloud Platform (GCP) / Cloud Run  
+**Environment:** GitHub Pages  
 **Target Scale:** 150+ Nodes (Services)
 
 ---
 
 ## 1. Executive Summary
-This repository contains the source code for the Organization's Service Dependency Graph. The system is designed as a Modern Web App (MWA) deployed as a containerized service on Google Cloud Run, rendering an interactive, force-directed graph derived from a static CSV registry.
+This repository contains the source code for the Organization's Service Dependency Graph. The system is designed as a static Single Page Application (SPA) hosted on GitHub Pages, rendering an interactive, force-directed graph derived from a static CSV registry.
 
 ### Problem Statement
 With a service mesh exceeding 150 nodes, maintaining accurate mental models of the system architecture has become increasingly difficult. Furthermore, static documentation methods are prone to immediate obsolescence.
@@ -21,14 +21,14 @@ The objective is to establish a "Living Document" that visualizes the current st
 ## 2. Technical Architecture
 
 ### Core Constraints
-- **Cloud-Native Deployment**: The system is packaged as a Docker container and deployed to Google Cloud Run for high availability and serverless scaling.
-- **Self-Contained Artifact**: The container includes both the built SPA and a lightweight production web server (Nginx), ensuring all dependencies are bundled at build time.
-- **Client-Side Processing**: To minimize backend complexity, all CSV parsing and data transformation operations are executed within the client browser.
+- **Static Hosting**: The system is hosted as a static site on GitHub Pages, requiring no backend runtime or server-side logic.
+- **Automated Deployment**: Deployment is handled via GitHub Actions, which builds the project and updates the live site on every push to the main branch.
+- **Client-Side Processing**: All CSV parsing and data transformation operations are executed within the client browser to minimize infrastructure complexity.
 
 ### Technology Stack
 - **Build Tool**: Vite
-- **Containerization**: Docker (Multi-stage build)
-- **Runtime**: Google Cloud Run
+- **Hosting**: GitHub Pages
+- **Automation**: GitHub Actions
 - **Graph Engine**: Cytoscape.js
 - **Layout Extension**: `cytoscape-fcose`
 - **Data Parsing**: PapaParse
@@ -39,8 +39,10 @@ The objective is to establish a "Living Document" that visualizes the current st
 ## 3. Repository Structure
 ```text
 service-map-viz/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml           # Automated deployment to GH Pages
 ├── .gitignore
-├── Dockerfile                   # Container definition for Cloud Run
 ├── package.json                 # Project dependencies
 ├── vite.config.js               # Build configuration
 ├── public/
@@ -81,30 +83,24 @@ The application ingests a flat CSV file located at `./public/data/services.csv`.
 ## 5. Implementation Details
 
 ### A. CSV Parsing Logic (`src/logic/parser.js`)
-Standard transformation logic remains focused on browser-side execution for zero-latency interactivity.
+Standard transformation logic runs entirely in the browser.
 
-### B. Layout Configuration (`cytoscape-fcose`)
-Physics-based simulation approach remains the standard for scale.
+### B. Deployment Automation (`.github/workflows/deploy.yml`)
+Uses the `peaceiris/actions-gh-pages` action to deploy the `dist/` folder.
 
 ---
 
-## 6. Deployment Strategy (GCP Cloud Run)
-The deployment is automated via Google Cloud Build or GitHub/Bitbucket Actions targeting GCP.
+## 6. Deployment Strategy (GitHub Pages)
+The deployment is fully automated via GitHub Actions.
 
 **Deployment Steps:**
-1. **Build**: Build the Docker image using the provided `Dockerfile`.
-2. **Push**: Push the image to GCP Artifact Registry.
-3. **Deploy**: Deploy to Cloud Run:
-   ```bash
-   gcloud run deploy service-map-viz \
-     --image gcr.io/your-project/service-map-viz \
-     --platform managed \
-     --allow-unauthenticated
-   ```
+1. **Push**: Commit and push changes to the `main` branch.
+2. **Build**: GitHub Actions automatically triggers a build using `npm run build`.
+3. **Deploy**: The built artifacts are pushed to the `gh-pages` branch and served live.
 
 ---
 
 ## 7. Roadmap & Features
-- **Phase 1**: Containerization & Cloud Run Deployment.
+- **Phase 1**: GitHub Pages Integration & Automation.
 - **Phase 2**: Interactivity & Search Enhancements.
-- **Phase 3**: Automated Data Sync (via Cloud Functions or Cron jobs).
+- **Phase 3**: Automated Data Sync (via scheduled GitHub Actions).
