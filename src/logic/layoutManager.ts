@@ -2,6 +2,10 @@ import { CyInstance } from '../types';
 import { layoutConfig } from './graphConfig';
 import { updateStatus, showToast } from './ui';
 import { LayoutOptions, NodeSingular } from 'cytoscape';
+import { disableGrouping } from './grouping';
+
+// Layouts that properly support compound/grouped nodes
+const COMPOUND_COMPATIBLE_LAYOUTS = ['fcose', 'dagre', 'dagre-horizontal', 'dagre-vertical'];
 
 /**
  * Layout Transition Management
@@ -17,6 +21,19 @@ export const initLayoutManager = (cy: CyInstance): void => {
         const isHorizontalDagre = layoutValue === 'dagre-horizontal';
         const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
         const layoutName = (isHorizontalDagre || isVerticalDagre) ? 'dagre' : layoutValue;
+
+        // Check if grouping is active and layout doesn't support it
+        const groupingSelect = document.getElementById('groupingSelect') as HTMLSelectElement | null;
+        const hasGrouping = groupingSelect && groupingSelect.value !== 'none';
+        const hasParentNodes = cy.nodes(':parent').length > 0;
+
+        if ((hasGrouping || hasParentNodes) && !COMPOUND_COMPATIBLE_LAYOUTS.includes(layoutValue)) {
+            showToast(`${layoutName} layout doesn't support grouping - disabling groups`, 'warning');
+            disableGrouping(cy);
+            if (groupingSelect) {
+                groupingSelect.value = 'none';
+            }
+        }
 
         // Check for selected node to use as center/root
         const selectedNodes = cy.nodes(':selected');
