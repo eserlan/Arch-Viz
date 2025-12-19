@@ -97,8 +97,19 @@ export const parseCSV = (csvString: string): ParseResult => {
         const labels = labelsRaw ? labelsRaw.split(';').map((d) => d.trim()).filter(Boolean) : [];
         const labelClasses = labels.map((d) => `label-${slugify(d)}`).join(' ');
         const tierClass = slugify(`tier-${tier}`);
-        const isDatabase = /\b(db|database)\b/i.test(id) || /\b(db|database)\b/i.test(name);
-        const databaseClass = isDatabase ? 'is-database' : '';
+
+        // Detect node type by name/id patterns
+        const isDatabase = /\b(db|database|postgres|mysql|mongo|redis|sql)\b/i.test(id) || /\b(db|database|postgres|mysql|mongo|redis|sql)\b/i.test(name);
+        const isQueue = /\b(topic|queue|kafka|rabbit|mq|sqs|sns|pubsub|stream|event)\b/i.test(id) || /\b(topic|queue|kafka|rabbit|mq|sqs|sns|pubsub|stream|event)\b/i.test(name);
+
+        // Apply shape classes (queue takes precedence if both match)
+        let shapeClass = '';
+        if (isQueue) {
+            shapeClass = 'is-queue';
+        } else if (isDatabase) {
+            shapeClass = 'is-database';
+        }
+
         const verifiedClass = verified ? 'verified' : '';
 
         elements.push({
@@ -114,7 +125,7 @@ export const parseCSV = (csvString: string): ParseResult => {
                 repoUrl,
                 verified,
             },
-            classes: `${tierClass} ${labelClasses} ${databaseClass} ${verifiedClass}`.trim(),
+            classes: `${tierClass} ${labelClasses} ${shapeClass} ${verifiedClass}`.trim(),
         });
 
         if (row.depends_on) {
