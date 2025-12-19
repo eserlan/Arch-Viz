@@ -195,8 +195,26 @@ const renderGraph = (elements, skipped) => {
   cy.on('tap', 'node', (evt) => {
     const node = evt.target;
     showPanel(node);
+
+    // Get depth setting
+    const depthVal = document.getElementById('depthSelect')?.value || '1';
+
+    let highlightCollection = node;
+
+    if (depthVal === 'all') {
+      // Highlight the entire connected component (undirected)
+      const components = cy.elements().components();
+      const component = components.find(c => c.contains(node));
+      if (component) highlightCollection = component;
+    } else {
+      const depth = parseInt(depthVal, 10);
+      for (let i = 0; i < depth; i++) {
+        highlightCollection = highlightCollection.union(highlightCollection.neighborhood());
+      }
+    }
+
     cy.elements().addClass('dimmed');
-    node.closedNeighborhood().removeClass('dimmed');
+    highlightCollection.removeClass('dimmed');
   });
 
   cy.on('tap', (evt) => {

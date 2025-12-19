@@ -50,6 +50,19 @@
         </select>
       </div>
 
+      <!-- Connection Depth -->
+      <div class="flex flex-col gap-2">
+        <label for="depthSelect" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Trace
+          Depth</label>
+        <select id="depthSelect"
+          class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+          <option value="1" selected>1 Level (Direct)</option>
+          <option value="2">2 Levels</option>
+          <option value="3">3 Levels</option>
+          <option value="all">All Connected</option>
+        </select>
+      </div>
+
       <!-- Label Filter -->
       <div class="flex flex-col gap-2">
         <label for="labelFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
