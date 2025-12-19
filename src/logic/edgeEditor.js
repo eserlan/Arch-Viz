@@ -5,6 +5,8 @@ import { saveGraphData } from './storage';
 cytoscape.use(edgehandles);
 
 let eh = null;
+let cyRef = null;
+let updateStatusRef = null;
 let isEditMode = false;
 
 const edgehandlesDefaults = {
@@ -30,6 +32,8 @@ const edgehandlesDefaults = {
 };
 
 export const initEdgeEditor = (cy, updateStatus) => {
+    cyRef = cy;
+    updateStatusRef = updateStatus;
     eh = cy.edgehandles(edgehandlesDefaults);
 
     // Listen for new edge creation
@@ -37,13 +41,27 @@ export const initEdgeEditor = (cy, updateStatus) => {
         saveGraphData(cy.elements().jsons());
         updateStatus(`Connected ${sourceNode.data('label') || sourceNode.id()} → ${targetNode.data('label') || targetNode.id()}`);
     });
+
+    // Listen for edge clicks to delete in edit mode
+    cy.on('tap', 'edge', (evt) => {
+        if (!isEditMode) return;
+        const edge = evt.target;
+        const sourceName = edge.source().data('label') || edge.source().id();
+        const targetName = edge.target().data('label') || edge.target().id();
+
+        if (confirm(`Remove connection: ${sourceName} → ${targetName}?`)) {
+            edge.remove();
+            saveGraphData(cy.elements().jsons());
+            updateStatus(`Removed connection: ${sourceName} → ${targetName}`);
+        }
+    });
 };
 
 export const enableEditMode = (updateStatus) => {
     if (!eh) return;
     eh.enableDrawMode();
     isEditMode = true;
-    updateStatus('Edit Mode: Drag from a node to create a connection');
+    updateStatus('Edit Mode: Drag to connect, click edge to remove');
 };
 
 export const disableEditMode = (updateStatus) => {
