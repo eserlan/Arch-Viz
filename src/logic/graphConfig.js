@@ -40,11 +40,11 @@ export const stylesheet = [
   {
     selector: '.is-database',
     style: {
-      'background-image': '/Arch-Viz/assets/database.svg',
-      'background-fit': 'contain',
-      'background-opacity': 0.8,
-      'border-style': 'double',
-      'border-width': 4,
+      'shape': 'barrel',
+      'border-style': 'solid',
+      'border-width': 3,
+      'height': 60,
+      'width': 50,
     },
   },
   {
