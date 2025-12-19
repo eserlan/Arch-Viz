@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
   <title>Arch Viz - Mapping the Chaos</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-Clh8_2w6.js"></script>
-  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-Dr4hewbm.css">
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-DxHxJSvZ.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-C-3uOixQ.css">
 </head>
 
 <body class="bg-slate-950 text-slate-100">
@@ -103,7 +103,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
-            <span id="editModeLabel">Enter Edit Mode</span>
+            <span id="editModeLabel">Edit Connections</span>
+          </button>
+
+          <button id="addServiceBtnSidebar"
+            class="hidden w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-2 mt-2 hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors flex items-center justify-center gap-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Add Service</span>
           </button>
         </div>
 
@@ -205,12 +213,16 @@
           <div id="panelContent" class="space-y-3">
             <!-- Items injected by JS -->
           </div>
-          <div id="editActions" class="hidden flex gap-2 mt-4 pt-4 border-t border-slate-800">
-            <button id="saveBtn"
-              class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded transition-colors">Save
-              Changes</button>
-            <button id="cancelBtn"
-              class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2 rounded transition-colors">Cancel</button>
+          <div id="editActions" class="hidden gap-2 mt-4 pt-4 border-t border-slate-800 flex-wrap">
+            <div class="flex gap-2 w-full">
+              <button id="saveBtn"
+                class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded transition-colors">Save</button>
+              <button id="cancelBtn"
+                class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2 rounded transition-colors">Cancel</button>
+            </div>
+            <button id="deleteNodeBtn"
+              class="w-full mt-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[10px] font-bold py-2 rounded border border-red-500/20 transition-colors">Delete
+              Service</button>
           </div>
         </div>
       </section>
@@ -299,6 +311,10 @@
         <h3 class="text-lg font-semibold mb-2 text-white">Interactive Features</h3>
         <ul class="list-disc list-inside text-sm text-slate-300 space-y-1 ml-1">
           <li><strong class="text-emerald-400">Click</strong> a node to see details and highlight neighbors.</li>
+          <li><strong class="text-emerald-400">Edit / Delete</strong>: Buttons in selected service panel.</li>
+          <li><strong class="text-emerald-400">Add Service</strong>: Button in sidebar to create new nodes.</li>
+          <li><strong class="text-emerald-400">Edit Connections</strong>: Toggle mode to drag new connections between
+            nodes.</li>
           <li><strong class="text-emerald-400">Ctrl + Click</strong> filters to select multiple items.</li>
           <li><strong class="text-emerald-400">Trace Depth</strong>: Expand connection highlighting distance.</li>
           <li><strong class="text-emerald-400">Export</strong>: Save your graph as an image.</li>
@@ -307,6 +323,49 @@
     </div>
   </dialog>
 
+  <!-- Add Service Modal -->
+  <dialog id="addServiceModal"
+    class="bg-slate-900 text-slate-100 p-6 rounded-xl border border-slate-700 shadow-2xl backdrop:bg-slate-950/80 w-full max-w-sm">
+    <h2 class="text-lg font-bold text-emerald-400 mb-4">Add New Service</h2>
+    <form id="addServiceForm" class="space-y-4">
+      <div>
+        <label class="block text-xs uppercase text-slate-500 font-bold mb-1">ID (Required)</label>
+        <input type="text" name="id" required
+          class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-emerald-500 focus:outline-none placeholder-slate-600"
+          placeholder="e.g. auth-service" />
+      </div>
+      <div>
+        <label class="block text-xs uppercase text-slate-500 font-bold mb-1">Name (Required)</label>
+        <input type="text" name="name" required
+          class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-emerald-500 focus:outline-none placeholder-slate-600"
+          placeholder="e.g. Auth Service" />
+      </div>
+      <div>
+        <label class="block text-xs uppercase text-slate-500 font-bold mb-1">Owner</label>
+        <input type="text" name="owner"
+          class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-emerald-500 focus:outline-none placeholder-slate-600"
+          placeholder="Team/Owner" />
+      </div>
+      <div class="flex gap-2">
+        <div class="flex-1">
+          <label class="block text-xs uppercase text-slate-500 font-bold mb-1">Tier</label>
+          <select name="tier"
+            class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-emerald-500 focus:outline-none">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="button" id="cancelAddServiceBtn"
+          class="flex-1 bg-slate-800 text-slate-300 text-xs font-bold py-2 rounded hover:bg-slate-700 transition-colors">Cancel</button>
+        <button type="submit"
+          class="flex-1 bg-emerald-600 text-white text-xs font-bold py-2 rounded hover:bg-emerald-500 transition-colors">Create</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 
 </html>
