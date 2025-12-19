@@ -3,7 +3,8 @@ import { saveGraphData } from './storage';
 let currentSelectedNode = null;
 let cyRef = null;
 let updateStatusRef = null;
-let listenersAttached = false;
+let originalData = {}; // Store original values for dirty checking
+let isFormDirty = false;
 
 const getElements = () => ({
   servicePanel: document.getElementById('servicePanel'),
@@ -13,6 +14,26 @@ const getElements = () => ({
   saveBtn: document.getElementById('saveBtn'),
   cancelBtn: document.getElementById('cancelBtn'),
 });
+
+const updateSaveButtonState = () => {
+  const { saveBtn, panelContent } = getElements();
+  if (!saveBtn || !panelContent) return;
+
+  const inputs = panelContent.querySelectorAll('input[data-key]');
+  let isDirty = false;
+
+  inputs.forEach(input => {
+    const key = input.dataset.key;
+    if (originalData[key] !== input.value) {
+      isDirty = true;
+    }
+  });
+
+  isFormDirty = isDirty;
+  saveBtn.disabled = !isDirty;
+  saveBtn.classList.toggle('opacity-50', !isDirty);
+  saveBtn.classList.toggle('cursor-not-allowed', !isDirty);
+};
 
 export const showPanel = (node) => {
   const { servicePanel, panelContent, editBtn, editActions } = getElements();
@@ -26,6 +47,15 @@ export const showPanel = (node) => {
     target: edge.target().data('label') || edge.target().id(),
     targetId: edge.target().id()
   }));
+
+  // Store original data for dirty checking
+  originalData = {
+    label: data.label || '',
+    domain: data.domain || '',
+    tier: data.tier || '',
+    owner: data.owner || '',
+    repoUrl: data.repoUrl || ''
+  };
 
   panelContent.innerHTML = `
     <div class="info-item">
@@ -65,16 +95,19 @@ export const showPanel = (node) => {
   servicePanel.classList.add('active');
   editBtn?.classList.remove('hidden');
   editActions?.classList.add('hidden');
+  isFormDirty = false;
 };
 
 export const hidePanel = () => {
   const { servicePanel } = getElements();
   if (servicePanel) servicePanel.classList.remove('active');
   currentSelectedNode = null;
+  originalData = {};
+  isFormDirty = false;
 };
 
 const toggleEdit = (editing) => {
-  const { panelContent, editBtn, editActions } = getElements();
+  const { panelContent, editBtn, editActions, saveBtn } = getElements();
   if (!panelContent || !currentSelectedNode) return;
 
   const values = panelContent.querySelectorAll('.info-value[data-key]');
@@ -89,6 +122,19 @@ const toggleEdit = (editing) => {
       el.textContent = val;
     }
   });
+
+  // Add input listeners for dirty checking
+  if (editing) {
+    const inputs = panelContent.querySelectorAll('input[data-key]');
+    inputs.forEach(input => {
+      input.addEventListener('input', updateSaveButtonState);
+    });
+    // Initially disable save button
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  }
 
   const connectionsList = panelContent.querySelector('.connections-list');
   if (editing && cyRef) {
@@ -133,13 +179,13 @@ const toggleEdit = (editing) => {
       if (!targetId) return;
       const edgeId = `${currentSelectedNode.id()}-${targetId}`;
 
-      // Add temp edge in Cytoscape immediately
+      // Add edge in Cytoscape
       cy.add({
         group: 'edges',
         data: { id: edgeId, source: currentSelectedNode.id(), target: targetId }
       });
 
-      // Re-toggle edit to refresh list (simplest way to update UI)
+      // Re-toggle edit to refresh list
       toggleEdit(true);
     });
 
@@ -150,9 +196,6 @@ const toggleEdit = (editing) => {
         toggleEdit(true);
       });
     });
-
-  } else {
-    // Handled by showPanel in next call, but let's clean up for consistency
   }
 
   if (editing) {
@@ -165,10 +208,17 @@ const toggleEdit = (editing) => {
 };
 
 const handleSave = () => {
-  if (!currentSelectedNode || !cyRef) return;
+  if (!currentSelectedNode || !cyRef) {
+    console.error('handleSave: No node or cy reference');
+    return;
+  }
   const { panelContent } = getElements();
+  if (!panelContent) {
+    console.error('handleSave: No panelContent');
+    return;
+  }
 
-  const inputs = panelContent.querySelectorAll('input');
+  const inputs = panelContent.querySelectorAll('input[data-key]');
   const newData = {};
   inputs.forEach(input => {
     const key = input.dataset.key;
@@ -184,34 +234,48 @@ const handleSave = () => {
     currentSelectedNode.classes(currentSelectedNode.classes().replace(/domain-\S+/g, '').trim() + ' ' + newDomainClasses);
   }
 
+  // Update node data
   currentSelectedNode.data(newData);
 
-  // Save total state
-  saveGraphData(cyRef.elements().jsons());
+  // Save to localStorage
+  const elements = cyRef.elements().jsons();
+  saveGraphData(elements);
 
   if (updateStatusRef) {
-    updateStatusRef(`Updated ${newData.label || currentSelectedNode.id()} and its connections`);
+    updateStatusRef(`Saved changes to ${newData.label || currentSelectedNode.id()}`);
   }
+
+  // Refresh panel to show saved state
   showPanel(currentSelectedNode);
 };
 
 export const initPanel = (cy, updateStatus) => {
-  // Update module-level references
+  // Update module-level references every time
   cyRef = cy;
   updateStatusRef = updateStatus;
 
-  // Only attach event listeners once
-  if (listenersAttached) return;
-  listenersAttached = true;
-
   const { editBtn, cancelBtn, saveBtn } = getElements();
 
-  editBtn?.addEventListener('click', () => toggleEdit(true));
-  cancelBtn?.addEventListener('click', () => {
-    if (currentSelectedNode) {
-      showPanel(currentSelectedNode);
-    }
-  });
+  // Remove old listeners by cloning and replacing elements
+  if (editBtn) {
+    const newEditBtn = editBtn.cloneNode(true);
+    editBtn.parentNode.replaceChild(newEditBtn, editBtn);
+    newEditBtn.addEventListener('click', () => toggleEdit(true));
+  }
 
-  saveBtn?.addEventListener('click', handleSave);
+  if (cancelBtn) {
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    newCancelBtn.addEventListener('click', () => {
+      if (currentSelectedNode) {
+        showPanel(currentSelectedNode);
+      }
+    });
+  }
+
+  if (saveBtn) {
+    const newSaveBtn = saveBtn.cloneNode(true);
+    saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+    newSaveBtn.addEventListener('click', handleSave);
+  }
 };
