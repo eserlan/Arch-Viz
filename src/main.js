@@ -78,6 +78,67 @@ if (downloadCsvBtn) {
   });
 }
 
+// Copy Image to Clipboard button
+const copyImageBtn = document.getElementById('copyImageBtn');
+if (copyImageBtn) {
+  copyImageBtn.addEventListener('click', async () => {
+    if (!cy) {
+      showToast('No graph to copy', 'warning');
+      return;
+    }
+    try {
+      // Generate PNG with higher resolution
+      const png64 = cy.png({ scale: 2, bg: '#0f172a', full: true });
+
+      // Convert base64 to blob
+      const response = await fetch(png64);
+      const blob = await response.blob();
+
+      // Copy to clipboard
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]);
+
+      showToast('Graph copied to clipboard!', 'success');
+    } catch (err) {
+      console.error('Failed to copy image:', err);
+      showToast('Failed to copy image to clipboard', 'error');
+    }
+  });
+}
+
+// Save Image button
+const saveImageBtn = document.getElementById('saveImageBtn');
+if (saveImageBtn) {
+  saveImageBtn.addEventListener('click', () => {
+    if (!cy) {
+      showToast('No graph to save', 'warning');
+      return;
+    }
+    try {
+      // Generate PNG with higher resolution
+      const png64 = cy.png({ scale: 2, bg: '#0f172a', full: true });
+
+      // Generate timestamped filename
+      const now = new Date();
+      const pad = (n) => n.toString().padStart(2, '0');
+      const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+      const filename = `service-map-${timestamp}.png`;
+
+      // Create download link
+      const link = document.createElement('a');
+      link.href = png64;
+      link.download = filename;
+      link.click();
+
+      showToast(`Saved ${filename}`, 'success');
+    } catch (err) {
+      console.error('Failed to save image:', err);
+      showToast('Failed to save image', 'error');
+    }
+  });
+}
+
 const renderGraph = (elements, skipped) => {
   updateStatus('Rendering graph…');
 
