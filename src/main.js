@@ -36,7 +36,7 @@ const renderGraph = (elements, skipped) => {
   });
 
   cy.ready(() => {
-    cy.fit(undefined, 80);
+    cy.fit(undefined, 100);
     updateStatus(
       `Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` +
       (skipped ? ` (skipped ${skipped} invalid rows)` : ''),
@@ -75,16 +75,26 @@ if (layoutSelect) {
       animate: true,
       animationDuration: 1000,
       fit: true,
-      padding: 80,
+      padding: 100, // Increased padding for safer fitting
       randomize: false,
       nodeDimensionsIncludeLabels: true,
     };
 
     const finalConfig = layoutName === 'fcose' ?
-      { ...layoutConfig, animate: true, animationDuration: 1000 } :
+      { ...layoutConfig, animate: true, animationDuration: 1000, fit: true, padding: 100 } :
       animationOptions;
 
-    cy.layout(finalConfig).run();
+    const layout = cy.layout(finalConfig);
+
+    // Ensure we fit again once the layout has finished moving nodes
+    layout.one('layoutstop', () => {
+      cy.animate({
+        fit: { padding: 100 },
+        duration: 500
+      });
+    });
+
+    layout.run();
   });
 }
 
