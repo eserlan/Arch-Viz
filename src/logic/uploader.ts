@@ -1,10 +1,22 @@
-import { parseCSV } from './parser';
+import { parseCSV, ParseResult } from './parser';
 import { saveGraphData } from './storage';
+import { CyInstance, ToastType } from '../types';
+import { ElementsDefinition, ElementDefinition } from 'cytoscape';
 
 const dropZone = document.getElementById('dropZone');
 const mainContainer = document.querySelector('main');
 
-export const initUploader = (renderCallback, updateStatus, getCyInstance, showToast) => {
+type RenderCallback = (elements: ElementsDefinition | ElementDefinition[], skipped: number) => void;
+type UpdateStatus = (msg: string) => void;
+type ShowToast = (msg: string, type: ToastType) => void;
+type GetCyInstance = () => CyInstance | undefined;
+
+export const initUploader = (
+    renderCallback: RenderCallback,
+    updateStatus: UpdateStatus,
+    getCyInstance: GetCyInstance,
+    showToast?: ShowToast
+): void => {
     if (!mainContainer || !dropZone) return;
 
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -23,19 +35,19 @@ export const initUploader = (renderCallback, updateStatus, getCyInstance, showTo
         }, false);
     });
 
-    mainContainer.addEventListener('drop', (e) => {
+    mainContainer.addEventListener('drop', (e: DragEvent) => {
         const dt = e.dataTransfer;
-        const files = dt.files;
+        const files = dt?.files;
 
-        if (files.length > 0) {
+        if (files && files.length > 0) {
             const file = files[0];
             if (file.name.endsWith('.csv')) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    const csvText = event.target.result;
+                    const csvText = event.target?.result as string;
                     updateStatus(`Parsing ${file.name}…`);
 
-                    const result = parseCSV(csvText);
+                    const result: ParseResult = parseCSV(csvText);
 
                     // Check for errors
                     if (result.error) {
@@ -60,7 +72,7 @@ export const initUploader = (renderCallback, updateStatus, getCyInstance, showTo
                     if (cy) cy.destroy();
 
                     renderCallback(elements, skipped);
-                    saveGraphData(elements);
+                    saveGraphData(elements as ElementDefinition[]);
 
                     // Show any warnings/hints
                     if (hints && hints.length > 0 && showToast) {

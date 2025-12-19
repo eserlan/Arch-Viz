@@ -1,23 +1,26 @@
+import { CyInstance } from '../types';
+import { layoutConfig } from './graphConfig';
+import { updateStatus } from './ui';
+import { LayoutOptions } from 'cytoscape';
+
 /**
  * Layout Transition Management
  */
-import { layoutConfig } from './graphConfig';
-import { updateStatus } from './ui';
-
-export const initLayoutManager = (cy) => {
-    const layoutSelect = document.getElementById('layoutSelect');
+export const initLayoutManager = (cy: CyInstance): void => {
+    const layoutSelect = document.getElementById('layoutSelect') as HTMLSelectElement | null;
     if (!layoutSelect) return;
 
-    layoutSelect.addEventListener('change', (e) => {
+    layoutSelect.addEventListener('change', (e: Event) => {
         if (!cy) return;
-        const layoutValue = e.target.value;
+        const target = e.target as HTMLSelectElement;
+        const layoutValue = target.value;
         const isHorizontalDagre = layoutValue === 'dagre-horizontal';
         const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
         const layoutName = (isHorizontalDagre || isVerticalDagre) ? 'dagre' : layoutValue;
 
         updateStatus(`Switching to ${layoutName} layout…`);
 
-        const animationOptions = {
+        const animationOptions: any = {
             name: layoutName,
             animate: true,
             animationDuration: 1000,
@@ -29,7 +32,7 @@ export const initLayoutManager = (cy) => {
             rankDir: isHorizontalDagre ? 'LR' : 'TB',
         };
 
-        const finalConfig = layoutName === 'fcose' ?
+        const finalConfig: LayoutOptions = layoutName === 'fcose' ?
             { ...layoutConfig, animate: true, animationDuration: 1000, fit: false, padding: 160 } :
             animationOptions;
 
@@ -43,7 +46,7 @@ export const initLayoutManager = (cy) => {
                 fit: { padding: 160 },
                 duration: 800,
                 easing: 'ease-in-out-cubic'
-            });
+            } as any);
             updateStatus(`Layout: ${layoutName} applied`);
         };
 

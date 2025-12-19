@@ -1,29 +1,40 @@
-const getElements = () => ({
-    searchInput: document.getElementById('searchInput'),
+import { CyInstance } from '../types';
+import { NodeDefinition, EdgeDefinition, NodeSingular, EdgeSingular } from 'cytoscape';
+
+interface FilterElements {
+    searchInput: HTMLInputElement | null;
+    clearSearchBtn: HTMLElement | null;
+    labelFilterContainer: HTMLElement | null;
+    teamFilterContainer: HTMLElement | null;
+}
+
+const getElements = (): FilterElements => ({
+    searchInput: document.getElementById('searchInput') as HTMLInputElement | null,
     clearSearchBtn: document.getElementById('clearSearchBtn'),
     labelFilterContainer: document.getElementById('labelFilterContainer'),
     teamFilterContainer: document.getElementById('teamFilterContainer'),
 });
 
-let cyRef = null;
+let cyRef: CyInstance | null = null;
 
 /**
  * Get selected values from a filter element (select or container)
  */
-const getSelectedValues = (element) => {
+const getSelectedValues = (element: HTMLElement | null): string[] => {
     if (!element) return [];
     if (element.tagName === 'SELECT') {
-        return Array.from(element.selectedOptions).map(opt => opt.value);
+        const select = element as HTMLSelectElement;
+        return Array.from(select.selectedOptions).map(opt => opt.value);
     }
     // For cloud containers (labels and teams)
     if (element.id === 'labelFilterContainer' || element.id === 'teamFilterContainer') {
-        return Array.from(element.querySelectorAll('button[data-selected="true"]')).map(btn => btn.dataset.value);
+        return Array.from(element.querySelectorAll('button[data-selected="true"]')).map(btn => (btn as HTMLElement).dataset.value || '');
     }
     return [];
 };
 
-const updateButtonStyle = (btn, selected) => {
-    btn.dataset.selected = selected;
+const updateButtonStyle = (btn: HTMLButtonElement, selected: boolean): void => {
+    btn.dataset.selected = selected.toString();
     if (selected) {
         btn.className = 'text-[10px] px-2.5 py-1 rounded-full border border-emerald-500 bg-emerald-500 text-white font-medium shadow-sm transition-all duration-200';
     } else {
@@ -31,7 +42,7 @@ const updateButtonStyle = (btn, selected) => {
     }
 };
 
-export const applyFilters = (cy) => {
+export const applyFilters = (cy?: CyInstance): void => {
     const cyInstance = cy || cyRef;
     if (!cyInstance) return;
 
@@ -45,11 +56,11 @@ export const applyFilters = (cy) => {
     const filterByTeams = selectedTeams.length > 0;
 
     cyInstance.batch(() => {
-        cyInstance.nodes().forEach(node => {
+        cyInstance.nodes().forEach((node: NodeSingular) => {
             const name = (node.data('name') || node.data('label') || '').toLowerCase();
             const id = node.id().toLowerCase();
-            const nodeLabels = node.data('labels') || [];
-            const nodeOwner = node.data('owner') || '';
+            const nodeLabels: string[] = node.data('labels') || [];
+            const nodeOwner: string = node.data('owner') || '';
 
             const matchesSearch = name.includes(searchTerm) || id.includes(searchTerm);
             // Service matches if it has ANY of the selected labels
@@ -64,7 +75,7 @@ export const applyFilters = (cy) => {
             }
         });
 
-        cyInstance.edges().forEach(edge => {
+        cyInstance.edges().forEach((edge: EdgeSingular) => {
             const sourceFiltered = edge.source().hasClass('filtered');
             const targetFiltered = edge.target().hasClass('filtered');
 
@@ -77,7 +88,7 @@ export const applyFilters = (cy) => {
     });
 };
 
-const populateContainer = (container, items, currentSelections) => {
+const populateContainer = (container: HTMLElement | null, items: Set<string>, currentSelections: Set<string>): void => {
     if (!container) return;
 
     container.innerHTML = '';
@@ -106,14 +117,14 @@ const populateContainer = (container, items, currentSelections) => {
     });
 };
 
-export const populateLabelFilter = (elements) => {
+export const populateLabelFilter = (elements: (NodeDefinition | EdgeDefinition)[]): void => {
     const { labelFilterContainer } = getElements();
     if (!labelFilterContainer) return;
 
-    const labels = new Set();
+    const labels = new Set<string>();
     elements.forEach(el => {
-        const data = typeof el.data === 'function' ? el.data() : (el.data || el);
-        const nodeLabels = data.labels;
+        const data = (el as any).data || el;
+        const nodeLabels: string[] | undefined = data.labels;
         if (nodeLabels) {
             nodeLabels.forEach(d => labels.add(d));
         }
@@ -123,14 +134,14 @@ export const populateLabelFilter = (elements) => {
     populateContainer(labelFilterContainer, labels, currentSelections);
 };
 
-export const populateTeamFilter = (elements) => {
+export const populateTeamFilter = (elements: (NodeDefinition | EdgeDefinition)[]): void => {
     const { teamFilterContainer } = getElements();
     if (!teamFilterContainer) return;
 
-    const teams = new Set();
+    const teams = new Set<string>();
     elements.forEach(el => {
-        const data = typeof el.data === 'function' ? el.data() : (el.data || el);
-        const owner = data.owner;
+        const data = (el as any).data || el;
+        const owner: string | undefined = data.owner;
         if (owner) {
             teams.add(owner);
         }
@@ -140,18 +151,19 @@ export const populateTeamFilter = (elements) => {
     populateContainer(teamFilterContainer, teams, currentSelections);
 };
 
-export const initFilters = (cy) => {
+export const initFilters = (cy: CyInstance | null): void => {
     cyRef = cy;
     const { searchInput, clearSearchBtn } = getElements();
 
     const handleSearchInput = () => {
+        if (!searchInput) return;
         const val = searchInput.value;
         if (val.length > 0) {
             clearSearchBtn?.classList.remove('hidden');
         } else {
             clearSearchBtn?.classList.add('hidden');
         }
-        applyFilters(cy);
+        if (cy) applyFilters(cy);
     };
 
     searchInput?.addEventListener('input', handleSearchInput);

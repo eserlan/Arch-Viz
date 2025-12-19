@@ -1,27 +1,30 @@
+import { NodeSingular, EventObject } from 'cytoscape';
+import { showPanel, hidePanel } from './panel';
+import { getNodesAtDepth } from './graphUtils';
+import { CyInstance } from '../types';
+
 /**
  * Graph interaction events and UI feedback
  */
-import { showPanel, hidePanel } from './panel';
-import { getNodesAtDepth } from './graphUtils';
-
-export const initGraphEvents = (cy) => {
+export const initGraphEvents = (cy: CyInstance): void => {
     if (!cy) return;
 
-    const highlightConnections = (node) => {
-        const depthVal = document.getElementById('depthSelect')?.value || '1';
+    const highlightConnections = (node: NodeSingular) => {
+        const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
+        const depthVal = depthSelect?.value || '1';
         const highlightCollection = getNodesAtDepth(node, depthVal, cy);
 
         cy.elements().addClass('dimmed');
         highlightCollection.removeClass('dimmed');
     };
 
-    cy.on('tap', 'node', (evt) => {
-        const node = evt.target;
+    cy.on('tap', 'node', (evt: EventObject) => {
+        const node = evt.target as NodeSingular;
         showPanel(node);
         highlightConnections(node);
     });
 
-    cy.on('tap', (evt) => {
+    cy.on('tap', (evt: EventObject) => {
         if (evt.target === cy) {
             hidePanel();
             cy.elements().removeClass('dimmed');
@@ -29,10 +32,10 @@ export const initGraphEvents = (cy) => {
     });
 
     // Depth select interaction
-    const depthSelect = document.getElementById('depthSelect');
-    if (depthSelect) {
+    const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
+    if (depthSelect && depthSelect.parentNode) {
         // Simple way to ensure only one listener
-        const newSelect = depthSelect.cloneNode(true);
+        const newSelect = depthSelect.cloneNode(true) as HTMLSelectElement;
         depthSelect.parentNode.replaceChild(newSelect, depthSelect);
 
         newSelect.addEventListener('change', () => {
@@ -46,8 +49,8 @@ export const initGraphEvents = (cy) => {
     // Tooltip Logic
     const tooltip = document.getElementById('graphTooltip');
     if (tooltip) {
-        cy.on('mouseover', 'node', (evt) => {
-            const node = evt.target;
+        cy.on('mouseover', 'node', (evt: EventObject) => {
+            const node = evt.target as NodeSingular;
             const label = node.data('name') || node.data('label') || node.id();
             tooltip.textContent = label;
 

@@ -1,6 +1,7 @@
+import { CyInstance, ServiceData } from '../types';
 import { saveGraphData } from './storage';
 
-export const addNode = (cy, data) => {
+export const addNode = (cy: CyInstance, data: ServiceData): void => {
     if (cy.getElementById(data.id).nonempty()) {
         throw new Error(`Node with ID "${data.id}" already exists.`);
     }
@@ -8,12 +9,12 @@ export const addNode = (cy, data) => {
     // Default position: Center of viewport
     const pan = cy.pan();
     const zoom = cy.zoom();
-    const width = cy.width();
-    const height = cy.height();
+    const width = cy.width() || 0;
+    const height = cy.height() || 0;
     const pos = { x: (width / 2 - pan.x) / zoom, y: (height / 2 - pan.y) / zoom };
 
     // Ensure numeric tier if provided
-    const tier = data.tier ? parseInt(data.tier, 10) : undefined;
+    const tier = data.tier ? parseInt(data.tier.toString(), 10) : undefined;
 
     cy.add({
         group: 'nodes',
@@ -31,7 +32,7 @@ export const addNode = (cy, data) => {
     saveGraphData(cy.elements().jsons());
 };
 
-export const deleteNode = (cy, nodeId) => {
+export const deleteNode = (cy: CyInstance, nodeId: string): boolean => {
     const node = cy.getElementById(nodeId);
     if (node.nonempty()) {
         cy.remove(node);

@@ -1,9 +1,11 @@
+import { CyInstance } from '../types';
+import { showToast } from './ui';
+
 /**
  * Graph Export functionality (Clipboard and Download)
  */
-import { showToast } from './ui';
 
-export const copyImageToClipboard = async (cy) => {
+export const copyImageToClipboard = async (cy: CyInstance | null): Promise<void> => {
     if (!cy) {
         showToast('No graph to copy', 'warning');
         return;
@@ -24,7 +26,7 @@ export const copyImageToClipboard = async (cy) => {
     }
 };
 
-export const saveImageAsPng = (cy) => {
+export const saveImageAsPng = (cy: CyInstance | null): void => {
     if (!cy) {
         showToast('No graph to save', 'warning');
         return;
@@ -32,7 +34,7 @@ export const saveImageAsPng = (cy) => {
     try {
         const png64 = cy.png({ scale: 2, bg: '#0f172a', full: true });
         const now = new Date();
-        const pad = (n) => n.toString().padStart(2, '0');
+        const pad = (n: number) => n.toString().padStart(2, '0');
         const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
         const filename = `service-map-${timestamp}.png`;
 

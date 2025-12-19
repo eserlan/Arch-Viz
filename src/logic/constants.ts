@@ -2,7 +2,7 @@
  * Static content and constants for the UI
  */
 
-export const HELP_CONTENT_HTML = `
+export const HELP_CONTENT_HTML: string = `
   <div>
     <h3 class="text-lg font-semibold mb-2 text-white">How it Works</h3>
     <p class="text-sm text-slate-300 leading-relaxed">Drag and drop your <code>services.csv</code> file onto the

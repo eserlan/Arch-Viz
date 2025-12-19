@@ -1,14 +1,15 @@
-/**
- * Add Service Form Handling
- */
+import { CyInstance, ServiceData, Tier } from '../types';
 import { addNode } from './nodeOperations';
 import { showToast, updateStatus } from './ui';
 
-export const initServiceForm = (cy, onNodeAdded) => {
-    const addServiceModal = document.getElementById('addServiceModal');
+/**
+ * Add Service Form Handling
+ */
+export const initServiceForm = (cy: CyInstance, onNodeAdded?: () => void): void => {
+    const addServiceModal = document.getElementById('addServiceModal') as HTMLDialogElement | null;
     const addServiceBtnSidebar = document.getElementById('addServiceBtnSidebar');
     const cancelAddServiceBtn = document.getElementById('cancelAddServiceBtn');
-    const addServiceForm = document.getElementById('addServiceForm');
+    const addServiceForm = document.getElementById('addServiceForm') as HTMLFormElement | null;
 
     if (addServiceBtnSidebar) {
         addServiceBtnSidebar.addEventListener('click', () => {
@@ -24,14 +25,15 @@ export const initServiceForm = (cy, onNodeAdded) => {
     }
 
     if (addServiceForm) {
-        addServiceForm.addEventListener('submit', (e) => {
+        addServiceForm.addEventListener('submit', (e: SubmitEvent) => {
             e.preventDefault();
             const formData = new FormData(addServiceForm);
-            const data = {
-                id: formData.get('id'),
-                name: formData.get('name'),
-                owner: formData.get('owner'),
-                tier: parseInt(formData.get('tier'), 10)
+
+            const data: ServiceData = {
+                id: formData.get('id') as string,
+                name: formData.get('name') as string,
+                owner: formData.get('owner') as string,
+                tier: parseInt(formData.get('tier') as string, 10) as Tier
             };
 
             try {
@@ -41,7 +43,7 @@ export const initServiceForm = (cy, onNodeAdded) => {
                 addServiceModal?.close();
                 showToast(`Service "${data.name}" created`, 'success');
                 if (onNodeAdded) onNodeAdded();
-            } catch (err) {
+            } catch (err: any) {
                 alert(err.message);
             }
         });

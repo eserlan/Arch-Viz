@@ -1,36 +1,39 @@
+import { CyInstance } from '../types';
+import { ElementDefinition, NodeSingular, EdgeSingular } from 'cytoscape';
+
 const STORAGE_KEY = 'arch-viz-elements';
 const DIRTY_KEY = 'arch-viz-dirty';
 
 let isDirty = false;
 
-export const saveGraphData = (elements) => {
+export const saveGraphData = (elements: ElementDefinition[]): void => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(elements));
     setDirty(true);
 };
 
-export const loadGraphData = () => {
+export const loadGraphData = (): ElementDefinition[] | null => {
     const saved = localStorage.getItem(STORAGE_KEY);
     // Check if we have saved data (meaning user has made changes)
     isDirty = localStorage.getItem(DIRTY_KEY) === 'true';
     return saved ? JSON.parse(saved) : null;
 };
 
-export const clearGraphData = () => {
+export const clearGraphData = (): void => {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(DIRTY_KEY);
     isDirty = false;
 };
 
-export const setDirty = (value) => {
+export const setDirty = (value: boolean): void => {
     isDirty = value;
     localStorage.setItem(DIRTY_KEY, value ? 'true' : 'false');
     // Dispatch custom event for UI updates
     window.dispatchEvent(new CustomEvent('dirty-state-change', { detail: { isDirty: value } }));
 };
 
-export const getDirtyState = () => isDirty;
+export const getDirtyState = (): boolean => isDirty;
 
-export const exportToCSV = (cy) => {
+export const exportToCSV = (cy: CyInstance): string => {
     const nodes = cy.nodes();
     const edges = cy.edges();
 
@@ -38,11 +41,11 @@ export const exportToCSV = (cy) => {
     const headers = ['id', 'name', 'labels', 'tier', 'depends_on', 'owner', 'repo_url'];
 
     // Build rows from nodes
-    const rows = nodes.map(node => {
+    const rows = nodes.map((node: NodeSingular) => {
         const data = node.data();
         // Find all edges where this node is the source
-        const outgoing = edges.filter(e => e.source().id() === node.id());
-        const dependsOn = outgoing.map(e => e.target().id()).join(';');
+        const outgoing = edges.filter((e: EdgeSingular) => e.source().id() === node.id());
+        const dependsOn = outgoing.map((e: EdgeSingular) => e.target().id()).join(';');
 
         return [
             data.id || '',
@@ -54,24 +57,25 @@ export const exportToCSV = (cy) => {
             data.repoUrl || ''
         ].map(val => {
             // Escape commas and quotes in values
-            if (typeof val === 'string' && (val.includes(',') || val.includes('"'))) {
-                return `"${val.replace(/"/g, '""')}"`;
+            const valStr = val.toString();
+            if (valStr.includes(',') || valStr.includes('"')) {
+                return `"${valStr.replace(/"/g, '""')}"`;
             }
-            return val;
+            return valStr;
         }).join(',');
     });
 
     return [headers.join(','), ...rows].join('\n');
 };
 
-export const downloadCSV = (cy) => {
+export const downloadCSV = (cy: CyInstance): void => {
     const csv = exportToCSV(cy);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
 
     // Generate timestamped filename: services-YYYY-MM-DD-HHmmss.csv
     const now = new Date();
-    const pad = (n) => n.toString().padStart(2, '0');
+    const pad = (n: number) => n.toString().padStart(2, '0');
     const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
     const filename = `services-${timestamp}.csv`;
 

@@ -1,13 +1,13 @@
 /**
  * Calculates the dynamic zoom level based on current zoom and wheel delta.
  * 
- * @param {number} currentZoom Current zoom level
- * @param {number} deltaY Mouse wheel deltaY
- * @param {number} minZoom Minimum allowed zoom
- * @param {number} maxZoom Maximum allowed zoom
- * @returns {number} New zoom level
+ * @param currentZoom Current zoom level
+ * @param deltaY Mouse wheel deltaY
+ * @param minZoom Minimum allowed zoom
+ * @param maxZoom Maximum allowed zoom
+ * @returns New zoom level
  */
-export const calculateDynamicZoom = (currentZoom, deltaY, minZoom, maxZoom) => {
+export const calculateDynamicZoom = (currentZoom: number, deltaY: number, minZoom: number, maxZoom: number): number => {
     // Base sensitivity 
     const baseSensitivity = 0.001;
 
@@ -20,7 +20,7 @@ export const calculateDynamicZoom = (currentZoom, deltaY, minZoom, maxZoom) => {
     const delta = deltaY * baseSensitivity * dynamicFactor;
 
     // Calculate new zoom using exponential scaling for smooth feel
-    let newZoom = currentZoom * Math.pow(10, -delta);
+    const newZoom = currentZoom * Math.pow(10, -delta);
 
     // Clamp
     return Math.max(minZoom, Math.min(maxZoom, newZoom));

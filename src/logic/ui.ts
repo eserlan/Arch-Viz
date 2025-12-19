@@ -1,15 +1,16 @@
 import { HELP_CONTENT_HTML } from './constants';
 import { ICONS } from './icons';
+import { ToastType, PanelConfig } from '../types';
 
 /**
  * UI Utilities and Shared Components
  */
 
-export const showToast = (message, type = 'info') => {
+export const showToast = (message: string, type: ToastType = 'info'): void => {
     const toastContainer = document.getElementById('toastContainer');
     if (!toastContainer) return;
 
-    const colors = {
+    const colors: Record<ToastType, string> = {
         info: 'bg-slate-800 border-slate-600 text-slate-200',
         success: 'bg-emerald-900/90 border-emerald-500 text-emerald-200',
         warning: 'bg-amber-900/90 border-amber-500 text-amber-200',
@@ -35,14 +36,14 @@ export const showToast = (message, type = 'info') => {
     }, 3000);
 };
 
-export const updateStatus = (message) => {
+export const updateStatus = (message: string): void => {
     showToast(message, 'info');
 };
 
 /**
  * Initialize a floating panel with drag and persistence logic
  */
-export function initFloatingPanel(config) {
+export function initFloatingPanel(config: PanelConfig): void {
     const {
         panelId,
         title,
@@ -55,7 +56,7 @@ export function initFloatingPanel(config) {
         defaultClasses = []
     } = config;
 
-    const panel = document.getElementById(panelId);
+    const panel = document.getElementById(panelId) as HTMLElement | null;
     if (!panel) return;
 
     // Inject Structure
@@ -116,7 +117,7 @@ export function initFloatingPanel(config) {
 
         // Close menu on outside click
         document.addEventListener('click', (e) => {
-            if (!menu.contains(e.target) && e.target !== menuBtn) {
+            if (!menu.contains(e.target as Node) && e.target !== menuBtn) {
                 menu.classList.add('hidden');
             }
         });
@@ -141,12 +142,12 @@ export function initFloatingPanel(config) {
                 panel.style.transform = 'none';
             }
 
-            let rafId = null;
-            const moveHandler = (evt) => {
+            let rafId: number | null = null;
+            const moveHandler = (evt: MouseEvent) => {
                 const cx = evt.clientX;
                 const cy = evt.clientY;
 
-                if (!rafId) {
+                if (rafId === null) {
                     rafId = requestAnimationFrame(() => {
                         const width = panel.offsetWidth;
                         const height = panel.offsetHeight;
@@ -169,11 +170,11 @@ export function initFloatingPanel(config) {
             document.addEventListener('mousemove', moveHandler);
 
             // Click to drop
-            const clickHandler = (evt) => {
+            const clickHandler = (evt: MouseEvent) => {
                 evt.preventDefault();
                 evt.stopPropagation();
                 document.removeEventListener('mousemove', moveHandler);
-                if (rafId) cancelAnimationFrame(rafId);
+                if (rafId !== null) cancelAnimationFrame(rafId);
 
                 panel.style.cursor = '';
                 panel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
@@ -195,8 +196,8 @@ export function initFloatingPanel(config) {
 /**
  * Initialize a simple modal (Help, etc.)
  */
-export function initModal(modalId, openBtnId, closeBtnId, contentId = null) {
-    const modal = document.getElementById(modalId);
+export function initModal(modalId: string, openBtnId: string, closeBtnId: string, contentId: string | null = null): void {
+    const modal = document.getElementById(modalId) as HTMLDialogElement | null;
     const openBtn = document.getElementById(openBtnId);
     const closeBtn = document.getElementById(closeBtnId);
 
