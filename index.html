@@ -1,24 +1,35 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Service Map Visualization Kit</title>
-    <script type="module" crossorigin src="/Arch-Viz/assets/index-SeryHWGW.js"></script>
-    <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-BYyvhSLP.css">
-  </head>
-  <body class="bg-slate-950 text-slate-100">
-    <div id="app" class="min-h-screen flex flex-col">
-      <header class="border-b border-slate-800 bg-slate-900/70 backdrop-blur px-6 py-4 flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase tracking-wider text-emerald-400">Architecture Team</p>
-          <h1 class="text-2xl font-semibold">Service Map Visualization Kit</h1>
-          <p class="text-sm text-slate-300">Interactive dependency graph for 150+ services</p>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Map Visualization Kit</title>
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-Bsoe8Aym.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-BYyvhSLP.css">
+</head>
+
+<body class="bg-slate-950 text-slate-100">
+  <div id="app" class="min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/70 backdrop-blur px-6 py-4 flex items-center justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-wider text-emerald-400">Architecture Team</p>
+        <h1 class="text-2xl font-semibold">Service Map Visualization Kit</h1>
         <div class="flex items-center gap-4">
           <div class="flex flex-col gap-1">
-            <label for="layoutSelect" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Graph Layout</label>
-            <select id="layoutSelect" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+            <label for="shapeSelect" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Node
+              Shape</label>
+            <select id="shapeSelect"
+              class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+              <option value="ellipse">Ellipse (Auto-size)</option>
+              <option value="circle">Perfect Circle</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="layoutSelect" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Graph
+              Layout</label>
+            <select id="layoutSelect"
+              class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
               <option value="fcose">Force Directed (fCoSE)</option>
               <option value="cose">Compound Spring Embedder (CoSE)</option>
               <option value="grid">Grid View</option>
@@ -32,29 +43,36 @@
             <p>Target: GitHub Pages / MWA</p>
           </div>
         </div>
-      </header>
-      <main class="flex-1 flex flex-col">
-        <section class="p-6 grid gap-4 md:grid-cols-3 bg-slate-900/60 border-b border-slate-800">
-          <div class="md:col-span-2 space-y-2">
-            <h2 class="text-lg font-semibold">How it works</h2>
-            <p class="text-sm text-slate-300">The graph renders client-side from a static CSV registry (<code>public/data/services.csv</code>). Cytoscape.js + fcose handles the layout; PapaParse converts CSV rows into nodes and edges.</p>
-            <p class="text-sm text-slate-300">Drop an updated CSV in <code>public/data/</code> and rebuild to publish a fresh “living diagram.”</p>
-          </div>
-          <div class="text-sm text-slate-200 bg-slate-800/50 rounded-lg border border-slate-700 p-4 space-y-2">
-            <p class="font-semibold">Data contract</p>
-            <ul class="list-disc list-inside text-slate-300">
-              <li><span class="font-semibold">id</span>, <span class="font-semibold">label</span>, <span class="font-semibold">domain</span> required</li>
-              <li><span class="font-semibold">depends_on</span>: semicolon-separated</li>
-              <li><span class="font-semibold">tier</span>: 1 (Critical) → 3 (Internal)</li>
-            </ul>
-            <p class="text-xs text-slate-400">Source: <code>./public/data/services.csv</code></p>
-          </div>
-        </section>
-        <section class="flex-1 relative">
-          <div id="cy" class="absolute inset-0"></div>
-          <div id="status" class="absolute right-4 top-4 bg-slate-900/80 text-xs text-slate-200 px-3 py-2 rounded border border-slate-700 shadow-lg"></div>
-        </section>
-      </main>
-    </div>
-  </body>
+    </header>
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 grid gap-4 md:grid-cols-3 bg-slate-900/60 border-b border-slate-800">
+        <div class="md:col-span-2 space-y-2">
+          <h2 class="text-lg font-semibold">How it works</h2>
+          <p class="text-sm text-slate-300">The graph renders client-side from a static CSV registry
+            (<code>public/data/services.csv</code>). Cytoscape.js + fcose handles the layout; PapaParse converts CSV
+            rows into nodes and edges.</p>
+          <p class="text-sm text-slate-300">Drop an updated CSV in <code>public/data/</code> and rebuild to publish a
+            fresh “living diagram.”</p>
+        </div>
+        <div class="text-sm text-slate-200 bg-slate-800/50 rounded-lg border border-slate-700 p-4 space-y-2">
+          <p class="font-semibold">Data contract</p>
+          <ul class="list-disc list-inside text-slate-300">
+            <li><span class="font-semibold">id</span>, <span class="font-semibold">label</span>, <span
+                class="font-semibold">domain</span> required</li>
+            <li><span class="font-semibold">depends_on</span>: semicolon-separated</li>
+            <li><span class="font-semibold">tier</span>: 1 (Critical) → 3 (Internal)</li>
+          </ul>
+          <p class="text-xs text-slate-400">Source: <code>./public/data/services.csv</code></p>
+        </div>
+      </section>
+      <section class="flex-1 relative">
+        <div id="cy" class="absolute inset-0"></div>
+        <div id="status"
+          class="absolute right-4 top-4 bg-slate-900/80 text-xs text-slate-200 px-3 py-2 rounded border border-slate-700 shadow-lg">
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+
 </html>
