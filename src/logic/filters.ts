@@ -117,14 +117,14 @@ const populateContainer = (container: HTMLElement | null, items: Set<string>, cu
     });
 };
 
-export const populateLabelFilter = (elements: (NodeDefinition | EdgeDefinition)[]): void => {
+export const populateLabelFilter = (elements: any[]): void => {
     const { labelFilterContainer } = getElements();
     if (!labelFilterContainer) return;
 
     const labels = new Set<string>();
     elements.forEach(el => {
-        const data = (el as any).data || el;
-        const nodeLabels: string[] | undefined = data.labels;
+        const data = (el && typeof el.data === 'function') ? el.data() : (el.data || el);
+        const nodeLabels: string[] | undefined = data?.labels;
         if (nodeLabels) {
             nodeLabels.forEach(d => labels.add(d));
         }
@@ -134,14 +134,14 @@ export const populateLabelFilter = (elements: (NodeDefinition | EdgeDefinition)[
     populateContainer(labelFilterContainer, labels, currentSelections);
 };
 
-export const populateTeamFilter = (elements: (NodeDefinition | EdgeDefinition)[]): void => {
+export const populateTeamFilter = (elements: any[]): void => {
     const { teamFilterContainer } = getElements();
     if (!teamFilterContainer) return;
 
     const teams = new Set<string>();
     elements.forEach(el => {
-        const data = (el as any).data || el;
-        const owner: string | undefined = data.owner;
+        const data = (el && typeof el.data === 'function') ? el.data() : (el.data || el);
+        const owner: string | undefined = data?.owner;
         if (owner) {
             teams.add(owner);
         }

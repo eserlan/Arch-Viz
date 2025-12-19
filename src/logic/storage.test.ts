@@ -1,30 +1,146 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { saveGraphData, loadGraphData, exportToCSV } from './storage';
+import { saveGraphData, loadGraphData, clearGraphData, getDirtyState, setDirty, exportToCSV, downloadCSV } from './storage';
+import { CyInstance } from '../types';
 
-describe('storage logic', () => {
+describe('Storage Module', () => {
     beforeEach(() => {
+        // Clear localStorage before each test
         localStorage.clear();
-        vi.restoreAllMocks();
+        vi.clearAllMocks();
     });
 
-    it('saves and loads graph data', () => {
-        const data: any[] = [{ group: 'nodes', data: { id: 'n1' } }];
+    it('should save data to localStorage', () => {
+        const data: any[] = [{ data: { id: 'test' } }];
         saveGraphData(data);
+
+        expect(localStorage.getItem('arch-viz-elements')).toBe(JSON.stringify(data));
+    });
+
+    it('should load data from localStorage', () => {
+        const data: any[] = [{ data: { id: 'test-load' } }];
+        localStorage.setItem('arch-viz-elements', JSON.stringify(data));
 
         const loaded = loadGraphData();
         expect(loaded).toEqual(data);
     });
 
-    it('exports to CSV correctly', () => {
-        const mockCy: any = {
+    it('should return null if no data exists', () => {
+        const loaded = loadGraphData();
+        expect(loaded).toBeNull();
+    });
+
+    it('should clear data from localStorage', () => {
+        localStorage.setItem('arch-viz-elements', 'some-data');
+        clearGraphData();
+
+        expect(localStorage.getItem('arch-viz-elements')).toBeNull();
+    });
+
+    it('should set dirty state to true when saving data', () => {
+        const data: any[] = [{ data: { id: 'test' } }];
+        saveGraphData(data);
+
+        expect(getDirtyState()).toBe(true);
+        expect(localStorage.getItem('arch-viz-dirty')).toBe('true');
+    });
+
+    it('should clear dirty state when clearing data', () => {
+        setDirty(true);
+        expect(getDirtyState()).toBe(true);
+
+        clearGraphData();
+        expect(getDirtyState()).toBe(false);
+        expect(localStorage.getItem('arch-viz-dirty')).toBeNull();
+    });
+
+    it('should toggle dirty state manually via setDirty', () => {
+        expect(getDirtyState()).toBe(false);
+
+        setDirty(true);
+        expect(getDirtyState()).toBe(true);
+
+        setDirty(false);
+        expect(getDirtyState()).toBe(false);
+    });
+
+    it('should dispatch dirty-state-change event when setDirty is called', () => {
+        const handler = vi.fn();
+        window.addEventListener('dirty-state-change', handler);
+
+        setDirty(true);
+
+        expect(handler).toHaveBeenCalledWith(
+            expect.objectContaining({
+                detail: { isDirty: true }
+            })
+        );
+
+        window.removeEventListener('dirty-state-change', handler);
+    });
+
+    it('should export graph to CSV format', () => {
+        // Mock Cytoscape instance
+        const mockCy = {
             nodes: () => [
-                { id: () => 'n1', data: () => ({ id: 'n1', name: 'N1', tier: '1' }) }
+                {
+                    data: (key?: string) => {
+                        const d: any = { id: 'svc-a', name: 'Service A', labels: ['Core'], tier: '1', owner: 'Team A', repoUrl: 'http://example.com' };
+                        return key ? d[key] : d;
+                    },
+                    id: () => 'svc-a'
+                },
+                {
+                    data: (key?: string) => {
+                        const d: any = { id: 'svc-b', name: 'Service B', labels: ['Auth'], tier: '2', owner: 'Team B', repoUrl: '' };
+                        return key ? d[key] : d;
+                    },
+                    id: () => 'svc-b'
+                }
             ],
-            edges: () => []
-        };
+            edges: () => [
+                {
+                    source: () => ({ id: () => 'svc-a' }),
+                    target: () => ({ id: () => 'svc-b' })
+                }
+            ]
+        } as unknown as CyInstance;
 
         const csv = exportToCSV(mockCy);
-        expect(csv).toContain('id,name,labels,tier,depends_on,owner,repo_url');
-        expect(csv).toContain('n1,N1,,1,,,');
+        const lines = csv.split('\n');
+
+        expect(lines[0]).toBe('id,name,labels,tier,depends_on,owner,repo_url');
+        expect(lines[1]).toContain('svc-a');
+        expect(lines[1]).toContain('Service A');
+        expect(lines[1]).toContain('svc-b'); // depends_on
+    });
+
+    it('should generate timestamped filename in downloadCSV', () => {
+        // Mock document.createElement and URL methods
+        const mockLink = {
+            href: '',
+            download: '',
+            click: vi.fn()
+        };
+        const originalCreateElement = document.createElement.bind(document);
+        vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+            if (tag === 'a') return mockLink as any;
+            return originalCreateElement(tag);
+        });
+        vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
+        vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
+
+        const mockCy = {
+            nodes: () => [],
+            edges: () => []
+        } as unknown as CyInstance;
+
+        downloadCSV(mockCy);
+
+        // Verify filename format: services-YYYY-MM-DD-HHmmss.csv
+        expect(mockLink.download).toMatch(/^services-\d{4}-\d{2}-\d{2}-\d{6}\.csv$/);
+        expect(mockLink.click).toHaveBeenCalled();
+
+        // Cleanup
+        vi.restoreAllMocks();
     });
 });
