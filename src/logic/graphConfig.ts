@@ -123,7 +123,7 @@ export const stylesheet: any[] = [
         selector: '.verified',
         style: {
             'border-width': 6,
-            'border-color': '#334155',
+            'border-color': '#94a3b8',
             'border-style': 'solid',
         } as any,
     },
