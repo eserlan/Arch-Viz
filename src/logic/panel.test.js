@@ -22,8 +22,8 @@ describe('Panel Module', () => {
     `;
     });
 
-    const createMockNode = (data = {}) => ({
-        data: () => ({
+    const createMockNode = (data = {}) => {
+        const nodeData = {
             id: 'test-id',
             label: 'Test Label',
             domain: 'Test Domain',
@@ -31,17 +31,26 @@ describe('Panel Module', () => {
             owner: 'Test Owner',
             repoUrl: 'http://test.com',
             ...data
-        }),
-        outgoers: () => [],
-        id: () => data.id || 'test-id',
-        classes: () => 'some-class',
-        cy: () => mockCy
-    });
+        };
+        // Create a mock collection that simulates Cytoscape's API
+        const mockEdgeCollection = {
+            map: () => [],
+            targets: () => ({ map: () => [] })
+        };
+        return {
+            data: (key) => key ? nodeData[key] : nodeData,
+            outgoers: () => mockEdgeCollection,
+            id: () => nodeData.id,
+            classes: () => 'some-class',
+            cy: () => mockCy
+        };
+    };
 
     const mockCy = {
         elements: () => ({
             jsons: () => [{ data: { id: 'test' } }]
-        })
+        }),
+        nodes: () => ({ filter: () => ({ map: () => [] }) })
     };
 
     it('should update panel content with node data', () => {
@@ -76,12 +85,8 @@ describe('Panel Module', () => {
         };
         const mockNode = {
             data: () => ({ id: 'source-id', label: 'Source' }),
-            outgoers: () => [mockEdge]
+            outgoers: () => ({ map: (fn) => [mockEdge].map(fn) })
         };
-        // Add map method to simulate Cytoscape collection
-        mockNode.outgoers = () => ({
-            map: (fn) => [mockEdge].map(fn)
-        });
 
         showPanel(mockNode);
 
@@ -89,18 +94,18 @@ describe('Panel Module', () => {
         expect(content.innerHTML).toContain('Target Service');
     });
 
-    it('should initialize panel with cy reference and attach listeners once', () => {
+    it('should initialize panel with cy reference and attach listeners', () => {
         const mockUpdateStatus = vi.fn();
 
-        // First call should attach listeners
         initPanel(mockCy, mockUpdateStatus);
 
-        // Get buttons
         const editBtn = document.getElementById('editBtn');
         const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
 
         expect(editBtn).toBeTruthy();
         expect(cancelBtn).toBeTruthy();
+        expect(saveBtn).toBeTruthy();
     });
 
     it('should show "No dependencies" text when node has no connections', () => {
@@ -110,5 +115,55 @@ describe('Panel Module', () => {
 
         const content = document.getElementById('panelContent');
         expect(content.innerHTML).toContain('No dependencies');
+    });
+
+    it('should disable save button when entering edit mode (no changes yet)', () => {
+        const mockNode = createMockNode();
+        const mockUpdateStatus = vi.fn();
+
+        initPanel(mockCy, mockUpdateStatus);
+        showPanel(mockNode);
+
+        // Click edit button
+        const editBtn = document.getElementById('editBtn');
+        editBtn.click();
+
+        // Save button should be disabled
+        const saveBtn = document.getElementById('saveBtn');
+        expect(saveBtn.disabled).toBe(true);
+        expect(saveBtn.classList.contains('opacity-50')).toBe(true);
+    });
+
+    it('should enable save button when input value changes', () => {
+        const mockNode = createMockNode();
+        const mockUpdateStatus = vi.fn();
+
+        initPanel(mockCy, mockUpdateStatus);
+        showPanel(mockNode);
+
+        // Click edit button
+        const editBtn = document.getElementById('editBtn');
+        editBtn.click();
+
+        // Find an input and change its value
+        const labelInput = document.querySelector('input[data-key="label"]');
+        expect(labelInput).toBeTruthy();
+
+        labelInput.value = 'Changed Label';
+        labelInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+        // Save button should now be enabled
+        const saveBtn = document.getElementById('saveBtn');
+        expect(saveBtn.disabled).toBe(false);
+        expect(saveBtn.classList.contains('opacity-50')).toBe(false);
+    });
+
+    it('should store original data for dirty comparison', () => {
+        const mockNode = createMockNode({ label: 'Original Label' });
+
+        showPanel(mockNode);
+
+        const content = document.getElementById('panelContent');
+        expect(content.innerHTML).toContain('Original Label');
     });
 });
