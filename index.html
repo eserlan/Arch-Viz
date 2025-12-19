@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
   <title>Arch Viz - Mapping the Chaos</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-Bp0KgznE.js"></script>
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-BjklNBDe.js"></script>
   <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-BL4KwPk3.css">
 </head>
 
@@ -70,6 +70,18 @@
           <option value="3">3 Levels</option>
           <option value="all">All Connected</option>
         </select>
+      </div>
+
+      <!-- Group by Team Toggle -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Group by Team</label>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="groupByTeamToggle" class="sr-only peer">
+          <div
+            class="w-9 h-5 bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600">
+          </div>
+          <span class="ms-2 text-xs text-slate-400 peer-checked:text-emerald-400">Show team groups</span>
+        </label>
       </div>
 
       <!-- Label Filter Moved to Floating Panel -->
