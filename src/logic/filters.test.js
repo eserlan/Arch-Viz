@@ -10,23 +10,37 @@ describe('Filters Module', () => {
       <button id="clearSearchBtn" class="hidden"></button>
     `;
         vi.clearAllMocks();
+        initFilters(null); // Reset module state
     });
 
-    const createMockCy = () => ({
+    const createMockNode = (id, labels, owner) => ({
+        id: () => id,
+        data: vi.fn((key) => {
+            const d = { id, name: `Service ${id}`, labels, owner };
+            return key ? d[key] : d;
+        }),
+        hasClass: vi.fn().mockReturnValue(false),
+        addClass: vi.fn(),
+        removeClass: vi.fn()
+    });
+
+    const createMockCy = (elements = []) => ({
         batch: vi.fn((cb) => cb()),
         nodes: vi.fn().mockReturnValue({
-            forEach: vi.fn()
+            forEach: (cb) => elements.forEach(cb),
+            length: elements.length
         }),
         edges: vi.fn().mockReturnValue({
-            forEach: vi.fn()
+            forEach: vi.fn(),
+            length: 0
         })
     });
 
     it('should populate label filter with unique sorted values', () => {
         const elements = [
-            { data: { labels: ['Security', 'Auth'] } },
-            { data: { labels: ['Security', 'Database'] } },
-            { data: { labels: ['Analytics'] } }
+            createMockNode('s1', ['Security', 'Auth']),
+            createMockNode('s2', ['Security', 'Database']),
+            createMockNode('s3', ['Analytics'])
         ];
 
         populateLabelFilter(elements);
@@ -39,9 +53,9 @@ describe('Filters Module', () => {
 
     it('should populate team filter with unique sorted values', () => {
         const elements = [
-            { data: { owner: 'Platform Team' } },
-            { data: { owner: 'Security Team' } },
-            { data: { owner: 'DB Team' } }
+            createMockNode('s1', [], 'Platform Team'),
+            createMockNode('s2', [], 'Security Team'),
+            createMockNode('s3', [], 'DB Team')
         ];
 
         populateTeamFilter(elements);
@@ -54,8 +68,8 @@ describe('Filters Module', () => {
 
     it('should handle elements without owner', () => {
         const elements = [
-            { data: { name: 'No Owner Node' } },
-            { data: { owner: 'Some Team' } }
+            createMockNode('s1', [], null),
+            createMockNode('s2', [], 'Some Team')
         ];
 
         populateTeamFilter(elements);
@@ -66,8 +80,8 @@ describe('Filters Module', () => {
 
     it('should allow multi-select filtering persistence during refresh', () => {
         const elements = [
-            { data: { owner: 'Team A' } },
-            { data: { owner: 'Team B' } }
+            createMockNode('s1', [], 'Team A'),
+            createMockNode('s2', [], 'Team B')
         ];
 
         populateTeamFilter(elements);
@@ -84,9 +98,10 @@ describe('Filters Module', () => {
     });
 
     it('should update filters on label button click', () => {
-        const cy = createMockCy();
+        const elements = [createMockNode('s1', ['TestLabel'])];
+        const cy = createMockCy(elements);
         initFilters(cy);
-        populateLabelFilter([{ data: { labels: ['TestLabel'] } }]);
+        populateLabelFilter(elements);
 
         const btn = document.querySelector('button[data-value="TestLabel"]');
         btn.click();
@@ -96,9 +111,10 @@ describe('Filters Module', () => {
     });
 
     it('should update filters on team button click', () => {
-        const cy = createMockCy();
+        const elements = [createMockNode('s1', [], 'TestTeam')];
+        const cy = createMockCy(elements);
         initFilters(cy);
-        populateTeamFilter([{ data: { owner: 'TestTeam' } }]);
+        populateTeamFilter(elements);
 
         const btn = document.querySelector('button[data-value="TestTeam"]');
         btn.click();
@@ -108,28 +124,12 @@ describe('Filters Module', () => {
     });
 
     it('should apply filters correctly across all criteria', () => {
-        const createMockNode = (id, labels, owner) => ({
-            id: () => id,
-            data: vi.fn((key) => {
-                const d = { id, name: `Service ${id}`, labels, owner };
-                return key ? d[key] : d;
-            }),
-            hasClass: () => false,
-            addClass: vi.fn(),
-            removeClass: vi.fn()
-        });
-
         const elements = [
             createMockNode('s1', ['L1'], 'T1'),
             createMockNode('s2', ['L2'], 'T2')
         ];
 
-        const cy = {
-            batch: vi.fn((cb) => cb()),
-            nodes: vi.fn().mockReturnValue(elements),
-            edges: vi.fn().mockReturnValue([])
-        };
-
+        const cy = createMockCy(elements);
         initFilters(cy);
         populateLabelFilter(elements);
         populateTeamFilter(elements);

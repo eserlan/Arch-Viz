@@ -5,9 +5,8 @@ import { ICONS } from './icons';
  * UI Utilities and Shared Components
  */
 
-const toastContainer = document.getElementById('toastContainer');
-
 export const showToast = (message, type = 'info') => {
+    const toastContainer = document.getElementById('toastContainer');
     if (!toastContainer) return;
 
     const colors = {
