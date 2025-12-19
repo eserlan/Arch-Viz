@@ -1,6 +1,9 @@
 import { saveGraphData } from './storage';
 
 let currentSelectedNode = null;
+let cyRef = null;
+let updateStatusRef = null;
+let listenersAttached = false;
 
 const getElements = () => ({
   servicePanel: document.getElementById('servicePanel'),
@@ -88,8 +91,8 @@ const toggleEdit = (editing) => {
   });
 
   const connectionsList = panelContent.querySelector('.connections-list');
-  if (editing) {
-    const cy = currentSelectedNode.cy();
+  if (editing && cyRef) {
+    const cy = cyRef;
     const outgoingEdges = currentSelectedNode.outgoers('edge');
     const existingTargets = new Set(outgoingEdges.targets().map(n => n.id()));
 
@@ -128,7 +131,6 @@ const toggleEdit = (editing) => {
     addBtn?.addEventListener('click', () => {
       const targetId = select.value;
       if (!targetId) return;
-      const targetNode = cy.getElementById(targetId);
       const edgeId = `${currentSelectedNode.id()}-${targetId}`;
 
       // Add temp edge in Cytoscape immediately
@@ -162,41 +164,54 @@ const toggleEdit = (editing) => {
   }
 };
 
+const handleSave = () => {
+  if (!currentSelectedNode || !cyRef) return;
+  const { panelContent } = getElements();
+
+  const inputs = panelContent.querySelectorAll('input');
+  const newData = {};
+  inputs.forEach(input => {
+    const key = input.dataset.key;
+    if (key) {
+      newData[key] = input.value;
+    }
+  });
+
+  if (newData.domain) {
+    const domains = newData.domain.split(',').map(d => d.trim()).filter(Boolean);
+    newData.domains = domains;
+    const newDomainClasses = domains.map(d => `domain-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`).join(' ');
+    currentSelectedNode.classes(currentSelectedNode.classes().replace(/domain-\S+/g, '').trim() + ' ' + newDomainClasses);
+  }
+
+  currentSelectedNode.data(newData);
+
+  // Save total state
+  saveGraphData(cyRef.elements().jsons());
+
+  if (updateStatusRef) {
+    updateStatusRef(`Updated ${newData.label || currentSelectedNode.id()} and its connections`);
+  }
+  showPanel(currentSelectedNode);
+};
+
 export const initPanel = (cy, updateStatus) => {
+  // Update module-level references
+  cyRef = cy;
+  updateStatusRef = updateStatus;
+
+  // Only attach event listeners once
+  if (listenersAttached) return;
+  listenersAttached = true;
+
   const { editBtn, cancelBtn, saveBtn } = getElements();
 
   editBtn?.addEventListener('click', () => toggleEdit(true));
   cancelBtn?.addEventListener('click', () => {
-    // Reload original state from cy if canceled?
-    // Actually, since we modified cy directly during connections edit, we might need a better rollback.
-    // For now, let's just reload display.
-    showPanel(currentSelectedNode);
-  });
-
-  saveBtn?.addEventListener('click', () => {
-    if (!currentSelectedNode) return;
-    const { panelContent } = getElements();
-
-    const inputs = panelContent.querySelectorAll('input');
-    const newData = {};
-    inputs.forEach(input => {
-      const key = input.dataset.key;
-      newData[key] = input.value;
-    });
-
-    if (newData.domain) {
-      const domains = newData.domain.split(',').map(d => d.trim()).filter(Boolean);
-      newData.domains = domains;
-      const newDomainClasses = domains.map(d => `domain-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`).join(' ');
-      currentSelectedNode.classes(currentSelectedNode.classes().replace(/domain-\S+/g, '').trim() + ' ' + newDomainClasses);
+    if (currentSelectedNode) {
+      showPanel(currentSelectedNode);
     }
-
-    currentSelectedNode.data(newData);
-
-    // Save total state
-    saveGraphData(cy.elements().jsons());
-
-    updateStatus(`Updated ${newData.label || currentSelectedNode.id()} and its connections`);
-    showPanel(currentSelectedNode);
   });
+
+  saveBtn?.addEventListener('click', handleSave);
 };
