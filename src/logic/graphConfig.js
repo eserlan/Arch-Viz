@@ -34,7 +34,17 @@ export const stylesheet = [
       'text-valign': 'center',
       'text-halign': 'center',
       'padding': '8px',
-      'shape': 'round-rectangle',
+      'shape': 'ellipse',
+    },
+  },
+  {
+    selector: '.is-database',
+    style: {
+      'background-image': '/Arch-Viz/assets/database.svg',
+      'background-fit': 'contain',
+      'background-opacity': 0.8,
+      'border-style': 'double',
+      'border-width': 4,
     },
   },
   {

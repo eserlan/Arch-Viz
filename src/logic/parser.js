@@ -47,6 +47,8 @@ export const parseCSV = (csvString) => {
 
     const domainClass = slugify(domain);
     const tierClass = slugify(`tier-${tier}`);
+    const isDatabase = /\b(db|database)\b/i.test(id) || /\b(db|database)\b/i.test(label);
+    const databaseClass = isDatabase ? 'is-database' : '';
 
     elements.push({
       group: 'nodes',
@@ -58,7 +60,7 @@ export const parseCSV = (csvString) => {
         owner,
         repoUrl,
       },
-      classes: `${tierClass} domain-${domainClass}`.trim(),
+      classes: `${tierClass} domain-${domainClass} ${databaseClass}`.trim(),
     });
 
     if (row.depends_on) {
