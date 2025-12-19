@@ -23,6 +23,9 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
     cy.on('tap', 'node', (evt: EventObject) => {
         const node = evt.target as NodeSingular;
+        // Select this node (enables layout centering around selected node)
+        cy.nodes().unselect();
+        node.select();
         showPanel(node);
         highlightConnections(node);
     });
@@ -30,6 +33,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
     cy.on('tap', (evt: EventObject) => {
         if (evt.target === cy) {
             hidePanel();
+            cy.nodes().unselect();
             cy.elements().removeClass('dimmed');
         }
     });

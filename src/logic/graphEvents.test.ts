@@ -40,7 +40,10 @@ describe('Graph Events Logic', () => {
                 eventHandlers[key] = handler;
             }),
             elements: vi.fn(() => mockElements),
-            nodes: vi.fn(() => ({ length: 0 }))
+            nodes: vi.fn(() => ({
+                length: 0,
+                unselect: vi.fn()
+            }))
         } as unknown as CyInstance;
 
         vi.clearAllMocks();
@@ -54,7 +57,7 @@ describe('Graph Events Logic', () => {
     });
 
     it('should show panel and highlight connections on node tap', () => {
-        const mockNode = { id: () => 'n1' };
+        const mockNode = { id: () => 'n1', select: vi.fn() };
         (graphUtils.getNodesAtDepth as any).mockReturnValue(mockElements);
 
         initGraphEvents(mockCy);
