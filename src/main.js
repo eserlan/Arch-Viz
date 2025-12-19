@@ -432,7 +432,7 @@ if (addServiceForm) {
       id: formData.get('id'),
       name: formData.get('name'),
       owner: formData.get('owner'),
-      tier: formData.get('tier')
+      tier: parseInt(formData.get('tier'), 10)
     };
 
     try {

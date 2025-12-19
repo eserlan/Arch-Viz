@@ -24,6 +24,7 @@ export const addNode = (cy, data) => {
             owner: data.owner,
             label: data.name // Fallback for display
         },
+        classes: tier ? `tier-${tier}` : '',
         position: pos
     });
 

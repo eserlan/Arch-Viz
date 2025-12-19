@@ -36,6 +36,7 @@ describe('Node Operations', () => {
         const callArg = cy.add.mock.calls[0][0];
         expect(callArg.data.id).toBe('new');
         expect(callArg.data.tier).toBe(1);
+        expect(callArg.classes).toBe('tier-1');
     });
 
     it('should throw error if node exists', () => {

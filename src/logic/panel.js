@@ -1,6 +1,13 @@
 import { saveGraphData } from './storage';
 import { deleteNode } from './nodeOperations';
 
+const TIER_LABELS = {
+  1: 'Tier 1 (Critical)',
+  2: 'Tier 2 (Major)',
+  3: 'Tier 3 (Minor)',
+  4: 'Tier 4 (Low)'
+};
+
 let currentSelectedNode = null;
 let cyRef = null;
 let updateStatusRef = null;
@@ -21,7 +28,7 @@ const updateSaveButtonState = () => {
   const { saveBtn, panelContent } = getElements();
   if (!saveBtn || !panelContent) return;
 
-  const inputs = panelContent.querySelectorAll('input[data-key]');
+  const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
   let isDirty = false;
 
   inputs.forEach(input => {
@@ -74,7 +81,7 @@ export const showPanel = (node) => {
     </div>
     <div class="info-item">
       <label>Tier</label>
-      <div class="info-value" data-key="tier">${data.tier || ''}</div>
+      <div class="info-value" data-key="tier">${TIER_LABELS[data.tier] || data.tier || ''}</div>
     </div>
     <div class="info-item">
       <label>Owner</label>
@@ -116,22 +123,38 @@ const toggleEdit = (editing) => {
 
   const values = panelContent.querySelectorAll('.info-value[data-key]');
   values.forEach(el => {
+    const key = el.dataset.key;
     if (editing) {
-      const currentVal = el.textContent;
-      const key = el.dataset.key;
-      el.innerHTML = `<input type="text" data-key="${key}" value="${currentVal}" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm">`;
+      if (key === 'tier') {
+        const currentTier = parseInt(originalData.tier || 4, 10);
+        const options = Object.entries(TIER_LABELS).map(([val, label]) =>
+          `<option value="${val}" ${parseInt(val) === currentTier ? 'selected' : ''}>${label}</option>`
+        ).join('');
+        el.innerHTML = `<select data-key="tier" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-emerald-500">${options}</select>`;
+      } else {
+        const currentVal = originalData[key] || el.textContent;
+        el.innerHTML = `<input type="text" data-key="${key}" value="${currentVal}" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm">`;
+      }
     } else {
       const input = el.querySelector('input');
-      const val = input ? input.value : el.textContent;
-      el.textContent = val;
+      const select = el.querySelector('select');
+
+      if (select) {
+        const val = select.value;
+        el.textContent = TIER_LABELS[val] || val;
+      } else {
+        const val = input ? input.value : el.textContent;
+        el.textContent = val;
+      }
     }
   });
 
   // Add input listeners for dirty checking
   if (editing) {
-    const inputs = panelContent.querySelectorAll('input[data-key]');
+    const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
     inputs.forEach(input => {
       input.addEventListener('input', updateSaveButtonState);
+      input.addEventListener('change', updateSaveButtonState);
     });
     // Initially disable save button
     if (saveBtn) {
@@ -222,7 +245,7 @@ const handleSave = () => {
     return;
   }
 
-  const inputs = panelContent.querySelectorAll('input[data-key]');
+  const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
   const newData = {};
   inputs.forEach(input => {
     const key = input.dataset.key;
@@ -230,6 +253,14 @@ const handleSave = () => {
       newData[key] = input.value;
     }
   });
+
+  if (newData.tier) {
+    newData.tier = parseInt(newData.tier, 10);
+
+    // Update classes to reflect new tier color
+    [1, 2, 3, 4].forEach(t => currentSelectedNode.removeClass(`tier-${t}`));
+    currentSelectedNode.addClass(`tier-${newData.tier}`);
+  }
 
   // Handle 'name' field - also update 'label' for Cytoscape display
   if (newData.name) {
