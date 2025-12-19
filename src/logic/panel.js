@@ -230,8 +230,12 @@ const handleSave = () => {
   if (newData.domain) {
     const domains = newData.domain.split(',').map(d => d.trim()).filter(Boolean);
     newData.domains = domains;
-    const newDomainClasses = domains.map(d => `domain-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`).join(' ');
-    currentSelectedNode.classes(currentSelectedNode.classes().replace(/domain-\S+/g, '').trim() + ' ' + newDomainClasses);
+    const newDomainClasses = domains.map(d => `domain-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+    // Get current classes as array, filter out old domain classes, add new ones
+    const currentClasses = currentSelectedNode.classes();
+    const classArray = Array.isArray(currentClasses) ? currentClasses : [];
+    const filteredClasses = classArray.filter(c => !c.startsWith('domain-'));
+    currentSelectedNode.classes([...filteredClasses, ...newDomainClasses]);
   }
 
   // Update node data
