@@ -8,6 +8,7 @@ import { loadGraphData, saveGraphData, clearGraphData } from './logic/storage';
 import { initPanel, showPanel, hidePanel } from './logic/panel';
 import { initFilters, populateDomainFilter } from './logic/filters';
 import { initUploader } from './logic/uploader';
+import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor';
 
 cytoscape.use(fcose);
 
@@ -62,8 +63,27 @@ const renderGraph = (elements, skipped) => {
   // Re-initialize UI components with the new cy instance
   initFilters(cy);
   initPanel(cy, updateStatus);
+  initEdgeEditor(cy, updateStatus);
   populateDomainFilter(elements);
 };
+
+// Edit Mode Toggle Button
+const editModeBtn = document.getElementById('editModeBtn');
+const editModeLabel = document.getElementById('editModeLabel');
+if (editModeBtn) {
+  editModeBtn.addEventListener('click', () => {
+    const active = toggleEditMode(updateStatus);
+    if (active) {
+      editModeBtn.classList.remove('bg-slate-800', 'border-slate-700');
+      editModeBtn.classList.add('bg-amber-600', 'border-amber-500', 'text-white');
+      editModeLabel.textContent = 'Exit Edit Mode';
+    } else {
+      editModeBtn.classList.add('bg-slate-800', 'border-slate-700');
+      editModeBtn.classList.remove('bg-amber-600', 'border-amber-500', 'text-white');
+      editModeLabel.textContent = 'Enter Edit Mode';
+    }
+  });
+}
 
 const layoutSelect = document.getElementById('layoutSelect');
 if (layoutSelect) {
