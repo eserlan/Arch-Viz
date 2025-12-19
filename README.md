@@ -1,5 +1,7 @@
 # Service Map Visualization Kit
 
+🚀 **Live App:** [https://eserlan.github.io/Arch-Viz/](https://eserlan.github.io/Arch-Viz/)
+
 Interactive service dependency map for 150+ services. The app is a static, client-side SPA built with Vite that renders a Cytoscape force-directed graph from a CSV registry.
 
 ## Tech Stack
