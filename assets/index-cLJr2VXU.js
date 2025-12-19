@@ -366,7 +366,7 @@ License: MIT
     </div>
     <div class="info-item">
       <label>Repo URL</label>
-      <div class="info-value" data-key="repoUrl">${i.repoUrl||""}</div>
+      <div class="info-value" data-key="repoUrl">${i.repoUrl?`<a href="${i.repoUrl}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline break-all">${i.repoUrl}</a>`:'<span class="text-slate-500 italic">Not set</span>'}</div>
     </div>
     <div class="info-item">
       <label>Depends On</label>
