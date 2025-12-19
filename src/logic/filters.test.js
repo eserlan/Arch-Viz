@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { populateLabelFilter, populateTeamFilter, applyFilters } from './filters';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { populateLabelFilter, populateTeamFilter, applyFilters, initFilters } from './filters';
 
 describe('Filters Module', () => {
     beforeEach(() => {
@@ -95,5 +95,28 @@ describe('Filters Module', () => {
 
         const select = document.getElementById('teamFilter');
         expect(select.options).toHaveLength(1); // Only 'Some Team'
+    });
+
+    it('should update filters on button click', () => {
+        const elements = [{ data: { labels: ['Test'] } }];
+
+        // Mock cy
+        const cy = {
+            batch: vi.fn((cb) => cb()),
+            nodes: vi.fn().mockReturnValue([]),
+            edges: vi.fn().mockReturnValue([])
+        };
+
+        initFilters(cy); // Sets cyRef
+        populateLabelFilter(elements);
+
+        const btn = document.querySelector('button[data-value="Test"]');
+        expect(btn).toBeTruthy();
+
+        // Simulate click
+        btn.click();
+
+        expect(btn.dataset.selected).toBe('true');
+        expect(cy.batch).toHaveBeenCalled();
     });
 });
