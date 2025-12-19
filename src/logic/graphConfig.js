@@ -9,6 +9,8 @@ export const layoutConfig = {
   edgeElasticity: 0.45,
   nestingFactor: 0.1,
   numIter: 2500,
+  fit: true,
+  padding: 80,
 };
 
 export const stylesheet = [
