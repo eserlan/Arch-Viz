@@ -211,18 +211,26 @@ const layoutSelect = document.getElementById('layoutSelect');
 if (layoutSelect) {
   layoutSelect.addEventListener('change', (e) => {
     if (!cy) return;
-    const layoutName = e.target.value;
+    const layoutValue = e.target.value;
+    const isHorizontalDagre = layoutValue === 'dagre-horizontal';
+    const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
+
+    // Normalize layout name for Cytoscape
+    const layoutName = (isHorizontalDagre || isVerticalDagre) ? 'dagre' : layoutValue;
+
     updateStatus(`Switching to ${layoutName} layout…`);
 
     const animationOptions = {
       name: layoutName,
       animate: true,
       animationDuration: 1000,
-      fit: false, // Don't fit during layout to avoid animation conflicts
+      fit: false,
       padding: 160,
       randomize: false,
       nodeDimensionsIncludeLabels: true,
       spacingFactor: (layoutName === 'circle' || layoutName === 'concentric') ? 0.7 : 1,
+      // Dagre specific options
+      rankDir: isHorizontalDagre ? 'LR' : 'TB',
     };
 
     const finalConfig = layoutName === 'fcose' ?
