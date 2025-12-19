@@ -48,11 +48,21 @@
       </div>
 
       <!-- Label Filter -->
-      <div class="flex flex-col gap-2 flex-1">
+      <div class="flex flex-col gap-2">
         <label for="labelFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
           Labels <span class="text-slate-600 font-normal">(Ctrl+click)</span></label>
-        <select id="labelFilter" multiple size="8"
-          class="w-full flex-1 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        <select id="labelFilter" multiple size="5"
+          class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+          <!-- Populated by JS -->
+        </select>
+      </div>
+
+      <!-- Team Filter -->
+      <div class="flex flex-col gap-2">
+        <label for="teamFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
+          Teams <span class="text-slate-600 font-normal">(Ctrl+click)</span></label>
+        <select id="teamFilter" multiple size="5"
+          class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500">
           <!-- Populated by JS -->
         </select>
       </div>

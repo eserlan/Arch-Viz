@@ -1,37 +1,42 @@
 const getElements = () => ({
     searchInput: document.getElementById('searchInput'),
     labelFilter: document.getElementById('labelFilter'),
+    teamFilter: document.getElementById('teamFilter'),
 });
 
 /**
  * Get selected values from a multi-select element
  */
-const getSelectedLabels = (selectElement) => {
+const getSelectedValues = (selectElement) => {
     if (!selectElement) return [];
     return Array.from(selectElement.selectedOptions).map(opt => opt.value);
 };
 
 export const applyFilters = (cy) => {
     if (!cy) return;
-    const { searchInput, labelFilter } = getElements();
+    const { searchInput, labelFilter, teamFilter } = getElements();
 
     const searchTerm = searchInput?.value.toLowerCase() || '';
-    const selectedLabels = getSelectedLabels(labelFilter);
+    const selectedLabels = getSelectedValues(labelFilter);
+    const selectedTeams = getSelectedValues(teamFilter);
 
-    // If no selection or only 'all' selected, show everything
-    const filterByLabels = selectedLabels.length > 0 && !selectedLabels.includes('all');
+    const filterByLabels = selectedLabels.length > 0;
+    const filterByTeams = selectedTeams.length > 0;
 
     cy.batch(() => {
         cy.nodes().forEach(node => {
             const name = (node.data('name') || node.data('label') || '').toLowerCase();
             const id = node.id().toLowerCase();
             const nodeLabels = node.data('labels') || [];
+            const nodeOwner = node.data('owner') || '';
 
             const matchesSearch = name.includes(searchTerm) || id.includes(searchTerm);
             // Service matches if it has ANY of the selected labels
             const matchesLabel = !filterByLabels || selectedLabels.some(selected => nodeLabels.includes(selected));
+            // Service matches if its owner is in the selected teams
+            const matchesTeam = !filterByTeams || selectedTeams.includes(nodeOwner);
 
-            if (matchesSearch && matchesLabel) {
+            if (matchesSearch && matchesLabel && matchesTeam) {
                 node.removeClass('filtered');
             } else {
                 node.addClass('filtered');
@@ -65,14 +70,13 @@ export const populateLabelFilter = (elements) => {
     });
 
     // Store currently selected values
-    const currentSelections = getSelectedLabels(labelFilter);
+    const currentSelections = getSelectedValues(labelFilter);
 
     labelFilter.innerHTML = '';
     Array.from(labels).sort().forEach(label => {
         const option = document.createElement('option');
         option.value = label;
         option.textContent = label;
-        // Restore selection state
         if (currentSelections.includes(label)) {
             option.selected = true;
         }
@@ -80,9 +84,38 @@ export const populateLabelFilter = (elements) => {
     });
 };
 
+export const populateTeamFilter = (elements) => {
+    const { teamFilter } = getElements();
+    if (!teamFilter) return;
+
+    const teams = new Set();
+    elements.forEach(el => {
+        const data = el.data || el;
+        const owner = data.owner;
+        if (owner) {
+            teams.add(owner);
+        }
+    });
+
+    // Store currently selected values
+    const currentSelections = getSelectedValues(teamFilter);
+
+    teamFilter.innerHTML = '';
+    Array.from(teams).sort().forEach(team => {
+        const option = document.createElement('option');
+        option.value = team;
+        option.textContent = team;
+        if (currentSelections.includes(team)) {
+            option.selected = true;
+        }
+        teamFilter.appendChild(option);
+    });
+};
+
 export const initFilters = (cy) => {
-    const { searchInput, labelFilter } = getElements();
+    const { searchInput, labelFilter, teamFilter } = getElements();
 
     searchInput?.addEventListener('input', () => applyFilters(cy));
     labelFilter?.addEventListener('change', () => applyFilters(cy));
+    teamFilter?.addEventListener('change', () => applyFilters(cy));
 };
