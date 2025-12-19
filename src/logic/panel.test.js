@@ -246,4 +246,35 @@ describe('Panel Module', () => {
         expect(mockNode.removeClass).toHaveBeenCalledWith('tier-1');
         expect(mockNode.addClass).toHaveBeenCalledWith('tier-3');
     });
+
+    it('should correctly parse multi-label input and update node classes', () => {
+        const mockNode = createMockNode({ labels: [], classes: [] });
+        initPanel(mockCy, vi.fn());
+        showPanel(mockNode);
+
+        document.getElementById('editBtn').click();
+
+        // Find labels input
+        const labelsInput = document.querySelector('input[data-key="labels"]');
+        expect(labelsInput).toBeTruthy();
+        labelsInput.value = 'Security; Auth, Analytics'; // Test both separators
+        labelsInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+        // Save
+        document.getElementById('saveBtn').click();
+
+        // Assert labels parsed correctly
+        expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({
+            labels: ['Security', 'Auth', 'Analytics'],
+            labelsDisplay: 'Security, Auth, Analytics'
+        }));
+
+        // Assert classes mapped (lower-cased and slugified)
+        // Note: The logic in panel.js uses slugify-like replacement
+        expect(mockNode.classes).toHaveBeenCalledWith(expect.arrayContaining([
+            'label-security',
+            'label-auth',
+            'label-analytics'
+        ]));
+    });
 });
