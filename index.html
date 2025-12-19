@@ -77,6 +77,22 @@
       </section>
       <section class="flex-1 relative">
         <div id="cy" class="absolute inset-0"></div>
+        <!-- Drop Zone Overlay -->
+        <div id="dropZone"
+          class="absolute inset-0 flex flex-col items-center justify-center border-4 border-dashed border-emerald-500/50 rounded-lg m-8 transition-all">
+          <div
+            class="bg-slate-900/80 p-8 rounded-2xl border border-slate-700 shadow-2xl flex flex-col items-center gap-4">
+            <svg class="w-16 h-16 text-emerald-400 animate-bounce" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <div class="text-center">
+              <p class="text-xl font-bold text-white">Drop your services.csv here</p>
+              <p class="text-sm text-slate-400 mt-1">Updates the diagram instantly</p>
+            </div>
+          </div>
+        </div>
         <div id="status"
           class="absolute right-4 top-4 bg-slate-900/80 text-xs text-slate-200 px-3 py-2 rounded border border-slate-700 shadow-lg">
         </div>

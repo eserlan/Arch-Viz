@@ -6,7 +6,8 @@
   color-scheme: dark;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -27,10 +28,25 @@ html, body {
   transition: grid-template-rows 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-details[open] + .accordion-wrapper {
+details[open]+.accordion-wrapper {
   grid-template-rows: 1fr;
 }
 
 .accordion-body {
   overflow: hidden;
+}
+
+/* Drag and Drop Drop-zone */
+#dropZone {
+  display: none;
+  background: rgba(15, 23, 42, 0.85);
+  /* slate-900 with opacity */
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  pointer-events: none;
+  /* Let events pass to container if needed, though we'll handle at container level */
+}
+
+#dropZone.active {
+  display: flex;
 }
