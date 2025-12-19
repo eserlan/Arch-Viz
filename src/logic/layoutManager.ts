@@ -1,7 +1,7 @@
 import { CyInstance } from '../types';
 import { layoutConfig } from './graphConfig';
-import { updateStatus } from './ui';
-import { LayoutOptions } from 'cytoscape';
+import { updateStatus, showToast } from './ui';
+import { LayoutOptions, NodeSingular } from 'cytoscape';
 
 /**
  * Layout Transition Management
@@ -18,6 +18,16 @@ export const initLayoutManager = (cy: CyInstance): void => {
         const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
         const layoutName = (isHorizontalDagre || isVerticalDagre) ? 'dagre' : layoutValue;
 
+        // Check for selected node to use as center/root
+        const selectedNodes = cy.nodes(':selected');
+        const hasSelectedNode = selectedNodes.length > 0;
+        const selectedNode: NodeSingular | null = hasSelectedNode ? selectedNodes[0] : null;
+        const selectedNodeId = selectedNode?.id();
+
+        if (hasSelectedNode && selectedNode) {
+            showToast(`Layout centered on: ${selectedNode.data('name') || selectedNodeId}`, 'info');
+        }
+
         updateStatus(`Switching to ${layoutName} layout…`);
 
         const animationOptions: any = {
@@ -32,9 +42,55 @@ export const initLayoutManager = (cy: CyInstance): void => {
             rankDir: isHorizontalDagre ? 'LR' : 'TB',
         };
 
-        const finalConfig: LayoutOptions = layoutName === 'fcose' ?
-            { ...layoutConfig, animate: true, animationDuration: 1000, fit: false, padding: 160 } :
-            animationOptions;
+        // Add layout-specific centering options
+        if (selectedNodeId) {
+            if (layoutName === 'breadthfirst') {
+                // Use selected node as root for tree layouts
+                animationOptions.roots = `#${selectedNodeId}`;
+                animationOptions.directed = true;
+            } else if (layoutName === 'concentric') {
+                // Place selected node at center for concentric layout
+                animationOptions.concentric = (node: NodeSingular) => {
+                    return node.id() === selectedNodeId ? 1000 : node.degree();
+                };
+                animationOptions.levelWidth = () => 2;
+            } else if (layoutName === 'dagre') {
+                // Use selected node as root for hierarchical layout
+                animationOptions.roots = `#${selectedNodeId}`;
+            } else if (layoutName === 'circle') {
+                // Start circle from selected node
+                animationOptions.startAngle = 0;
+                // Sort to put selected node first
+                animationOptions.sort = (a: NodeSingular, b: NodeSingular) => {
+                    if (a.id() === selectedNodeId) return -1;
+                    if (b.id() === selectedNodeId) return 1;
+                    return 0;
+                };
+            }
+        }
+
+        let finalConfig: LayoutOptions;
+
+        if (layoutName === 'fcose') {
+            finalConfig = {
+                ...layoutConfig,
+                animate: true,
+                animationDuration: 1000,
+                fit: false,
+                padding: 160,
+            };
+
+            // For force-directed layouts, fix the selected node position
+            if (selectedNode) {
+                const pos = selectedNode.position();
+                (finalConfig as any).fixedNodeConstraint = [{
+                    nodeId: selectedNodeId,
+                    position: { x: pos.x, y: pos.y }
+                }];
+            }
+        } else {
+            finalConfig = animationOptions;
+        }
 
         const layout = cy.layout(finalConfig);
 

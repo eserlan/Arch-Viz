@@ -18,7 +18,8 @@ describe('layoutManager logic', () => {
         };
         mockCy = {
             layout: vi.fn().mockReturnValue(mockLayout),
-            animate: vi.fn()
+            animate: vi.fn(),
+            nodes: vi.fn().mockReturnValue({ length: 0 })
         };
     });
 
