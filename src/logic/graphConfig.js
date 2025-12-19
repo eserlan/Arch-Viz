@@ -54,7 +54,7 @@ export const stylesheet = [
       'border-style': 'solid',
       'border-width': 3,
       // Add two horizontal lines to simulate a stacked cylinder look
-      'background-image': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><line x1="0" y1="33" x2="100" y2="33" stroke="rgba(255,255,255,0.3)" stroke-width="2"/><line x1="0" y1="66" x2="100" y2="66" stroke="rgba(255,255,255,0.3)" stroke-width="2"/></svg>',
+      'background-image': 'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Cline%20x1%3D%220%22%20y1%3D%2233%22%20x2%3D%22100%22%20y2%3D%2233%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.3)%22%20stroke-width%3D%222%22%2F%3E%3Cline%20x1%3D%220%22%20y1%3D%2266%22%20x2%3D%22100%22%20y2%3D%2266%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.3)%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E',
       'background-fit': 'cover',
       'padding': '12px',
     },
@@ -64,7 +64,7 @@ export const stylesheet = [
     style: {
       'background-color': '#f97316',
       'border-color': '#fdba74',
-      'font-weight': '700',
+      'font-weight': 'bold',
     },
   },
   {
