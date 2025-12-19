@@ -96,8 +96,13 @@ export const initGraphEvents = (cy: CyInstance): void => {
     if (tooltip) {
         cy.on('mouseover', 'node', (evt: EventObject) => {
             const node = evt.target as NodeSingular;
-            const label = node.data('name') || node.data('label') || node.id();
-            tooltip.textContent = label;
+            const name = node.data('name') || node.data('label') || node.id();
+            const labels = node.data('labels') || [];
+            const labelsText = Array.isArray(labels) && labels.length > 0 ? labels.join(', ') : '';
+
+            tooltip.innerHTML = labelsText
+                ? `<strong>${name}</strong><br><span class="text-slate-400 text-[10px]">${labelsText}</span>`
+                : `<strong>${name}</strong>`;
 
             const pos = node.renderedPosition();
             tooltip.style.left = `${pos.x}px`;

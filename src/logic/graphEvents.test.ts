@@ -77,7 +77,11 @@ describe('Graph Events Logic', () => {
 
     it('should update tooltip on node mouseover', () => {
         const mockNode = {
-            data: vi.fn((key: string) => key === 'name' ? 'Node A' : null),
+            data: vi.fn((key: string) => {
+                if (key === 'name') return 'Node A';
+                if (key === 'labels') return ['Core', 'Auth'];
+                return null;
+            }),
             renderedPosition: vi.fn(() => ({ x: 100, y: 100 }))
         };
 
@@ -86,7 +90,8 @@ describe('Graph Events Logic', () => {
         mouseoverHandler({ target: mockNode });
 
         const tooltip = document.getElementById('graphTooltip')!;
-        expect(tooltip.textContent).toBe('Node A');
+        expect(tooltip.innerHTML).toContain('Node A');
+        expect(tooltip.innerHTML).toContain('Core, Auth');
         expect(tooltip.style.opacity).toBe('1');
     });
 });
