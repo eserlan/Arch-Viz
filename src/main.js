@@ -10,6 +10,7 @@ import { initPanel, showPanel, hidePanel } from './logic/panel';
 import { initFilters, populateLabelFilter, populateTeamFilter } from './logic/filters';
 import { initUploader } from './logic/uploader';
 import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor';
+import { calculateDynamicZoom } from './logic/zoom';
 
 cytoscape.use(fcose);
 cytoscape.use(dagre);
@@ -162,19 +163,11 @@ const renderGraph = (elements, skipped) => {
 
     e.preventDefault();
 
-    const zoom = cy.zoom();
+    const currentZoom = cy.zoom();
     const minZoom = cy.minZoom();
     const maxZoom = cy.maxZoom();
 
-    // Dynamic sensitivity:
-    // When zoomed out (low zoom), we want higher sensitivity (move faster)
-    // When zoomed in (high zoom), we want lower sensitivity (more precision)
-    // Formula: basic_sensitivity / current_zoom
-    const baseSensitivity = 0.001;
-    const dynamicFactor = Math.max(0.1, 1 / Math.max(0.1, zoom)); // Cap factor
-    const delta = e.deltaY * baseSensitivity * dynamicFactor;
-
-    const newZoom = Math.max(minZoom, Math.min(maxZoom, zoom * Math.pow(10, -delta)));
+    const newZoom = calculateDynamicZoom(currentZoom, e.deltaY, minZoom, maxZoom);
 
     // Zoom towards the mouse pointer
     const rect = cyContainer.getBoundingClientRect();
