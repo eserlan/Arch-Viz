@@ -100,11 +100,6 @@ export const stylesheet = [
     style: {
       'border-color': '#22c55e',
       'border-width': 4,
-      'shadow-blur': 15,
-      'shadow-color': '#22c55e',
-      'shadow-opacity': 0.6,
-      'shadow-offset-x': 0,
-      'shadow-offset-y': 0,
     },
   },
   {
