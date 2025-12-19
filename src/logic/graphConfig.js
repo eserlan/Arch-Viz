@@ -28,7 +28,6 @@ export const stylesheet = [
       'background-color': '#2563eb',
       'border-color': '#93c5fd',
       'border-width': 2,
-      'label': 'data(label)',
       'color': '#e2e8f0',
       'font-size': 12,
       'text-wrap': 'wrap',
@@ -37,6 +36,12 @@ export const stylesheet = [
       'text-halign': 'center',
       'padding': '8px',
       'shape': 'ellipse',
+    },
+  },
+  {
+    selector: 'node[label]',
+    style: {
+      'label': 'data(label)',
     },
   },
   {
