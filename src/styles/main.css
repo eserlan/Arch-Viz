@@ -94,3 +94,26 @@ body {
   /* emerald-500 */
   box-shadow: 0 0 0 1px #10b981;
 }
+
+.connection-tag {
+  display: inline-block;
+  background: #334155;
+  color: #e2e8f0;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  border: 1px solid #475569;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

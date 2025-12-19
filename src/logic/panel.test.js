@@ -21,7 +21,8 @@ describe('Panel Module', () => {
                 tier: '1',
                 owner: 'Test Owner',
                 repoUrl: 'http://test.com'
-            })
+            }),
+            outgoers: () => []
         };
 
         showPanel(mockNode);
