@@ -13,6 +13,7 @@ import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor
 import { calculateDynamicZoom } from './logic/zoom';
 import { getNodesAtDepth } from './logic/graphUtils';
 import { addNode } from './logic/nodeOperations';
+import { makeDraggable } from './logic/draggable';
 
 cytoscape.use(fcose);
 cytoscape.use(dagre);
@@ -446,6 +447,13 @@ if (addServiceForm) {
       alert(err.message);
     }
   });
+}
+
+// Draggable Filter Panel
+const floatingPanel = document.getElementById('floatingFilterPanel');
+const dragHandle = document.getElementById('filterDragHandle');
+if (floatingPanel && dragHandle) {
+  makeDraggable(floatingPanel, dragHandle);
 }
 
 // Bootstrap
