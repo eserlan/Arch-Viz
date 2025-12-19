@@ -243,6 +243,31 @@ const renderGraph = (elements, skipped) => {
     }
   });
 
+  // Tooltip Logic
+  const tooltip = document.getElementById('graphTooltip');
+  if (tooltip) {
+    cy.on('mouseover', 'node', (evt) => {
+      const node = evt.target;
+      const label = node.data('name') || node.data('label') || node.id();
+      tooltip.textContent = label;
+
+      const pos = node.renderedPosition();
+      tooltip.style.left = `${pos.x}px`;
+      tooltip.style.top = `${pos.y - 20}px`;
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.style.opacity = '1';
+    });
+
+    cy.on('mouseout', 'node', () => {
+      tooltip.style.opacity = '0';
+    });
+
+    // Hide on pan/zoom
+    cy.on('viewport', () => {
+      tooltip.style.opacity = '0';
+    });
+  }
+
   // Re-initialize UI components with the new cy instance
   initFilters(cy);
   initPanel(cy, updateStatus);
