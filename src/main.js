@@ -19,6 +19,102 @@ const updateStatus = (message) => {
 
 let cy;
 
+let currentSelectedNode = null;
+const servicePanel = document.getElementById('servicePanel');
+const panelContent = document.getElementById('panelContent');
+const editBtn = document.getElementById('editBtn');
+const editActions = document.getElementById('editActions');
+const saveBtn = document.getElementById('saveBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+
+const showPanel = (node) => {
+  currentSelectedNode = node;
+  const data = node.data();
+
+  panelContent.innerHTML = `
+    <div class="info-item">
+      <label>Service ID</label>
+      <div class="info-value text-slate-500 font-mono">${data.id}</div>
+    </div>
+    <div class="info-item">
+      <label>Label</label>
+      <div class="info-value" data-key="label">${data.label || ''}</div>
+    </div>
+    <div class="info-item">
+      <label>Domain</label>
+      <div class="info-value" data-key="domain">${data.domain || ''}</div>
+    </div>
+    <div class="info-item">
+      <label>Tier</label>
+      <div class="info-value" data-key="tier">${data.tier || ''}</div>
+    </div>
+    <div class="info-item">
+      <label>Owner</label>
+      <div class="info-value" data-key="owner">${data.owner || ''}</div>
+    </div>
+    <div class="info-item">
+      <label>Repo URL</label>
+      <div class="info-value" data-key="repoUrl">${data.repoUrl || ''}</div>
+    </div>
+  `;
+
+  servicePanel.classList.add('active');
+  editBtn.classList.remove('hidden');
+  editActions.classList.add('hidden');
+};
+
+const hidePanel = () => {
+  servicePanel.classList.remove('active');
+  currentSelectedNode = null;
+};
+
+const toggleEdit = (editing) => {
+  const values = panelContent.querySelectorAll('.info-value[data-key]');
+  values.forEach(el => {
+    if (editing) {
+      const currentVal = el.textContent;
+      const key = el.dataset.key;
+      el.innerHTML = `<input type="text" data-key="${key}" value="${currentVal}">`;
+    } else {
+      const input = el.querySelector('input');
+      const val = input ? input.value : el.textContent;
+      el.textContent = val;
+    }
+  });
+
+  if (editing) {
+    editBtn.classList.add('hidden');
+    editActions.classList.remove('hidden');
+  } else {
+    editBtn.classList.remove('hidden');
+    editActions.classList.add('hidden');
+  }
+};
+
+editBtn?.addEventListener('click', () => toggleEdit(true));
+cancelBtn?.addEventListener('click', () => toggleEdit(false));
+
+saveBtn?.addEventListener('click', () => {
+  if (!currentSelectedNode) return;
+
+  const inputs = panelContent.querySelectorAll('input');
+  const newData = {};
+  inputs.forEach(input => {
+    const key = input.dataset.key;
+    newData[key] = input.value;
+  });
+
+  // Update Cytoscape node
+  currentSelectedNode.data(newData);
+
+  // Persist to localStorage
+  const allElements = cy.elements().jsons();
+  localStorage.setItem('arch-viz-elements', JSON.stringify(allElements));
+
+  updateStatus(`Updated ${newData.label || currentSelectedNode.id()}`);
+  toggleEdit(false);
+});
+
 const renderGraph = (elements, skipped) => {
   updateStatus('Rendering graph…');
 
@@ -43,23 +139,13 @@ const renderGraph = (elements, skipped) => {
   });
 
   cy.on('tap', 'node', (evt) => {
-    const node = evt.target;
-    const domain = node.data('domain');
-    const owner = node.data('owner');
-    const tier = node.data('tier');
-    const repoUrl = node.data('repoUrl');
+    showPanel(evt.target);
+  });
 
-    const details = [
-      `Service: ${node.data('label') || node.id()}`,
-      domain ? `Domain: ${domain}` : null,
-      tier ? `Tier: ${tier}` : null,
-      owner ? `Owner: ${owner}` : null,
-      repoUrl ? `Repo: ${repoUrl}` : null,
-    ]
-      .filter(Boolean)
-      .join(' · ');
-
-    updateStatus(details);
+  cy.on('tap', (evt) => {
+    if (evt.target === cy) {
+      hidePanel();
+    }
   });
 };
 
@@ -91,6 +177,14 @@ if (layoutSelect) {
 
 const loadData = async () => {
   try {
+    const savedData = localStorage.getItem('arch-viz-elements');
+    if (savedData) {
+      updateStatus('Loading data from local storage…');
+      const elements = JSON.parse(savedData);
+      renderGraph(elements, 0);
+      return;
+    }
+
     updateStatus('Fetching CSV data…');
     cyContainer?.classList.add('cy-loading');
 
@@ -151,6 +245,9 @@ if (mainContainer && dropZone) {
             cy.destroy(); // Clean up existing instance
           }
           renderGraph(elements, skipped);
+
+          // Persist dropped data to localStorage
+          localStorage.setItem('arch-viz-elements', JSON.stringify(elements));
         };
         reader.readAsText(file);
       } else {
@@ -159,6 +256,14 @@ if (mainContainer && dropZone) {
     }
   }, false);
 }
+
+const resetDataBtn = document.getElementById('resetDataBtn');
+resetDataBtn?.addEventListener('click', () => {
+  if (confirm('Clear all local edits and reset to the default services.csv?')) {
+    localStorage.removeItem('arch-viz-elements');
+    window.location.reload();
+  }
+});
 
 initAccordion();
 loadData();

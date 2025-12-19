@@ -67,8 +67,11 @@
                   <li><span class="font-semibold text-slate-100">depends_on</span>: semicolon-separated</li>
                   <li><span class="font-semibold text-slate-100">tier</span>: 1 (Critical) → 3 (Internal)</li>
                 </ul>
-                <p class="text-xs text-slate-400 pt-2 border-t border-slate-700">Source:
-                  <code>./public/data/services.csv</code>
+                <p class="text-xs text-slate-400 pt-2 border-t border-slate-700 flex items-center justify-between">
+                  <span>Source: <code>./public/data/services.csv</code></span>
+                  <button id="resetDataBtn"
+                    class="bg-red-500/20 hover:bg-red-500/40 text-red-300 text-[10px] px-2 py-0.5 rounded transition-colors border border-red-500/30">Reset
+                    to Default</button>
                 </p>
               </div>
             </div>
@@ -93,8 +96,29 @@
             </div>
           </div>
         </div>
+        <!-- Service Detail Panel (Bottom Right) -->
+        <div id="servicePanel"
+          class="absolute bottom-6 right-6 w-80 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700 shadow-2xl p-5 translate-y-4 opacity-0 pointer-events-none transition-all duration-300 z-40">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-400">Service Details</h3>
+            <button id="editBtn"
+              class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-600 transition-colors uppercase font-bold tracking-tighter">Edit</button>
+          </div>
+          <div id="panelContent" class="space-y-3">
+            <!-- Items injected by JS -->
+          </div>
+          <div id="editActions" class="hidden flex gap-2 mt-4 pt-4 border-t border-slate-800">
+            <button id="saveBtn"
+              class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded transition-colors">Save
+              Changes</button>
+            <button id="cancelBtn"
+              class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2 rounded transition-colors">Cancel</button>
+          </div>
+        </div>
+
         <div id="status"
-          class="absolute right-4 top-4 bg-slate-900/80 text-xs text-slate-200 px-3 py-2 rounded border border-slate-700 shadow-lg">
+          class="absolute left-6 bottom-6 bg-slate-900/80 text-[10px] text-slate-400 px-3 py-1.5 rounded border border-slate-800 backdrop-blur-sm z-30">
+          Ready
         </div>
       </section>
     </main>
