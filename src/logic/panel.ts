@@ -301,13 +301,31 @@ const handleSave = (): void => {
         }
     });
 
-    // Handle verified toggle - update class
+    // Handle verified toggle - update class and add/remove Verified label
     if (typeof newData.verified === 'boolean') {
+        // Get current labels or parse from form input
+        let labels: string[] = [];
+        if (newData.labels && Array.isArray(newData.labels)) {
+            labels = [...newData.labels];
+        } else if (newData.labels && typeof newData.labels === 'string') {
+            labels = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
+        } else {
+            labels = currentSelectedNode.data('labels') || [];
+            labels = Array.isArray(labels) ? [...labels] : [];
+        }
+
         if (newData.verified) {
             currentSelectedNode.addClass('verified');
+            if (!labels.includes('Verified')) {
+                labels.push('Verified');
+            }
         } else {
             currentSelectedNode.removeClass('verified');
+            labels = labels.filter(l => l !== 'Verified');
         }
+
+        newData.labels = labels;
+        newData.labelsDisplay = labels.join(', ');
     }
 
     if (newData.tier) {
@@ -323,8 +341,16 @@ const handleSave = (): void => {
         newData.label = newData.name;
     }
 
-    // Handle 'labels' field - parse semicolon or comma separated values
-    if (newData.labels) {
+    // Handle 'labels' field - parse semicolon or comma separated values and update classes
+    if (newData.labels && Array.isArray(newData.labels)) {
+        const labels = newData.labels;
+        const newLabelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+        // Get current classes as array, filter out old label classes, add new ones
+        const currentClasses = currentSelectedNode.classes();
+        const classArray = Array.isArray(currentClasses) ? currentClasses : [];
+        const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
+        currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
+    } else if (newData.labels && typeof newData.labels === 'string') {
         const labels = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
         newData.labelsDisplay = labels.join(', ');
         newData.labels = labels;

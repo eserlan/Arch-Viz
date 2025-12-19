@@ -3,6 +3,7 @@ import { showPanel, hidePanel } from './panel';
 import { getNodesAtDepth } from './graphUtils';
 import { saveGraphData } from './storage';
 import { showToast } from './ui';
+import { populateLabelFilter, populateTeamFilter } from './filters';
 import { CyInstance } from '../types';
 
 /**
@@ -37,21 +38,39 @@ export const initGraphEvents = (cy: CyInstance): void => {
     cy.on('cxttap', 'node', (evt: EventObject) => {
         const node = evt.target as NodeSingular;
         const isVerified = node.hasClass('verified');
-        const label = node.data('name') || node.data('label') || node.id();
+        const nodeName = node.data('name') || node.data('label') || node.id();
+
+        // Get current labels array
+        let labels: string[] = node.data('labels') || [];
+        labels = Array.isArray(labels) ? [...labels] : [];
 
         if (isVerified) {
             node.removeClass('verified');
             node.data('verified', false);
-            showToast(`Unverified: ${label}`, 'info');
+            // Remove 'Verified' from labels
+            labels = labels.filter(l => l !== 'Verified');
+            showToast(`Unverified: ${nodeName}`, 'info');
         } else {
             node.addClass('verified');
             node.data('verified', true);
-            showToast(`Verified: ${label}`, 'success');
+            // Add 'Verified' to labels if not present
+            if (!labels.includes('Verified')) {
+                labels.push('Verified');
+            }
+            showToast(`Verified: ${nodeName}`, 'success');
         }
+
+        // Update labels data
+        node.data('labels', labels);
+        node.data('labelsDisplay', labels.join(', '));
 
         // Save the change
         const elements = cy.elements().jsons();
         saveGraphData(elements as any);
+
+        // Refresh filter panels
+        populateLabelFilter(cy.nodes().toArray());
+        populateTeamFilter(cy.nodes().toArray());
 
         // Refresh panel if this node is selected
         showPanel(node);
