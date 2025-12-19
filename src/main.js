@@ -5,54 +5,22 @@ import dagre from 'cytoscape-dagre';
 import { parseCSV } from './logic/parser';
 import { layoutConfig, stylesheet } from './logic/graphConfig';
 import { initAccordion } from './logic/accordion';
-import { loadGraphData, saveGraphData, clearGraphData, getDirtyState, downloadCSV } from './logic/storage';
-import { initPanel, showPanel, hidePanel } from './logic/panel';
+import { loadGraphData, getDirtyState, clearGraphData, downloadCSV } from './logic/storage';
 import { initFilters, populateLabelFilter, populateTeamFilter } from './logic/filters';
 import { initUploader } from './logic/uploader';
-import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor';
+import { initEdgeEditor, toggleEditMode } from './logic/edgeEditor';
 import { calculateDynamicZoom } from './logic/zoom';
-import { getNodesAtDepth } from './logic/graphUtils';
-import { addNode } from './logic/nodeOperations';
+import { showToast, updateStatus, initFloatingPanel, initModal } from './logic/ui';
+import { copyImageToClipboard, saveImageAsPng } from './logic/exports';
+import { initLayoutManager } from './logic/layoutManager';
+import { initGraphEvents } from './logic/graphEvents';
+import { initServiceForm } from './logic/serviceForm';
 
 cytoscape.use(fcose);
 cytoscape.use(dagre);
 
 const cyContainer = document.getElementById('cy');
-const toastContainer = document.getElementById('toastContainer');
 const csvUrl = `${import.meta.env.BASE_URL}data/services.csv`;
-
-const showToast = (message, type = 'info') => {
-  if (!toastContainer) return;
-
-  const colors = {
-    info: 'bg-slate-800 border-slate-600 text-slate-200',
-    success: 'bg-emerald-900/90 border-emerald-500 text-emerald-200',
-    warning: 'bg-amber-900/90 border-amber-500 text-amber-200',
-    error: 'bg-red-900/90 border-red-500 text-red-200'
-  };
-
-  const toast = document.createElement('div');
-  toast.className = `${colors[type] || colors.info} px-4 py-2 rounded-lg border backdrop-blur-sm shadow-lg text-sm font-medium transform transition-all duration-300 opacity-0 translate-y-2`;
-  toast.textContent = message;
-  toastContainer.appendChild(toast);
-
-  // Animate in
-  requestAnimationFrame(() => {
-    toast.classList.remove('opacity-0', 'translate-y-2');
-    toast.classList.add('opacity-100', 'translate-y-0');
-  });
-
-  // Auto dismiss after 3 seconds
-  setTimeout(() => {
-    toast.classList.remove('opacity-100', 'translate-y-0');
-    toast.classList.add('opacity-0', '-translate-y-2');
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-};
-
-const updateStatus = (message) => {
-  showToast(message, 'info');
-};
 
 let cy;
 
@@ -64,85 +32,21 @@ const updateDirtyUI = (isDirty) => {
   }
 };
 
-// Listen for dirty state changes
 window.addEventListener('dirty-state-change', (e) => {
   updateDirtyUI(e.detail.isDirty);
 });
 
-// Download CSV button
+// Sidebar Actions logic
 const downloadCsvBtn = document.getElementById('downloadCsvBtn');
-if (downloadCsvBtn) {
-  downloadCsvBtn.addEventListener('click', () => {
-    if (cy) {
-      downloadCSV(cy);
-      const now = new Date();
-      const pad = (n) => n.toString().padStart(2, '0');
-      const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-      updateStatus(`Downloaded services-${timestamp}.csv`);
-    }
-  });
-}
+downloadCsvBtn?.addEventListener('click', () => {
+  if (cy) {
+    downloadCSV(cy);
+    updateStatus(`Downloaded updated CSV`);
+  }
+});
 
-// Copy Image to Clipboard button
-const copyImageBtn = document.getElementById('copyImageBtn');
-if (copyImageBtn) {
-  copyImageBtn.addEventListener('click', async () => {
-    if (!cy) {
-      showToast('No graph to copy', 'warning');
-      return;
-    }
-    try {
-      // Generate PNG with higher resolution
-      const png64 = cy.png({ scale: 2, bg: '#0f172a', full: true });
-
-      // Convert base64 to blob
-      const response = await fetch(png64);
-      const blob = await response.blob();
-
-      // Copy to clipboard
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': blob })
-      ]);
-
-      showToast('Graph copied to clipboard!', 'success');
-    } catch (err) {
-      console.error('Failed to copy image:', err);
-      showToast('Failed to copy image to clipboard', 'error');
-    }
-  });
-}
-
-// Save Image button
-const saveImageBtn = document.getElementById('saveImageBtn');
-if (saveImageBtn) {
-  saveImageBtn.addEventListener('click', () => {
-    if (!cy) {
-      showToast('No graph to save', 'warning');
-      return;
-    }
-    try {
-      // Generate PNG with higher resolution
-      const png64 = cy.png({ scale: 2, bg: '#0f172a', full: true });
-
-      // Generate timestamped filename
-      const now = new Date();
-      const pad = (n) => n.toString().padStart(2, '0');
-      const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-      const filename = `service-map-${timestamp}.png`;
-
-      // Create download link
-      const link = document.createElement('a');
-      link.href = png64;
-      link.download = filename;
-      link.click();
-
-      showToast(`Saved ${filename}`, 'success');
-    } catch (err) {
-      console.error('Failed to save image:', err);
-      showToast('Failed to save image', 'error');
-    }
-  });
-}
+document.getElementById('copyImageBtn')?.addEventListener('click', () => copyImageToClipboard(cy));
+document.getElementById('saveImageBtn')?.addEventListener('click', () => saveImageAsPng(cy));
 
 const renderGraph = (elements, skipped) => {
   updateStatus('Rendering graph…');
@@ -152,216 +56,70 @@ const renderGraph = (elements, skipped) => {
     elements,
     layout: layoutConfig,
     style: stylesheet,
-    userZoomingEnabled: false, // We'll handle zoom manually
+    userZoomingEnabled: false,
     selectionType: 'single',
-    minZoom: 0.1, // Allow more zoom out for large graphs
+    minZoom: 0.1,
     maxZoom: 2.5,
   });
 
-  // Custom wheel zoom handler for dynamic sensitivity
+  // Zoom management
   cyContainer.addEventListener('wheel', (e) => {
-    // Only handle if no other modifiers are pressed (to avoid conflicting with browser zoom etc)
     if (!cy) return;
-
     e.preventDefault();
-
     const currentZoom = cy.zoom();
-    const minZoom = cy.minZoom();
-    const maxZoom = cy.maxZoom();
-
-    const newZoom = calculateDynamicZoom(currentZoom, e.deltaY, minZoom, maxZoom);
-
-    // Zoom towards the mouse pointer
+    const newZoom = calculateDynamicZoom(currentZoom, e.deltaY, cy.minZoom(), cy.maxZoom());
     const rect = cyContainer.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    cy.zoom({
-      level: newZoom,
-      renderedPosition: { x, y }
-    });
+    cy.zoom({ level: newZoom, renderedPosition: { x: e.clientX - rect.left, y: e.clientY - rect.top } });
   }, { passive: false });
 
-  window.cy = cy; // Export for debugging
+  window.cy = cy;
 
   cy.ready(() => {
     cy.fit(undefined, 100);
-    updateStatus(
-      `Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` +
-      (skipped ? ` (skipped ${skipped} invalid rows)` : ''),
-    );
-    // Update dirty UI on initial load
+    updateStatus(`Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` + (skipped ? ` (skipped ${skipped} invalid rows)` : ''));
     updateDirtyUI(getDirtyState());
   });
 
-  // Helper for highlighting connections
-  const highlightConnections = (node) => {
-    const depthVal = document.getElementById('depthSelect')?.value || '1';
-
-    // Use extracted logic
-    const highlightCollection = getNodesAtDepth(node, depthVal, cy);
-
-    cy.elements().addClass('dimmed');
-    highlightCollection.removeClass('dimmed');
-  };
-
-  cy.on('tap', 'node', (evt) => {
-    const node = evt.target;
-    showPanel(node);
-    highlightConnections(node);
-  });
-
-  // Handle depth change immediately
-  const depthSelect = document.getElementById('depthSelect');
-  if (depthSelect) {
-    // Clone to remove old listeners (simple cleanup)
-    const newSelect = depthSelect.cloneNode(true);
-    depthSelect.parentNode.replaceChild(newSelect, depthSelect);
-
-    newSelect.addEventListener('change', () => {
-      // Find currently selected/active node
-      // We check cy :selected or look for active class?
-      // Cytoscape handles selection state on tap by default
-      const selected = cy.nodes(':selected');
-      if (selected.length > 0) {
-        highlightConnections(selected[0]);
-      }
-    });
-  }
-
-  cy.on('tap', (evt) => {
-    if (evt.target === cy) {
-      hidePanel();
-      cy.elements().removeClass('dimmed');
-    }
-  });
-
-  // Tooltip Logic
-  const tooltip = document.getElementById('graphTooltip');
-  if (tooltip) {
-    cy.on('mouseover', 'node', (evt) => {
-      const node = evt.target;
-      const label = node.data('name') || node.data('label') || node.id();
-      tooltip.textContent = label;
-
-      const pos = node.renderedPosition();
-      tooltip.style.left = `${pos.x}px`;
-      tooltip.style.top = `${pos.y - 20}px`;
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.style.opacity = '1';
-    });
-
-    cy.on('mouseout', 'node', () => {
-      tooltip.style.opacity = '0';
-    });
-
-    // Hide on pan/zoom
-    cy.on('viewport', () => {
-      tooltip.style.opacity = '0';
-    });
-  }
-
-  // Re-initialize UI components with the new cy instance
+  // Initialize modular controllers
   initFilters(cy);
-  initPanel(cy, updateStatus);
   initEdgeEditor(cy, updateStatus);
+  initLayoutManager(cy);
+  initGraphEvents(cy);
+  initServiceForm(cy, () => updateDirtyUI(true));
+
   populateLabelFilter(elements);
   populateTeamFilter(elements);
 };
 
-// Edit Mode Toggle Button
+// Edit Mode UI
 const editModeBtn = document.getElementById('editModeBtn');
 const editModeLabel = document.getElementById('editModeLabel');
-if (editModeBtn) {
-  editModeBtn.addEventListener('click', () => {
-    const active = toggleEditMode(updateStatus);
-    const addServiceBtn = document.getElementById('addServiceBtnSidebar');
+editModeBtn?.addEventListener('click', () => {
+  const active = toggleEditMode(updateStatus);
+  const addServiceBtn = document.getElementById('addServiceBtnSidebar');
 
-    if (active) {
-      editModeBtn.classList.remove('bg-slate-800', 'border-slate-700');
-      editModeBtn.classList.add('bg-amber-600', 'border-amber-500', 'text-white');
-      editModeLabel.textContent = 'Exit Edit Mode';
-      addServiceBtn?.classList.remove('hidden');
-    } else {
-      editModeBtn.classList.add('bg-slate-800', 'border-slate-700');
-      editModeBtn.classList.remove('bg-amber-600', 'border-amber-500', 'text-white');
-      editModeLabel.textContent = 'Enter Edit Mode';
-      addServiceBtn?.classList.add('hidden');
-    }
-  });
-}
-
-const layoutSelect = document.getElementById('layoutSelect');
-if (layoutSelect) {
-  layoutSelect.addEventListener('change', (e) => {
-    if (!cy) return;
-    const layoutValue = e.target.value;
-    const isHorizontalDagre = layoutValue === 'dagre-horizontal';
-    const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
-
-    // Normalize layout name for Cytoscape
-    const layoutName = (isHorizontalDagre || isVerticalDagre) ? 'dagre' : layoutValue;
-
-    updateStatus(`Switching to ${layoutName} layout…`);
-
-    const animationOptions = {
-      name: layoutName,
-      animate: true,
-      animationDuration: 1000,
-      fit: false,
-      padding: 160,
-      randomize: false,
-      nodeDimensionsIncludeLabels: true,
-      spacingFactor: (layoutName === 'circle' || layoutName === 'concentric') ? 0.7 : 1,
-      // Dagre specific options
-      rankDir: isHorizontalDagre ? 'LR' : 'TB',
-    };
-
-    const finalConfig = layoutName === 'fcose' ?
-      { ...layoutConfig, animate: true, animationDuration: 1000, fit: false, padding: 160 } :
-      animationOptions;
-
-    const layout = cy.layout(finalConfig);
-
-    let layoutFinished = false;
-    const onStop = () => {
-      if (layoutFinished) return;
-      layoutFinished = true;
-      cy.animate({
-        fit: { padding: 160 },
-        duration: 800,
-        easing: 'ease-in-out-cubic'
-      });
-      updateStatus(`Layout: ${layoutName} applied`);
-    };
-
-    layout.one('layoutstop', onStop);
-    layout.run();
-
-    // Fallback in case layoutstop doesn't fire for some reason
-    setTimeout(() => {
-      if (!layoutFinished) {
-        onStop();
-      }
-    }, 2500);
-  });
-}
+  if (active) {
+    editModeBtn.className = 'w-full bg-amber-600 border border-amber-500 text-white text-xs rounded px-3 py-2 flex items-center justify-center gap-2 transition-colors';
+    editModeLabel.textContent = 'Exit Edit Mode';
+    addServiceBtn?.classList.remove('hidden');
+  } else {
+    editModeBtn.className = 'w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-2 hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors flex items-center justify-center gap-2';
+    editModeLabel.textContent = 'Enter Edit Mode';
+    addServiceBtn?.classList.add('hidden');
+  }
+});
 
 const loadData = async () => {
   try {
     const savedData = loadGraphData();
     if (savedData) {
-      updateStatus('Loading data from local storage…');
       renderGraph(savedData, 0);
       return;
     }
 
-    updateStatus('Fetching CSV data…');
     cyContainer?.classList.add('cy-loading');
-
     const response = await fetch(csvUrl);
-    if (!response.ok) throw new Error(`Unable to load services.csv (${response.status})`);
-
+    if (!response.ok) throw new Error(`Unable to load services.csv`);
     const csvText = await response.text();
     const { elements, skipped } = parseCSV(csvText);
     renderGraph(elements, skipped);
@@ -373,206 +131,17 @@ const loadData = async () => {
   }
 };
 
-const resetDataBtn = document.getElementById('resetDataBtn');
-resetDataBtn?.addEventListener('click', () => {
+document.getElementById('resetDataBtn')?.addEventListener('click', () => {
   if (confirm('Clear all local edits and reset to the default services.csv?')) {
     clearGraphData();
     window.location.reload();
   }
 });
 
-// Help Modal Logic
-const helpModal = document.getElementById('helpModal');
-const openHelpBtn = document.getElementById('openHelpBtn');
-const closeHelpBtn = document.getElementById('closeHelpBtn');
+// Setup Modals
+initModal('helpModal', 'openHelpBtn', 'closeHelpBtn');
 
-if (helpModal && openHelpBtn && closeHelpBtn) {
-  openHelpBtn.addEventListener('click', () => {
-    helpModal.showModal();
-  });
-
-  closeHelpBtn.addEventListener('click', () => {
-    helpModal.close();
-  });
-
-  // Close on backdrop click
-  helpModal.addEventListener('click', (e) => {
-    const rect = helpModal.getBoundingClientRect();
-    if (e.clientX < rect.left || e.clientX > rect.right ||
-      e.clientY < rect.top || e.clientY > rect.bottom) {
-      helpModal.close();
-    }
-  });
-}
-
-// Add Service Logic
-const addServiceModal = document.getElementById('addServiceModal');
-const addServiceBtnSidebar = document.getElementById('addServiceBtnSidebar');
-const cancelAddServiceBtn = document.getElementById('cancelAddServiceBtn');
-const addServiceForm = document.getElementById('addServiceForm');
-
-if (addServiceBtnSidebar) {
-  addServiceBtnSidebar.addEventListener('click', () => {
-    addServiceForm?.reset();
-    addServiceModal?.showModal();
-  });
-}
-
-if (cancelAddServiceBtn) {
-  cancelAddServiceBtn.addEventListener('click', () => {
-    addServiceModal?.close();
-  });
-}
-
-if (addServiceForm) {
-  addServiceForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(addServiceForm);
-    const data = {
-      id: formData.get('id'),
-      name: formData.get('name'),
-      owner: formData.get('owner'),
-      tier: parseInt(formData.get('tier'), 10)
-    };
-
-    try {
-      if (!cy) throw new Error("Graph not initialized");
-      addNode(cy, data);
-      updateStatus(`Created service: ${data.name}`);
-      addServiceModal?.close();
-      showToast(`Service "${data.name}" created`, 'success');
-      updateDirtyUI(true); // Ensure dirty state is reflected
-    } catch (err) {
-      alert(err.message);
-    }
-  });
-}
-
-// Floating Panel Helper
-function initFloatingPanel(config) {
-  const {
-    panelId,
-    menuBtnId,
-    menuId,
-    moveBtnId,
-    storageKey,
-    defaultClasses = []
-  } = config;
-
-  const panel = document.getElementById(panelId);
-  const menuBtn = document.getElementById(menuBtnId);
-  const menu = document.getElementById(menuId);
-  const moveBtn = document.getElementById(moveBtnId);
-
-  if (!panel) return;
-
-  // Restore panel position
-  const savedPos = localStorage.getItem(storageKey);
-  if (savedPos) {
-    try {
-      const { left, top } = JSON.parse(savedPos);
-      panel.style.left = left;
-      panel.style.top = top;
-      if (defaultClasses.length) {
-        panel.classList.remove(...defaultClasses);
-      }
-      panel.style.transform = 'none';
-    } catch (e) {
-      console.error(`Error loading panel position for ${panelId}`, e);
-    }
-  }
-
-  // Reveal panel after potential position update to avoid jump
-  requestAnimationFrame(() => {
-    panel.classList.remove('opacity-0');
-  });
-
-  // Menu interactions
-  if (menuBtn && menu) {
-    menuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      menu.classList.toggle('hidden');
-    });
-
-    // Close menu on outside click
-    document.addEventListener('click', (e) => {
-      if (!menu.contains(e.target) && e.target !== menuBtn) {
-        menu.classList.add('hidden');
-      }
-    });
-  }
-
-  if (moveBtn) {
-    moveBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (menu) menu.classList.add('hidden');
-
-      // Enter Move Mode
-      panel.style.cursor = 'move';
-      panel.classList.add('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
-      showToast('Click anywhere to place the panel', 'info');
-
-      // Initial setup to absolute positioning if using responsive centering
-      if (panel.classList.contains('-translate-x-1/2')) {
-        const rect = panel.getBoundingClientRect();
-        panel.style.left = rect.left + 'px';
-        panel.style.top = rect.top + 'px';
-        panel.classList.remove('-translate-x-1/2', 'left-1/2');
-        panel.style.transform = 'none';
-      }
-
-      let rafId = null;
-      const moveHandler = (evt) => {
-        const cx = evt.clientX;
-        const cy = evt.clientY;
-
-        if (!rafId) {
-          rafId = requestAnimationFrame(() => {
-            const width = panel.offsetWidth;
-            const height = panel.offsetHeight;
-            let left = cx - (width / 2);
-            let top = cy - 20;
-
-            const maxW = window.innerWidth - width;
-            const maxH = window.innerHeight - height;
-
-            left = Math.max(0, Math.min(maxW, left));
-            top = Math.max(0, Math.min(maxH, top));
-
-            panel.style.left = `${left}px`;
-            panel.style.top = `${top}px`;
-            rafId = null;
-          });
-        }
-      };
-
-      document.addEventListener('mousemove', moveHandler);
-
-      // Click to drop
-      const clickHandler = (evt) => {
-        evt.preventDefault();
-        evt.stopPropagation();
-        document.removeEventListener('mousemove', moveHandler);
-        if (rafId) cancelAnimationFrame(rafId);
-
-        panel.style.cursor = '';
-        panel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
-        showToast('Panel placed', 'success');
-
-        localStorage.setItem(storageKey, JSON.stringify({
-          left: panel.style.left,
-          top: panel.style.top
-        }));
-      };
-
-      setTimeout(() => {
-        document.addEventListener('click', clickHandler, { capture: true, once: true });
-      }, 50);
-    });
-  }
-}
-
-// Initialize Label Panel
+// Initialize Floating Panels
 initFloatingPanel({
   panelId: 'floatingFilterPanel',
   menuBtnId: 'panelMenuBtn',
@@ -582,7 +151,6 @@ initFloatingPanel({
   defaultClasses: ['-translate-x-1/2', 'left-1/2', 'top-6']
 });
 
-// Initialize Team Panel
 initFloatingPanel({
   panelId: 'floatingTeamPanel',
   menuBtnId: 'teamPanelMenuBtn',
