@@ -81,7 +81,10 @@ describe('Panel Module', () => {
         elements: () => ({
             jsons: () => [{ data: { id: 'test' } }]
         }),
-        nodes: () => ({ filter: () => ({ map: () => [] }) })
+        nodes: () => ({
+            filter: () => ({ map: () => [] }),
+            toArray: () => []
+        })
     } as unknown as CyInstance;
 
     it('should update panel content with node data', () => {
