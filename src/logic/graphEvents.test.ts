@@ -78,7 +78,8 @@ describe('Graph Events Logic', () => {
     it('should update tooltip on node mouseover', () => {
         const mockNode = {
             data: vi.fn((key: string) => key === 'name' ? 'Node A' : null),
-            renderedPosition: vi.fn(() => ({ x: 100, y: 100 }))
+            renderedPosition: vi.fn(() => ({ x: 100, y: 100 })),
+            hasClass: vi.fn(() => false)
         };
 
         initGraphEvents(mockCy);

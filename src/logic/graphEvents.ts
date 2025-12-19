@@ -1,6 +1,8 @@
 import { NodeSingular, EventObject } from 'cytoscape';
 import { showPanel, hidePanel } from './panel';
 import { getNodesAtDepth } from './graphUtils';
+import { saveGraphData } from './storage';
+import { showToast } from './ui';
 import { CyInstance } from '../types';
 
 /**
@@ -31,6 +33,30 @@ export const initGraphEvents = (cy: CyInstance): void => {
         }
     });
 
+    // Right-click to toggle verified state
+    cy.on('cxttap', 'node', (evt: EventObject) => {
+        const node = evt.target as NodeSingular;
+        const isVerified = node.hasClass('verified');
+        const label = node.data('name') || node.data('label') || node.id();
+
+        if (isVerified) {
+            node.removeClass('verified');
+            node.data('verified', false);
+            showToast(`Unverified: ${label}`, 'info');
+        } else {
+            node.addClass('verified');
+            node.data('verified', true);
+            showToast(`Verified: ${label}`, 'success');
+        }
+
+        // Save the change
+        const elements = cy.elements().jsons();
+        saveGraphData(elements as any);
+
+        // Refresh panel if this node is selected
+        showPanel(node);
+    });
+
     // Depth select interaction
     const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
     if (depthSelect && depthSelect.parentNode) {
@@ -52,7 +78,8 @@ export const initGraphEvents = (cy: CyInstance): void => {
         cy.on('mouseover', 'node', (evt: EventObject) => {
             const node = evt.target as NodeSingular;
             const label = node.data('name') || node.data('label') || node.id();
-            tooltip.textContent = label;
+            const verified = node.hasClass('verified') ? ' ✓' : '';
+            tooltip.textContent = label + verified;
 
             const pos = node.renderedPosition();
             tooltip.style.left = `${pos.x}px`;
