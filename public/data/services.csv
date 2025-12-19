@@ -1,7 +1,102 @@
 id,label,domain,tier,depends_on,owner,repo_url
-payment-api,Payment Gateway,Finance,1,fraud-check;ledger-db,Team Money,https://bitbucket.example.com/projects/FIN/repos/payment-api
-fraud-check,Fraud Detection,Security,1,,Team Security,https://bitbucket.example.com/projects/SEC/repos/fraud-check
-ledger-db,Ledger Database,Finance,1,,Data Platform,
-user-auth-svc,User Authentication,Identity,1,user-directory,Team Identity,
-user-directory,User Directory,Identity,2,,Platform Directory,
-notifications-svc,Notifications,Engagement,2,user-auth-svc;payment-api,Team Comms,
+auth-srv,Authentication Service,Identity,1,user-db;session-store,Identity Team,https://github.com/org/auth-srv
+user-db,User Database,Database,1,,DB Team,https://github.com/org/user-db
+session-store,Session Redis,Database,1,,DB Team,https://github.com/org/session-store
+ap-gw,API Gateway,Security,1,auth-srv;rate-limiter,Platform Team,https://github.com/org/ap-gw
+rate-limiter,Rate Limiter Service,Security,2,redis-cache,Platform Team,https://github.com/org/rate-limiter
+redis-cache,Main Cache,Database,2,,DB Team,https://github.com/org/redis-cache
+payment-api,Payment Gateway Service,Payment,1,fraud-svc;stripe-adapter;ledger-db,Money Team,https://github.com/org/payment-api
+fraud-svc,Fraud Detection,Security,1,analytics-engine,Security Team,https://github.com/org/fraud-svc
+stripe-adapter,Stripe Integration,Payment,2,,Money Team,https://github.com/org/stripe-adapter
+ledger-db,Payments Ledger,Database,1,,DB Team,https://github.com/org/ledger-db
+order-svc,Order Management Service,Orders,1,payment-api;inventory-svc;stock-db,Sales Team,https://github.com/org/order-svc
+inventory-svc,Inventory Service,Inventory,1,stock-db;warehouse-api,Sales Team,https://github.com/org/inventory-svc
+stock-db,Inventory Database,Database,1,,DB Team,https://github.com/org/stock-db
+warehouse-api,Warehouse API,Shipping,2,carrier-tracking,Logistics Team,https://github.com/org/warehouse-api
+carrier-tracking,Carrier Tracking,Shipping,3,fedex-svc;ups-svc,Logistics Team,https://github.com/org/carrier-tracking
+fedex-svc,FedEx Integration,Shipping,3,,Logistics Team,https://github.com/org/fedex-svc
+ups-svc,UPS Integration,Shipping,3,,Logistics Team,https://github.com/org/ups-svc
+shipping-svc,Shipping Coordinator,Shipping,2,order-svc;carrier-tracking,Logistics Team,https://github.com/org/shipping-svc
+customer-svc,Customer Profile,Identity,2,user-db;crm-integration,Support Team,https://github.com/org/customer-svc
+crm-integration,Salesforce Adapter,Analytics,3,,Support Team,https://github.com/org/crm-integration
+email-notif,Email Notification,Notifications,2,sendgrid-api,Messaging Team,https://github.com/org/email-notif
+sendgrid-api,SendGrid API,Notifications,3,,Messaging Team,https://github.com/org/sendgrid-api
+sms-notif,SMS Notification,Notifications,2,twilio-api,Messaging Team,https://github.com/org/sms-notif
+twilio-api,Twilio API,Notifications,3,,Messaging Team,https://github.com/org/twilio-api
+push-notif,Mobile Push Service,Notifications,2,fcm-google,Messaging Team,https://github.com/org/push-notif
+fcm-google,Firebase Messaging,Notifications,3,,Messaging Team,https://github.com/org/fcm-google
+notif-dispatcher,Notification Dispatcher,Notifications,1,email-notif;sms-notif;push-notif,Messaging Team,https://github.com/org/notif-dispatcher
+analytics-engine,BigData Analytics,Analytics,2,data-warehouse,Data Team,https://github.com/org/analytics-engine
+data-warehouse,Central Data Lake,Database,2,,Data Team,https://github.com/org/data-warehouse
+search-api,Elasticsearch Gateway,Analytics,2,search-db,Search Team,https://github.com/org/search-api
+search-db,Elasticsearch Cluster,Database,2,,Search Team,https://github.com/org/search-db
+billing-svc,Subscription Billing,Payment,1,ledger-db;payment-api,Money Team,https://github.com/org/billing-svc
+cart-svc,Shopping Cart,Orders,2,cart-db,Sales Team,https://github.com/org/cart-svc
+cart-db,ShoppingCart Redis,Database,2,,DB Team,https://github.com/org/cart-db
+catalog-api,Product Catalog,Inventory,2,catalog-db;search-api,Sales Team,https://github.com/org/catalog-api
+catalog-db,Catalog MongoDB,Database,2,,DB Team,https://github.com/org/catalog-db
+pricing-engine,Dynamic Pricing,Orders,2,catalog-api;analytics-engine,Sales Team,https://github.com/org/pricing-engine
+promo-svc,Promotion Coordinator,Orders,2,cart-svc;ledger-db,Sales Team,https://github.com/org/promo-svc
+review-svc,Product Reviews,Customer Support,3,review-db,Support Team,https://github.com/org/review-svc
+review-db,Reviews Postgres,Database,3,,DB Team,https://github.com/org/review-db
+recommendation-svc,AI Recommendations,Analytics,3,catalog-api;analytics-engine,Data Team,https://github.com/org/recommendation-svc
+loyalty-svc,Loyalty Rewards,Customer Support,2,ledger-db;email-notif,Support Team,https://github.com/org/loyalty-svc
+audit-log,System Audit Service,Security,2,audit-db,Security Team,https://github.com/org/audit-log
+audit-db,Audit Postgres,Database,2,,DB Team,https://github.com/org/audit-db
+feature-flags,LaunchDarkly Proxy,Security,3,,Platform Team,https://github.com/org/feature-flags
+config-svc,Central Configuration,Security,1,vault-api,Platform Team,https://github.com/org/config-svc
+vault-api,HashiCorp Vault,Security,1,,Platform Team,https://github.com/org/vault-api
+logging-api,ELK Gateway,Analytics,2,search-db,Platform Team,https://github.com/org/logging-api
+monitoring-svc,Prometheus Service,Security,2,grafana-api,Platform Team,https://github.com/org/monitoring-svc
+grafana-api,Grafana Visualization,Analytics,3,,Platform Team,https://github.com/org/grafana-api
+help-desk,Support Ticket System,Customer Support,3,help-db,Support Team,https://github.com/org/help-desk
+help-db,ServiceDesk DB,Database,3,,DB Team,https://github.com/org/help-db
+live-chat,Customer Live Chat,Customer Support,3,chat-db;fcm-google,Support Team,https://github.com/org/live-chat
+chat-db,Chat History Redis,Database,3,,DB Team,https://github.com/org/chat-db
+faq-api,Help Center API,Customer Support,3,search-api,Support Team,https://github.com/org/faq-api
+refund-svc,Refund Processor,Payment,1,payment-api;ledger-db,Money Team,https://github.com/org/refund-svc
+tax-calculator,TaxJar Integration,Payment,2,,Money Team,https://github.com/org/tax-calculator
+currency-api,Fixer Exchange Rates,Payment,3,,Money Team,https://github.com/org/currency-api
+payout-svc,Merchant Payouts,Payment,1,ledger-db;stripe-adapter,Money Team,https://github.com/org/payout-svc
+inventory-worker,Inventory Sync Worker,Inventory,2,stock-db;warehouse-api,Sales Team,https://github.com/org/inventory-worker
+price-worker,Price Batch Update,Orders,3,stock-db;catalog-db,Sales Team,https://github.com/org/price-worker
+image-resize,Image Optimization,Inventory,3,s3-bucket,Platform Team,https://github.com/org/image-resize
+s3-bucket,Asset Storage,Database,2,,Platform Team,https://github.com/org/s3-bucket
+video-stream,Product Videos,Inventory,3,s3-bucket,Platform Team,https://github.com/org/video-stream
+localization-svc,i18n Service,Identity,3,user-db,Identity Team,https://github.com/org/localization-svc
+consent-mgr,GDPR Consent Manager,Security,1,user-db;audit-log,Security Team,https://github.com/org/consent-mgr
+token-svc,JWT Token Issuer,Identity,1,auth-srv,Identity Team,https://github.com/org/token-svc
+id-verification,Onfido Integration,Identity,2,audit-log,Security Team,https://github.com/org/id-verification
+mfa-svc,Multi-Factor Auth,Identity,1,twilio-api,Identity Team,https://github.com/org/mfa-svc
+scim-bridge,Okta SCIM Bridge,Identity,2,auth-srv,Identity Team,https://github.com/org/scim-bridge
+edge-cache,Cloudflare Worker,Security,1,,Platform Team,https://github.com/org/edge-cache
+waf-svc,Web App Firewall,Security,1,edge-cache,Platform Team,https://github.com/org/waf-svc
+ddos-protection,DDoS Mitigation,Security,1,edge-cache,Platform Team,https://github.com/org/ddos-protection
+ab-testing,Split.io Engine,Analytics,3,user-db,Platform Team,https://github.com/org/ab-testing
+error-reporting,Sentry Adapter,Analytics,2,,Platform Team,https://github.com/org/error-reporting
+telemetry-api,OpenTelemetry Collector,Analytics,2,data-warehouse,Platform Team,https://github.com/org/telemetry-api
+bi-reporting,Tableau Bridge,Analytics,3,data-warehouse,Data Team,https://github.com/org/bi-reporting
+ml-inference,Predictive Shipping,Shipping,3,analytics-engine;warehouse-api,Data Team,https://github.com/org/ml-inference
+route-optimizer,Logistics Optimizer,Shipping,2,carrier-tracking,Logistics Team,https://github.com/org/route-optimizer
+label-gen,Shipping Label Generator,Shipping,2,carrier-tracking,Logistics Team,https://github.com/org/label-gen
+customs-svc,Customs API,Shipping,3,carrier-tracking,Logistics Team,https://github.com/org/customs-svc
+returns-api,Customer Returns,Shipping,3,order-svc;refund-svc,Logistics Team,https://github.com/org/returns-api
+inventory-scan,Barcode Scanner API,Inventory,3,stock-db,Logistics Team,https://github.com/org/inventory-scan
+vendor-portal,Merchant Dashboard,Inventory,2,catalog-api,Sales Team,https://github.com/org/vendor-portal
+contract-mgr,Vendor Contracts,Inventory,3,audit-db,Legal Team,https://github.com/org/contract-mgr
+license-svc,Software Licenses,Security,3,audit-db,Legal Team,https://github.com/org/license-svc
+privacy-center,Consumer Privacy,Security,2,consent-mgr,Legal Team,https://github.com/org/privacy-center
+legal-notices,Legal Compliance,Security,3,email-notif,Legal Team,https://github.com/org/legal-notices
+data-retention,Data Archival,Database,2,data-warehouse,Data Team,https://github.com/org/data-retention
+backup-mgr,Disaster Recovery,Database,1,stock-db;user-db;ledger-db,Platform Team,https://github.com/org/backup-mgr
+health-check,System Health Monitor,Security,1,monitoring-svc,Platform Team,https://github.com/org/health-check
+incident-mgr,PagerDuty Bridge,Security,1,monitoring-svc,Platform Team,https://github.com/org/incident-mgr
+api-docs,Swagger/OpenAPI,Analytics,3,ap-gw,Platform Team,https://github.com/org/api-docs
+feedback-svc,User Feedback,Customer Support,3,help-db,Support Team,https://github.com/org/feedback-svc
+survey-mgr,Customer Surveys,Customer Support,3,email-notif,Support Team,https://github.com/org/survey-mgr
+segmentation,User Segmentation,Analytics,2,data-warehouse,Data Team,https://github.com/org/segmentation
+personalization,Real-time Personalizer,Analytics,3,recommendation-svc;user-db,Data Team,https://github.com/org/personalization
+event-bus,RabbitMQ/Kafka,Security,1,,Platform Team,https://github.com/org/event-bus
+job-scheduler,Control-M / Quartz,Security,2,event-bus,Platform Team,https://github.com/org/job-scheduler
+replica-sync,Database Replication,Database,1,user-db;ledger-db,DB Team,https://github.com/org/replica-sync
+cache-purger,CDN Purge Service,Security,2,edge-cache,Platform Team,https://github.com/org/cache-purger
