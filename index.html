@@ -43,25 +43,43 @@
         </div>
     </header>
     <main class="flex-1 flex flex-col">
-      <section class="p-6 grid gap-4 md:grid-cols-3 bg-slate-900/60 border-b border-slate-800">
-        <div class="md:col-span-2 space-y-2">
-          <h2 class="text-lg font-semibold">How it works</h2>
-          <p class="text-sm text-slate-300">The graph renders client-side from a static CSV registry
-            (<code>public/data/services.csv</code>). Cytoscape.js + fcose handles the layout; PapaParse converts CSV
-            rows into nodes and edges.</p>
-          <p class="text-sm text-slate-300">Drop an updated CSV in <code>public/data/</code> and rebuild to publish a
-            fresh “living diagram.”</p>
-        </div>
-        <div class="text-sm text-slate-200 bg-slate-800/50 rounded-lg border border-slate-700 p-4 space-y-2">
-          <p class="font-semibold">Data contract</p>
-          <ul class="list-disc list-inside text-slate-300">
-            <li><span class="font-semibold">id</span>, <span class="font-semibold">label</span>, <span
-                class="font-semibold">domain</span> required</li>
-            <li><span class="font-semibold">depends_on</span>: semicolon-separated</li>
-            <li><span class="font-semibold">tier</span>: 1 (Critical) → 3 (Internal)</li>
-          </ul>
-          <p class="text-xs text-slate-400">Source: <code>./public/data/services.csv</code></p>
-        </div>
+      <section class="bg-slate-900/40 border-b border-slate-800">
+        <details class="group">
+          <summary
+            class="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-800/40 transition-colors list-none">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Project Information</span>
+              <span class="text-xs text-slate-500 group-open:hidden">(Click to expand details)</span>
+            </div>
+            <svg class="w-5 h-5 text-slate-500 group-open:rotate-180 transition-transform" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="p-6 pt-0 grid gap-6 md:grid-cols-3">
+            <div class="md:col-span-2 space-y-3">
+              <h2 class="text-lg font-semibold text-emerald-400">How it works</h2>
+              <p class="text-sm text-slate-300 leading-relaxed">The graph renders client-side from a static CSV registry
+                (<code>public/data/services.csv</code>). Cytoscape.js + fCoSE handles the layout; PapaParse converts CSV
+                rows into nodes and edges.</p>
+              <p class="text-sm text-slate-300">Drop an updated CSV in <code>public/data/</code> and rebuild to publish
+                a
+                fresh “living diagram.” All processing happens in your browser.</p>
+            </div>
+            <div class="text-sm text-slate-200 bg-slate-800/50 rounded-lg border border-slate-700 p-4 space-y-2">
+              <p class="font-semibold text-emerald-400">Data contract</p>
+              <ul class="list-disc list-inside text-slate-300 space-y-1">
+                <li><span class="font-semibold text-slate-100">id</span>, <span
+                    class="font-semibold text-slate-100">label</span>, <span
+                    class="font-semibold text-slate-100">domain</span> required</li>
+                <li><span class="font-semibold text-slate-100">depends_on</span>: semicolon-separated</li>
+                <li><span class="font-semibold text-slate-100">tier</span>: 1 (Critical) → 3 (Internal)</li>
+              </ul>
+              <p class="text-xs text-slate-400 pt-2 border-t border-slate-700">Source:
+                <code>./public/data/services.csv</code></p>
+            </div>
+          </div>
+        </details>
       </section>
       <section class="flex-1 relative">
         <div id="cy" class="absolute inset-0"></div>
