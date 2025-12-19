@@ -62,6 +62,19 @@ const renderGraph = (elements, skipped) => {
   });
 };
 
+const shapeSelect = document.getElementById('shapeSelect');
+if (shapeSelect) {
+  shapeSelect.addEventListener('change', (e) => {
+    if (!cy) return;
+    const newShape = e.target.value;
+    updateStatus(`Updating node shapes to ${newShape}…`);
+
+    // Apply shape to all standard nodes (excluding those with specific overlays/classes if needed)
+    // We target nodes that are NOT databases
+    cy.nodes().not('.is-database').style('shape', newShape);
+  });
+}
+
 const layoutSelect = document.getElementById('layoutSelect');
 if (layoutSelect) {
   layoutSelect.addEventListener('change', (e) => {
