@@ -88,10 +88,10 @@ export const stylesheet = [
     selector: 'node:selected',
     style: {
       'border-color': '#22c55e',
-      'border-width': 3,
-      'shadow-blur': 12,
+      'border-width': 4,
+      'shadow-blur': 15,
       'shadow-color': '#22c55e',
-      'shadow-opacity': 0.4,
+      'shadow-opacity': 0.6,
       'shadow-offset-x': 0,
       'shadow-offset-y': 0,
     },
@@ -101,7 +101,14 @@ export const stylesheet = [
     style: {
       'line-color': '#22c55e',
       'target-arrow-color': '#22c55e',
-      'width': 3,
+      'width': 4,
+    },
+  },
+  {
+    selector: '.dimmed',
+    style: {
+      'opacity': 0.15,
+      'text-opacity': 0,
     },
   },
 ];

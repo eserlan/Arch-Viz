@@ -139,12 +139,19 @@ const renderGraph = (elements, skipped) => {
   });
 
   cy.on('tap', 'node', (evt) => {
-    showPanel(evt.target);
+    const node = evt.target;
+    showPanel(node);
+
+    // Highlighting Logic
+    cy.elements().addClass('dimmed');
+    node.closedNeighborhood().removeClass('dimmed');
   });
 
   cy.on('tap', (evt) => {
     if (evt.target === cy) {
       hidePanel();
+      // Restore all elements
+      cy.elements().removeClass('dimmed');
     }
   });
 };
