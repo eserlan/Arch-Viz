@@ -376,6 +376,30 @@ resetDataBtn?.addEventListener('click', () => {
   }
 });
 
+// Help Modal Logic
+const helpModal = document.getElementById('helpModal');
+const openHelpBtn = document.getElementById('openHelpBtn');
+const closeHelpBtn = document.getElementById('closeHelpBtn');
+
+if (helpModal && openHelpBtn && closeHelpBtn) {
+  openHelpBtn.addEventListener('click', () => {
+    helpModal.showModal();
+  });
+
+  closeHelpBtn.addEventListener('click', () => {
+    helpModal.close();
+  });
+
+  // Close on backdrop click
+  helpModal.addEventListener('click', (e) => {
+    const rect = helpModal.getBoundingClientRect();
+    if (e.clientX < rect.left || e.clientX > rect.right ||
+      e.clientY < rect.top || e.clientY > rect.bottom) {
+      helpModal.close();
+    }
+  });
+}
+
 // Bootstrap
 initAccordion();
 initUploader(renderGraph, updateStatus, () => cy, showToast);
