@@ -494,8 +494,7 @@ if (movePanelBtn && floatingPanel) {
     e.stopPropagation();
     panelMenu.classList.add('hidden');
 
-    // Remove transitions for smooth dragging
-    floatingPanel.classList.remove('transition-all', 'duration-300');
+    // Enter Move Mode
 
     // Enter Move Mode
     floatingPanel.style.cursor = 'move';
@@ -548,9 +547,6 @@ if (movePanelBtn && floatingPanel) {
 
       floatingPanel.style.cursor = '';
       floatingPanel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
-
-      // Restore transitions
-      floatingPanel.classList.add('transition-all', 'duration-300');
 
       showToast('Panel placed', 'success');
 
