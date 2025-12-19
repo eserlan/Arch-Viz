@@ -72,13 +72,7 @@
 
       <!-- Label Filter Moved to Floating Panel -->
 
-      <!-- Team Filter -->
-      <div class="flex flex-col gap-2">
-        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter Teams</label>
-        <div id="teamFilterContainer" class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
-          <!-- Populated by JS -->
-        </div>
-      </div>
+      <!-- Team Filter moved to floating panel -->
 
       <!-- Divider -->
       <div class="border-t border-slate-800 pt-4 space-y-3">
@@ -199,6 +193,43 @@
             </div>
           </div>
           <div id="labelFilterContainer"
+            class="flex flex-wrap justify-center gap-2 max-h-[120px] overflow-y-auto px-1 custom-scrollbar">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Floating Team Filter -->
+        <div id="floatingTeamPanel"
+          class="opacity-0 absolute top-6 right-6 bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl z-30 min-w-[280px] max-w-sm transition-colors transition-opacity duration-300 hover:bg-slate-900/95 hover:border-slate-600 group">
+          <div id="teamFilterDragHandle" class="flex justify-between items-center mb-3 select-none">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <label class="text-[11px] uppercase tracking-widest text-slate-300 font-bold">Teams</label>
+            </div>
+            <div class="relative">
+              <button id="teamPanelMenuBtn"
+                class="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <div id="teamPanelMenu"
+                class="hidden absolute right-0 top-full mt-1 w-32 bg-slate-800 border border-slate-700 rounded shadow-xl z-50 overflow-hidden">
+                <button id="moveTeamPanelBtn"
+                  class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                  Move
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="teamFilterContainer"
             class="flex flex-wrap justify-center gap-2 max-h-[120px] overflow-y-auto px-1 custom-scrollbar">
             <!-- Populated by JS -->
           </div>

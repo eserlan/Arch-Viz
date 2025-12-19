@@ -448,119 +448,149 @@ if (addServiceForm) {
   });
 }
 
-// Filter Panel Menu & Move Logic
-const panelMenuBtn = document.getElementById('panelMenuBtn');
-const panelMenu = document.getElementById('panelMenu');
-const movePanelBtn = document.getElementById('movePanelBtn');
-const floatingPanel = document.getElementById('floatingFilterPanel');
+// Floating Panel Helper
+function initFloatingPanel(config) {
+  const {
+    panelId,
+    menuBtnId,
+    menuId,
+    moveBtnId,
+    storageKey,
+    defaultClasses = []
+  } = config;
 
-// Restore panel position
-const savedPos = localStorage.getItem('panel-pos');
-if (savedPos && floatingPanel) {
-  try {
-    const { left, top } = JSON.parse(savedPos);
-    floatingPanel.style.left = left;
-    floatingPanel.style.top = top;
-    floatingPanel.classList.remove('-translate-x-1/2', 'left-1/2', 'top-6');
-    floatingPanel.style.transform = 'none';
-  } catch (e) {
-    console.error("Error loading panel position", e);
+  const panel = document.getElementById(panelId);
+  const menuBtn = document.getElementById(menuBtnId);
+  const menu = document.getElementById(menuId);
+  const moveBtn = document.getElementById(moveBtnId);
+
+  if (!panel) return;
+
+  // Restore panel position
+  const savedPos = localStorage.getItem(storageKey);
+  if (savedPos) {
+    try {
+      const { left, top } = JSON.parse(savedPos);
+      panel.style.left = left;
+      panel.style.top = top;
+      if (defaultClasses.length) {
+        panel.classList.remove(...defaultClasses);
+      }
+      panel.style.transform = 'none';
+    } catch (e) {
+      console.error(`Error loading panel position for ${panelId}`, e);
+    }
+  }
+
+  // Reveal panel after potential position update to avoid jump
+  requestAnimationFrame(() => {
+    panel.classList.remove('opacity-0');
+  });
+
+  // Menu interactions
+  if (menuBtn && menu) {
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
+    });
+
+    // Close menu on outside click
+    document.addEventListener('click', (e) => {
+      if (!menu.contains(e.target) && e.target !== menuBtn) {
+        menu.classList.add('hidden');
+      }
+    });
+  }
+
+  if (moveBtn) {
+    moveBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (menu) menu.classList.add('hidden');
+
+      // Enter Move Mode
+      panel.style.cursor = 'move';
+      panel.classList.add('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
+      showToast('Click anywhere to place the panel', 'info');
+
+      // Initial setup to absolute positioning if using responsive centering
+      if (panel.classList.contains('-translate-x-1/2')) {
+        const rect = panel.getBoundingClientRect();
+        panel.style.left = rect.left + 'px';
+        panel.style.top = rect.top + 'px';
+        panel.classList.remove('-translate-x-1/2', 'left-1/2');
+        panel.style.transform = 'none';
+      }
+
+      let rafId = null;
+      const moveHandler = (evt) => {
+        const cx = evt.clientX;
+        const cy = evt.clientY;
+
+        if (!rafId) {
+          rafId = requestAnimationFrame(() => {
+            const width = panel.offsetWidth;
+            const height = panel.offsetHeight;
+            let left = cx - (width / 2);
+            let top = cy - 20;
+
+            const maxW = window.innerWidth - width;
+            const maxH = window.innerHeight - height;
+
+            left = Math.max(0, Math.min(maxW, left));
+            top = Math.max(0, Math.min(maxH, top));
+
+            panel.style.left = `${left}px`;
+            panel.style.top = `${top}px`;
+            rafId = null;
+          });
+        }
+      };
+
+      document.addEventListener('mousemove', moveHandler);
+
+      // Click to drop
+      const clickHandler = (evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        document.removeEventListener('mousemove', moveHandler);
+        if (rafId) cancelAnimationFrame(rafId);
+
+        panel.style.cursor = '';
+        panel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
+        showToast('Panel placed', 'success');
+
+        localStorage.setItem(storageKey, JSON.stringify({
+          left: panel.style.left,
+          top: panel.style.top
+        }));
+      };
+
+      setTimeout(() => {
+        document.addEventListener('click', clickHandler, { capture: true, once: true });
+      }, 50);
+    });
   }
 }
 
-// Reveal panel after potential position update to avoid jump
-if (floatingPanel) {
-  requestAnimationFrame(() => {
-    floatingPanel.classList.remove('opacity-0');
-  });
-}
+// Initialize Label Panel
+initFloatingPanel({
+  panelId: 'floatingFilterPanel',
+  menuBtnId: 'panelMenuBtn',
+  menuId: 'panelMenu',
+  moveBtnId: 'movePanelBtn',
+  storageKey: 'panel-pos',
+  defaultClasses: ['-translate-x-1/2', 'left-1/2', 'top-6']
+});
 
-if (panelMenuBtn && panelMenu) {
-  panelMenuBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    panelMenu.classList.toggle('hidden');
-  });
-
-  // Close menu on outside click
-  document.addEventListener('click', (e) => {
-    if (!panelMenu.contains(e.target) && e.target !== panelMenuBtn) {
-      panelMenu.classList.add('hidden');
-    }
-  });
-}
-
-if (movePanelBtn && floatingPanel) {
-  movePanelBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    panelMenu.classList.add('hidden');
-
-    // Enter Move Mode
-
-    // Enter Move Mode
-    floatingPanel.style.cursor = 'move';
-    floatingPanel.classList.add('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
-    showToast('Click anywhere to place the panel', 'info');
-
-    // Initial setup to absolute positioning if centered
-    if (floatingPanel.classList.contains('-translate-x-1/2')) {
-      const rect = floatingPanel.getBoundingClientRect();
-      floatingPanel.style.left = rect.left + 'px';
-      floatingPanel.style.top = rect.top + 'px';
-      floatingPanel.classList.remove('-translate-x-1/2', 'left-1/2');
-      floatingPanel.style.transform = 'none';
-    }
-
-    let rafId = null;
-    const moveHandler = (evt) => {
-      const cx = evt.clientX;
-      const cy = evt.clientY;
-
-      if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-          const width = floatingPanel.offsetWidth;
-          const height = floatingPanel.offsetHeight;
-          let left = cx - (width / 2);
-          let top = cy - 20;
-
-          const maxW = window.innerWidth - width;
-          const maxH = window.innerHeight - height;
-
-          left = Math.max(0, Math.min(maxW, left));
-          top = Math.max(0, Math.min(maxH, top));
-
-          floatingPanel.style.left = `${left}px`;
-          floatingPanel.style.top = `${top}px`;
-          rafId = null;
-        });
-      }
-    };
-
-    // Attach move handler
-    document.addEventListener('mousemove', moveHandler);
-
-    // Click to drop
-    const clickHandler = (evt) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-      document.removeEventListener('mousemove', moveHandler);
-      if (rafId) cancelAnimationFrame(rafId);
-
-      floatingPanel.style.cursor = '';
-      floatingPanel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
-
-      showToast('Panel placed', 'success');
-
-      localStorage.setItem('panel-pos', JSON.stringify({
-        left: floatingPanel.style.left,
-        top: floatingPanel.style.top
-      }));
-    };
-
-    setTimeout(() => {
-      document.addEventListener('click', clickHandler, { capture: true, once: true });
-    }, 50);
-  });
-}
+// Initialize Team Panel
+initFloatingPanel({
+  panelId: 'floatingTeamPanel',
+  menuBtnId: 'teamPanelMenuBtn',
+  menuId: 'teamPanelMenu',
+  moveBtnId: 'moveTeamPanelBtn',
+  storageKey: 'team-panel-pos',
+  defaultClasses: ['right-6', 'top-6']
+});
 
 // Bootstrap
 initAccordion();
