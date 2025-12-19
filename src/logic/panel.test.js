@@ -28,23 +28,53 @@ describe('Panel Module', () => {
             name: 'Test Name',
             label: 'Test Name',
             labelsDisplay: 'Test Label',
-            tier: '1',
+            tier: 1,
             owner: 'Test Owner',
             repoUrl: 'http://test.com',
             ...data
         };
+        let nodeClasses = data.classes || ['tier-1'];
+
         // Create a mock collection that simulates Cytoscape's API
         const mockEdgeCollection = {
-            map: () => [],
+            map: (fn) => [].map(fn),
             targets: () => ({ map: () => [] })
         };
-        return {
-            data: (key) => key ? nodeData[key] : nodeData,
+
+        const mockNode = {
+            data: vi.fn((key, val) => {
+                if (val !== undefined) {
+                    if (typeof key === 'object') Object.assign(nodeData, key);
+                    else nodeData[key] = val;
+                    return mockNode;
+                }
+                if (typeof key === 'object') {
+                    Object.assign(nodeData, key);
+                    return mockNode;
+                }
+                return key ? nodeData[key] : nodeData;
+            }),
+            classes: vi.fn((val) => {
+                if (val !== undefined) {
+                    nodeClasses = Array.isArray(val) ? val : val.split(' ');
+                    return mockNode;
+                }
+                return nodeClasses;
+            }),
+            addClass: vi.fn((cls) => {
+                if (!nodeClasses.includes(cls)) nodeClasses.push(cls);
+                return mockNode;
+            }),
+            removeClass: vi.fn((cls) => {
+                nodeClasses = nodeClasses.filter(c => c !== cls);
+                return mockNode;
+            }),
             outgoers: () => mockEdgeCollection,
             id: () => nodeData.id,
-            classes: () => 'some-class',
-            cy: () => mockCy
+            cy: () => mockCy,
+            hasClass: (cls) => nodeClasses.includes(cls)
         };
+        return mockNode;
     };
 
     const mockCy = {
@@ -166,5 +196,54 @@ describe('Panel Module', () => {
 
         const content = document.getElementById('panelContent');
         expect(content.innerHTML).toContain('Original Name');
+    });
+
+    it('should display descriptive tier label in showPanel', () => {
+        const mockNode = createMockNode({ tier: 2 });
+        showPanel(mockNode);
+        const content = document.getElementById('panelContent');
+        expect(content.innerHTML).toContain('Tier 2 (Major)');
+    });
+
+    it('should render a tier dropdown with correct selection in edit mode', () => {
+        const mockNode = createMockNode({ tier: 2 });
+        initPanel(mockCy, vi.fn());
+        showPanel(mockNode);
+
+        document.getElementById('editBtn').click();
+
+        const tierSelect = document.querySelector('select[data-key="tier"]');
+        expect(tierSelect).toBeTruthy();
+        expect(tierSelect.value).toBe('2');
+        expect(tierSelect.options[1].selected).toBe(true); // Tier 2 (Major)
+    });
+
+    it('should correctly update node tier data and classes when saving', () => {
+        const mockNode = createMockNode({ tier: 1, classes: ['tier-1'] });
+        const mockUpdateStatus = vi.fn();
+
+        initPanel(mockCy, mockUpdateStatus);
+        showPanel(mockNode);
+
+        document.getElementById('editBtn').click();
+
+        // Find selecting element
+        const tierSelect = document.querySelector('select[data-key="tier"]');
+        expect(tierSelect).toBeTruthy();
+
+        // Change tier to 3
+        tierSelect.value = '3';
+        tierSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+        // Save
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.click();
+
+        // Assert data updated (parseInt should have been called)
+        expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({ tier: 3 }));
+
+        // Assert classes updated (old removed, new added) via handleSave logic
+        expect(mockNode.removeClass).toHaveBeenCalledWith('tier-1');
+        expect(mockNode.addClass).toHaveBeenCalledWith('tier-3');
     });
 });
