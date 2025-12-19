@@ -5,8 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Service Map Visualization Kit</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-BCiCbl5P.js"></script>
-  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-Ble7dZ0-.css">
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-wfjtxMi9.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-COE82Czm.css">
 </head>
 
 <body class="bg-slate-950 text-slate-100">
@@ -31,10 +31,9 @@
           </div>
           <div class="flex flex-col gap-1">
             <label for="labelFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
-              Labels</label>
-            <select id="labelFilter"
-              class="w-32 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
-              <option value="all">All Labels</option>
+              Labels <span class="text-slate-600 font-normal">(Ctrl+click)</span></label>
+            <select id="labelFilter" multiple size="4"
+              class="w-40 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500">
               <!-- Populated by JS -->
             </select>
           </div>
