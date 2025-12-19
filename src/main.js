@@ -76,28 +76,40 @@ if (layoutSelect) {
       name: layoutName,
       animate: true,
       animationDuration: 1000,
-      fit: true,
-      padding: 150, // More padding for safety
+      fit: false, // Don't fit during layout to avoid animation conflicts
+      padding: 160,
       randomize: false,
       nodeDimensionsIncludeLabels: true,
-      spacingFactor: layoutName === 'circle' ? 0.75 : 1, // Compress circle layout
+      spacingFactor: (layoutName === 'circle' || layoutName === 'concentric') ? 0.7 : 1,
     };
 
     const finalConfig = layoutName === 'fcose' ?
-      { ...layoutConfig, animate: true, animationDuration: 1000, fit: true, padding: 150 } :
+      { ...layoutConfig, animate: true, animationDuration: 1000, fit: false, padding: 160 } :
       animationOptions;
 
     const layout = cy.layout(finalConfig);
 
-    layout.one('layoutstop', () => {
+    let layoutFinished = false;
+    const onStop = () => {
+      if (layoutFinished) return;
+      layoutFinished = true;
       cy.animate({
-        fit: { padding: 150 },
-        duration: 500
+        fit: { padding: 160 },
+        duration: 800,
+        easing: 'ease-in-out-cubic'
       });
       updateStatus(`Layout: ${layoutName} applied`);
-    });
+    };
 
+    layout.one('layoutstop', onStop);
     layout.run();
+
+    // Fallback in case layoutstop doesn't fire for some reason
+    setTimeout(() => {
+      if (!layoutFinished) {
+        onStop();
+      }
+    }, 2500);
   });
 }
 
