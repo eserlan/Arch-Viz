@@ -78,8 +78,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
         cy.on('mouseover', 'node', (evt: EventObject) => {
             const node = evt.target as NodeSingular;
             const label = node.data('name') || node.data('label') || node.id();
-            const verified = node.hasClass('verified') ? ' ✓' : '';
-            tooltip.textContent = label + verified;
+            tooltip.textContent = label;
 
             const pos = node.renderedPosition();
             tooltip.style.left = `${pos.x}px`;

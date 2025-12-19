@@ -123,14 +123,8 @@ export const stylesheet: any[] = [
         selector: '.verified',
         style: {
             'border-width': 6,
-            'border-color': '#ef4444',
+            'border-color': '#334155',
             'border-style': 'solid',
-        } as any,
-    },
-    {
-        selector: '.verified[label]',
-        style: {
-            'label': (ele: any) => `✓ ${ele.data('label') || ele.data('name') || ele.id()}`,
         } as any,
     },
 ];
