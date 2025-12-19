@@ -16,10 +16,12 @@ const updateStatus = (message) => {
   }
 };
 
+let cy;
+
 const renderGraph = (elements, skipped) => {
   updateStatus('Rendering graph…');
 
-  const cy = cytoscape({
+  cy = cytoscape({
     container: cyContainer,
     elements,
     layout: layoutConfig,
@@ -35,7 +37,7 @@ const renderGraph = (elements, skipped) => {
     cy.fit(undefined, 80);
     updateStatus(
       `Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` +
-        (skipped ? ` (skipped ${skipped} invalid rows)` : ''),
+      (skipped ? ` (skipped ${skipped} invalid rows)` : ''),
     );
   });
 
@@ -59,6 +61,32 @@ const renderGraph = (elements, skipped) => {
     updateStatus(details);
   });
 };
+
+const layoutSelect = document.getElementById('layoutSelect');
+if (layoutSelect) {
+  layoutSelect.addEventListener('change', (e) => {
+    if (!cy) return;
+    const layoutName = e.target.value;
+    updateStatus(`Switching to ${layoutName} layout…`);
+
+    const animationOptions = {
+      name: layoutName,
+      animate: true,
+      animationDuration: 1000,
+      fit: true,
+      padding: 80,
+      randomize: false, // Keep it stable when switching
+      nodeDimensionsIncludeLabels: true,
+    };
+
+    // Special handling for fCoSE which has its own config
+    const finalConfig =
+      layoutName === 'fcose' ? { ...layoutConfig, animate: true, animationDuration: 1000 } : animationOptions;
+
+    const layout = cy.layout(finalConfig);
+    layout.run();
+  });
+}
 
 const loadData = async () => {
   try {
