@@ -11,6 +11,7 @@ import { initFilters, populateLabelFilter, populateTeamFilter } from './logic/fi
 import { initUploader } from './logic/uploader';
 import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor';
 import { calculateDynamicZoom } from './logic/zoom';
+import { getNodesAtDepth } from './logic/graphUtils';
 
 cytoscape.use(fcose);
 cytoscape.use(dagre);
@@ -195,18 +196,9 @@ const renderGraph = (elements, skipped) => {
   // Helper for highlighting connections
   const highlightConnections = (node) => {
     const depthVal = document.getElementById('depthSelect')?.value || '1';
-    let highlightCollection = node;
 
-    if (depthVal === 'all') {
-      const components = cy.elements().components();
-      const component = components.find(c => c.contains(node));
-      if (component) highlightCollection = component;
-    } else {
-      const depth = parseInt(depthVal, 10);
-      for (let i = 0; i < depth; i++) {
-        highlightCollection = highlightCollection.union(highlightCollection.neighborhood());
-      }
-    }
+    // Use extracted logic
+    const highlightCollection = getNodesAtDepth(node, depthVal, cy);
 
     cy.elements().addClass('dimmed');
     highlightCollection.removeClass('dimmed');
