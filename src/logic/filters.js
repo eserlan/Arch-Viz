@@ -20,17 +20,20 @@ export const applyFilters = (cy) => {
             const matchesDomain = selectedDomain === 'all' || domains.includes(selectedDomain);
 
             if (matchesSearch && matchesDomain) {
-                node.style('display', 'element');
+                node.removeClass('filtered');
             } else {
-                node.style('display', 'none');
+                node.addClass('filtered');
             }
         });
 
         cy.edges().forEach(edge => {
-            if (edge.source().style('display') === 'element' && edge.target().style('display') === 'element') {
-                edge.style('display', 'element');
+            const sourceFiltered = edge.source().hasClass('filtered');
+            const targetFiltered = edge.target().hasClass('filtered');
+
+            if (!sourceFiltered && !targetFiltered) {
+                edge.removeClass('filtered');
             } else {
-                edge.style('display', 'none');
+                edge.addClass('filtered');
             }
         });
     });

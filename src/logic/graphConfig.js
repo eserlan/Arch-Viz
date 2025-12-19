@@ -105,7 +105,7 @@ export const stylesheet = [
     },
   },
   {
-    selector: '.dimmed',
+    selector: '.dimmed, .filtered',
     style: {
       'opacity': 0.15,
       'text-opacity': 0,
