@@ -12,6 +12,7 @@ import { initUploader } from './logic/uploader';
 import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor';
 import { calculateDynamicZoom } from './logic/zoom';
 import { getNodesAtDepth } from './logic/graphUtils';
+import { addNode } from './logic/nodeOperations';
 
 cytoscape.use(fcose);
 cytoscape.use(dagre);
@@ -274,14 +275,18 @@ const editModeLabel = document.getElementById('editModeLabel');
 if (editModeBtn) {
   editModeBtn.addEventListener('click', () => {
     const active = toggleEditMode(updateStatus);
+    const addServiceBtn = document.getElementById('addServiceBtnSidebar');
+
     if (active) {
       editModeBtn.classList.remove('bg-slate-800', 'border-slate-700');
       editModeBtn.classList.add('bg-amber-600', 'border-amber-500', 'text-white');
       editModeLabel.textContent = 'Exit Edit Mode';
+      addServiceBtn?.classList.remove('hidden');
     } else {
       editModeBtn.classList.add('bg-slate-800', 'border-slate-700');
       editModeBtn.classList.remove('bg-amber-600', 'border-amber-500', 'text-white');
       editModeLabel.textContent = 'Enter Edit Mode';
+      addServiceBtn?.classList.add('hidden');
     }
   });
 }
@@ -396,6 +401,49 @@ if (helpModal && openHelpBtn && closeHelpBtn) {
     if (e.clientX < rect.left || e.clientX > rect.right ||
       e.clientY < rect.top || e.clientY > rect.bottom) {
       helpModal.close();
+    }
+  });
+}
+
+// Add Service Logic
+const addServiceModal = document.getElementById('addServiceModal');
+const addServiceBtnSidebar = document.getElementById('addServiceBtnSidebar');
+const cancelAddServiceBtn = document.getElementById('cancelAddServiceBtn');
+const addServiceForm = document.getElementById('addServiceForm');
+
+if (addServiceBtnSidebar) {
+  addServiceBtnSidebar.addEventListener('click', () => {
+    addServiceForm?.reset();
+    addServiceModal?.showModal();
+  });
+}
+
+if (cancelAddServiceBtn) {
+  cancelAddServiceBtn.addEventListener('click', () => {
+    addServiceModal?.close();
+  });
+}
+
+if (addServiceForm) {
+  addServiceForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(addServiceForm);
+    const data = {
+      id: formData.get('id'),
+      name: formData.get('name'),
+      owner: formData.get('owner'),
+      tier: formData.get('tier')
+    };
+
+    try {
+      if (!cy) throw new Error("Graph not initialized");
+      addNode(cy, data);
+      updateStatus(`Created service: ${data.name}`);
+      addServiceModal?.close();
+      showToast(`Service "${data.name}" created`, 'success');
+      updateDirtyUI(true); // Ensure dirty state is reflected
+    } catch (err) {
+      alert(err.message);
     }
   });
 }

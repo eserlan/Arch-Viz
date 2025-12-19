@@ -1,4 +1,5 @@
 import { saveGraphData } from './storage';
+import { deleteNode } from './nodeOperations';
 
 let currentSelectedNode = null;
 let cyRef = null;
@@ -13,6 +14,7 @@ const getElements = () => ({
   editActions: document.getElementById('editActions'),
   saveBtn: document.getElementById('saveBtn'),
   cancelBtn: document.getElementById('cancelBtn'),
+  deleteNodeBtn: document.getElementById('deleteNodeBtn'),
 });
 
 const updateSaveButtonState = () => {
@@ -290,5 +292,24 @@ export const initPanel = (cy, updateStatus) => {
     const newSaveBtn = saveBtn.cloneNode(true);
     saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
     newSaveBtn.addEventListener('click', handleSave);
+  }
+
+  const { deleteNodeBtn } = getElements();
+  if (deleteNodeBtn) {
+    const newDeleteBtn = deleteNodeBtn.cloneNode(true);
+    deleteNodeBtn.parentNode.replaceChild(newDeleteBtn, deleteNodeBtn);
+    newDeleteBtn.addEventListener('click', () => {
+      if (currentSelectedNode) {
+        const label = currentSelectedNode.data('name') || currentSelectedNode.id();
+        if (confirm(`Are you sure you want to delete "${label}"?\nThis action cannot be undone.`)) {
+          const id = currentSelectedNode.id();
+          if (deleteNode(cy, id)) {
+            updateStatus(`Deleted service: ${label}`);
+            hidePanel();
+            cy.elements().removeClass('dimmed');
+          }
+        }
+      }
+    });
   }
 };
