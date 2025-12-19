@@ -1,24 +1,40 @@
 const getElements = () => ({
     searchInput: document.getElementById('searchInput'),
     clearSearchBtn: document.getElementById('clearSearchBtn'),
-    labelFilter: document.getElementById('labelFilter'),
+    labelFilterContainer: document.getElementById('labelFilterContainer'),
     teamFilter: document.getElementById('teamFilter'),
 });
 
 /**
- * Get selected values from a multi-select element
+ * Get selected values from a filter element (select or container)
  */
-const getSelectedValues = (selectElement) => {
-    if (!selectElement) return [];
-    return Array.from(selectElement.selectedOptions).map(opt => opt.value);
+const getSelectedValues = (element) => {
+    if (!element) return [];
+    if (element.tagName === 'SELECT') {
+        return Array.from(element.selectedOptions).map(opt => opt.value);
+    }
+    // For label cloud container
+    if (element.id === 'labelFilterContainer') {
+        return Array.from(element.querySelectorAll('button[data-selected="true"]')).map(btn => btn.dataset.value);
+    }
+    return [];
+};
+
+const updateLabelButtonStyle = (btn, selected) => {
+    btn.dataset.selected = selected;
+    if (selected) {
+        btn.className = 'text-[10px] px-2.5 py-1 rounded-full border border-emerald-500 bg-emerald-500 text-white font-medium shadow-sm transition-all duration-200';
+    } else {
+        btn.className = 'text-[10px] px-2.5 py-1 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-300 transition-all duration-200';
+    }
 };
 
 export const applyFilters = (cy) => {
     if (!cy) return;
-    const { searchInput, labelFilter, teamFilter } = getElements();
+    const { searchInput, labelFilterContainer, teamFilter } = getElements();
 
     const searchTerm = searchInput?.value.toLowerCase() || '';
-    const selectedLabels = getSelectedValues(labelFilter);
+    const selectedLabels = getSelectedValues(labelFilterContainer);
     const selectedTeams = getSelectedValues(teamFilter);
 
     const filterByLabels = selectedLabels.length > 0;
@@ -58,8 +74,8 @@ export const applyFilters = (cy) => {
 };
 
 export const populateLabelFilter = (elements) => {
-    const { labelFilter } = getElements();
-    if (!labelFilter) return;
+    const { labelFilterContainer } = getElements();
+    if (!labelFilterContainer) return;
 
     const labels = new Set();
     elements.forEach(el => {
@@ -70,18 +86,26 @@ export const populateLabelFilter = (elements) => {
         }
     });
 
-    // Store currently selected values
-    const currentSelections = getSelectedValues(labelFilter);
+    // Store currently selected values to allow persisting state during refreshes
+    const currentSelections = new Set(getSelectedValues(labelFilterContainer));
 
-    labelFilter.innerHTML = '';
+    labelFilterContainer.innerHTML = '';
+
+    if (labels.size === 0) {
+        labelFilterContainer.innerHTML = '<span class="text-[10px] text-slate-500 italic px-1">No labels found</span>';
+        return;
+    }
+
     Array.from(labels).sort().forEach(label => {
-        const option = document.createElement('option');
-        option.value = label;
-        option.textContent = label;
-        if (currentSelections.includes(label)) {
-            option.selected = true;
-        }
-        labelFilter.appendChild(option);
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.dataset.value = label;
+
+        // Restore previous selection if applicable
+        const isSelected = currentSelections.has(label);
+        updateLabelButtonStyle(btn, isSelected);
+
+        labelFilterContainer.appendChild(btn);
     });
 };
 
@@ -98,7 +122,6 @@ export const populateTeamFilter = (elements) => {
         }
     });
 
-    // Store currently selected values
     const currentSelections = getSelectedValues(teamFilter);
 
     teamFilter.innerHTML = '';
@@ -114,7 +137,7 @@ export const populateTeamFilter = (elements) => {
 };
 
 export const initFilters = (cy) => {
-    const { searchInput, labelFilter, teamFilter, clearSearchBtn } = getElements();
+    const { searchInput, labelFilterContainer, teamFilter, clearSearchBtn } = getElements();
 
     const handleSearchInput = () => {
         const val = searchInput.value;
@@ -136,6 +159,15 @@ export const initFilters = (cy) => {
         }
     });
 
-    labelFilter?.addEventListener('change', () => applyFilters(cy));
+    // Delegate click event for dynamic label buttons
+    labelFilterContainer?.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+
+        const selected = btn.dataset.selected === 'true';
+        updateLabelButtonStyle(btn, !selected);
+        applyFilters(cy);
+    });
+
     teamFilter?.addEventListener('change', () => applyFilters(cy));
 };

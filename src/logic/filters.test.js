@@ -4,8 +4,7 @@ import { populateLabelFilter, populateTeamFilter, applyFilters } from './filters
 describe('Filters Module', () => {
     beforeEach(() => {
         document.body.innerHTML = `
-      <select id="labelFilter" multiple>
-      </select>
+      <div id="labelFilterContainer"></div>
       <select id="teamFilter" multiple>
       </select>
       <input id="searchInput" type="text">
@@ -21,10 +20,10 @@ describe('Filters Module', () => {
 
         populateLabelFilter(elements);
 
-        const select = document.getElementById('labelFilter');
-        const options = Array.from(select.options).map(opt => opt.value);
+        const container = document.getElementById('labelFilterContainer');
+        const buttons = Array.from(container.querySelectorAll('button')).map(btn => btn.dataset.value);
 
-        expect(options).toEqual(['Analytics', 'Auth', 'Database', 'Security']);
+        expect(buttons).toEqual(['Analytics', 'Auth', 'Database', 'Security']);
     });
 
     it('should handle elements without labels', () => {
@@ -35,11 +34,11 @@ describe('Filters Module', () => {
 
         populateLabelFilter(elements);
 
-        const select = document.getElementById('labelFilter');
-        expect(select.options).toHaveLength(1); // Only 'Existing'
+        const container = document.getElementById('labelFilterContainer');
+        expect(container.querySelectorAll('button')).toHaveLength(1); // Only 'Existing'
     });
 
-    it('should allow multi-select filtering', () => {
+    it('should allow multi-select filtering persistence', () => {
         const elements = [
             { data: { labels: ['Security', 'Identity'] } },
             { data: { labels: ['Database'] } },
@@ -48,14 +47,26 @@ describe('Filters Module', () => {
 
         populateLabelFilter(elements);
 
-        const select = document.getElementById('labelFilter');
-        // Select both Security and Identity
-        Array.from(select.options).forEach(opt => {
-            opt.selected = (opt.value === 'Security' || opt.value === 'Identity');
+        const container = document.getElementById('labelFilterContainer');
+        const buttons = container.querySelectorAll('button');
+
+        // Simulate selection
+        buttons.forEach(btn => {
+            if (btn.dataset.value === 'Security' || btn.dataset.value === 'Identity') {
+                btn.dataset.selected = 'true';
+            }
         });
 
-        const selectedOptions = Array.from(select.selectedOptions).map(opt => opt.value);
-        expect(selectedOptions).toEqual(['Identity', 'Security']);
+        // Repopulate (simulating a refresh/update) should maintain selection
+        populateLabelFilter(elements);
+
+        const newButtons = document.getElementById('labelFilterContainer').querySelectorAll('button');
+        const selectedValues = Array.from(newButtons)
+            .filter(btn => btn.dataset.selected === 'true')
+            .map(btn => btn.dataset.value)
+            .sort();
+
+        expect(selectedValues).toEqual(['Identity', 'Security']);
     });
 
     it('should populate team filter with unique sorted values', () => {
