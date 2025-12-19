@@ -10,6 +10,7 @@ export interface ServiceData {
     labels?: string[];
     repoUrl?: string;
     depends_on?: string[];
+    verified?: boolean;
 }
 
 export interface GraphNode {

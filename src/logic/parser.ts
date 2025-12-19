@@ -91,6 +91,7 @@ export const parseCSV = (csvString: string): ParseResult => {
         const tier = row.tier?.toString().trim() || '3';
         const owner = row.owner?.trim();
         const repoUrl = row.repo_url?.trim();
+        const verified = row.verified?.trim().toLowerCase() === 'true' || row.verified?.trim() === '1';
 
         // Parse semicolon-separated labels
         const labels = labelsRaw ? labelsRaw.split(';').map((d) => d.trim()).filter(Boolean) : [];
@@ -98,6 +99,7 @@ export const parseCSV = (csvString: string): ParseResult => {
         const tierClass = slugify(`tier-${tier}`);
         const isDatabase = /\b(db|database)\b/i.test(id) || /\b(db|database)\b/i.test(name);
         const databaseClass = isDatabase ? 'is-database' : '';
+        const verifiedClass = verified ? 'verified' : '';
 
         elements.push({
             group: 'nodes',
@@ -110,8 +112,9 @@ export const parseCSV = (csvString: string): ParseResult => {
                 tier,
                 owner,
                 repoUrl,
+                verified,
             },
-            classes: `${tierClass} ${labelClasses} ${databaseClass}`.trim(),
+            classes: `${tierClass} ${labelClasses} ${databaseClass} ${verifiedClass}`.trim(),
         });
 
         if (row.depends_on) {

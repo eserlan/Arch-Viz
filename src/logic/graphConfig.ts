@@ -1,4 +1,4 @@
-import { Stylesheet, LayoutOptions } from 'cytoscape';
+// Cytoscape graph configuration
 
 export const layoutConfig: any = {
     name: 'fcose',
@@ -15,7 +15,7 @@ export const layoutConfig: any = {
     padding: 100,
 };
 
-export const stylesheet: Stylesheet[] = [
+export const stylesheet: any[] = [
     {
         selector: 'core',
         style: {
@@ -118,5 +118,13 @@ export const stylesheet: Stylesheet[] = [
             'opacity': 0.15,
             'text-opacity': 0,
         },
+    },
+    {
+        selector: '.verified',
+        style: {
+            'border-width': 4,
+            'border-color': '#22c55e',
+            'border-style': 'double',
+        } as any,
     },
 ];

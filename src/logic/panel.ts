@@ -81,13 +81,22 @@ export const showPanel = (node: NodeSingular): void => {
         labels: data.labelsDisplay || '',
         tier: data.tier?.toString() || '',
         owner: data.owner || '',
-        repoUrl: data.repoUrl || ''
+        repoUrl: data.repoUrl || '',
+        verified: data.verified ? 'true' : 'false'
     };
+
+    const verifiedBadge = data.verified
+        ? `<span class="inline-flex items-center gap-1 text-emerald-400"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Verified</span>`
+        : `<span class="text-slate-500 italic">Not verified</span>`;
 
     panelContent.innerHTML = `
     <div class="info-item">
       <label>Service ID</label>
       <div class="info-value text-slate-500 font-mono">${data.id}</div>
+    </div>
+    <div class="info-item">
+      <label>Verified</label>
+      <div class="info-value" data-key="verified">${verifiedBadge}</div>
     </div>
     <div class="info-item">
       <label>Name</label>
@@ -150,6 +159,15 @@ export const toggleEdit = (editing: boolean): void => {
                     `<option value="${val}" ${parseInt(val) === currentTier ? 'selected' : ''}>${label}</option>`
                 ).join('');
                 htmlEl.innerHTML = `<select data-key="tier" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-emerald-500">${options}</select>`;
+            } else if (key === 'verified') {
+                const isVerified = originalData.verified === 'true';
+                htmlEl.innerHTML = `
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" data-key="verified" ${isVerified ? 'checked' : ''} class="sr-only peer">
+                        <div class="relative w-9 h-5 bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                        <span class="ms-2 text-xs text-slate-400 peer-checked:text-emerald-400">Mark as verified</span>
+                    </label>
+                `;
             } else {
                 const currentVal = originalData[key] || htmlEl.textContent;
                 htmlEl.innerHTML = `<input type="text" data-key="${key}" value="${currentVal}" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm">`;
@@ -274,9 +292,22 @@ const handleSave = (): void => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
         if (key) {
-            newData[key] = el.value;
+            if (el.type === 'checkbox') {
+                newData[key] = (el as HTMLInputElement).checked;
+            } else {
+                newData[key] = el.value;
+            }
         }
     });
+
+    // Handle verified toggle - update class
+    if (typeof newData.verified === 'boolean') {
+        if (newData.verified) {
+            currentSelectedNode.addClass('verified');
+        } else {
+            currentSelectedNode.removeClass('verified');
+        }
+    }
 
     if (newData.tier) {
         newData.tier = parseInt(newData.tier, 10);

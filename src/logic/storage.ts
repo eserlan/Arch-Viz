@@ -38,7 +38,7 @@ export const exportToCSV = (cy: CyInstance): string => {
     const edges = cy.edges();
 
     // Build header
-    const headers = ['id', 'name', 'labels', 'tier', 'depends_on', 'owner', 'repo_url'];
+    const headers = ['id', 'name', 'labels', 'tier', 'depends_on', 'owner', 'repo_url', 'verified'];
 
     // Build rows from nodes
     const rows = nodes.map((node: NodeSingular) => {
@@ -54,7 +54,8 @@ export const exportToCSV = (cy: CyInstance): string => {
             data.tier || '',
             dependsOn,
             data.owner || '',
-            data.repoUrl || ''
+            data.repoUrl || '',
+            data.verified ? 'true' : 'false'
         ].map(val => {
             // Escape commas and quotes in values
             const valStr = val.toString();
