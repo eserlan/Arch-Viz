@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
   <title>Arch Viz - Mapping the Chaos</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-5Y8P12PF.js"></script>
-  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-C91UtVr_.css">
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-Clh8_2w6.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-Dr4hewbm.css">
 </head>
 
 <body class="bg-slate-950 text-slate-100">
@@ -151,36 +151,20 @@
 
       <!-- Info Toggle at bottom -->
       <div class="border-t border-slate-800 pt-4 mt-auto">
-        <button id="infoToggle"
-          class="group w-full flex items-center justify-between cursor-pointer hover:bg-slate-800/40 transition-colors rounded px-2 py-2">
-          <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Help</span>
-          <svg id="infoChevron" class="w-4 h-4 text-slate-500 transition-transform" fill="none" stroke="currentColor"
+        <button id="openHelpBtn"
+          class="group w-full flex items-center justify-between cursor-pointer hover:bg-slate-800/40 transition-colors rounded px-2 py-2 text-slate-400 hover:text-emerald-400">
+          <span class="text-xs font-bold uppercase tracking-widest">Guide & Docs</span>
+          <svg class="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor"
             viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </button>
-        <div id="infoContent" class="accordion-wrapper">
-          <div class="accordion-body">
-            <div class="pt-3 text-sm text-slate-200 space-y-3">
-              <p class="text-xs text-slate-400">Drag and drop your CSV on the graph to render.</p>
-              <div class="text-xs bg-slate-800/50 rounded border border-slate-700 p-3 space-y-2">
-                <p class="font-semibold text-emerald-400">Data contract</p>
-                <ul class="list-disc list-inside text-slate-300 space-y-1 text-[11px]">
-                  <li><span class="font-semibold text-slate-100">id</span>, <span
-                      class="font-semibold text-slate-100">name</span> required</li>
-                  <li><span class="font-semibold text-slate-100">labels</span>: semicolon-separated</li>
-                  <li><span class="font-semibold text-slate-100">depends_on</span>: semicolon-separated</li>
-                  <li><span class="font-semibold text-slate-100">tier</span>: 1-3</li>
-                </ul>
-                <code class="text-[9px] leading-tight block whitespace-pre bg-slate-900 p-2 rounded overflow-x-auto">id,name,labels,tier,depends_on
-auth-srv,Auth,Identity;Security,1,user-db</code>
-              </div>
-              <button id="resetDataBtn"
-                class="w-full bg-red-500/20 hover:bg-red-500/40 text-red-300 text-[10px] px-2 py-1.5 rounded transition-colors border border-red-500/30">Reset
-                to Default</button>
-            </div>
-          </div>
-        </div>
+
+        <button id="resetDataBtn"
+          class="mt-3 w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-[10px] px-2 py-2 rounded transition-colors border border-red-500/20 uppercase tracking-wider font-bold">
+          Reset Data
+        </button>
       </div>
     </aside>
 
@@ -237,6 +221,91 @@ auth-srv,Auth,Identity;Security,1,user-db</code>
   <div id="toastContainer"
     class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 items-center pointer-events-none">
   </div>
+
+  <!-- Help Modal -->
+  <dialog id="helpModal"
+    class="bg-slate-900 text-slate-100 p-6 rounded-xl border border-slate-700 shadow-2xl backdrop:bg-slate-950/80 w-full max-w-2xl">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold text-emerald-400">Arch Viz Guide</h2>
+      <button id="closeHelpBtn" class="text-slate-400 hover:text-white focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-6 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">
+      <div>
+        <h3 class="text-lg font-semibold mb-2 text-white">How it Works</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">Drag and drop your <code>services.csv</code> file onto the
+          canvas to visualize your architecture. The graph automatically updates and layout readjusts based on the new
+          data.</p>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold mb-2 text-white">CSV Format</h3>
+        <p class="text-sm text-slate-300 mb-2">Your CSV must have the following headers:</p>
+        <div class="bg-slate-800 rounded p-3 overflow-x-auto border border-slate-700">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="text-slate-400 border-b border-slate-600">
+                <th class="py-2 px-2">Column</th>
+                <th class="py-2 px-2">Req</th>
+                <th class="py-2 px-2">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300 font-mono">
+              <tr class="border-b border-slate-700/50">
+                <td class="py-2 px-2 text-emerald-300">id</td>
+                <td class="py-2 px-2 text-emerald-500">Yes</td>
+                <td class="py-2 px-2 font-sans text-slate-400">Unique identifier (no spaces).</td>
+              </tr>
+              <tr class="border-b border-slate-700/50">
+                <td class="py-2 px-2 text-emerald-300">name</td>
+                <td class="py-2 px-2 text-emerald-500">Yes</td>
+                <td class="py-2 px-2 font-sans text-slate-400">Display name of the service.</td>
+              </tr>
+              <tr class="border-b border-slate-700/50">
+                <td class="py-2 px-2 text-emerald-300">labels</td>
+                <td class="py-2 px-2 text-slate-500">No</td>
+                <td class="py-2 px-2 font-sans text-slate-400">Values separated by <code>;</code></td>
+              </tr>
+              <tr class="border-b border-slate-700/50">
+                <td class="py-2 px-2 text-emerald-300">tier</td>
+                <td class="py-2 px-2 text-slate-500">No</td>
+                <td class="py-2 px-2 font-sans text-slate-400">Number 1-3 for visual hierarchy.</td>
+              </tr>
+              <tr class="border-b border-slate-700/50">
+                <td class="py-2 px-2 text-emerald-300">owner</td>
+                <td class="py-2 px-2 text-slate-500">No</td>
+                <td class="py-2 px-2 font-sans text-slate-400">Team or person responsible.</td>
+              </tr>
+              <tr class="border-b border-slate-700/50">
+                <td class="py-2 px-2 text-emerald-300">repoUrl</td>
+                <td class="py-2 px-2 text-slate-500">No</td>
+                <td class="py-2 px-2 font-sans text-slate-400">Link to source code.</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-2 text-emerald-300">depends_on</td>
+                <td class="py-2 px-2 text-slate-500">No</td>
+                <td class="py-2 px-2 font-sans text-slate-400">Semicolon-sep list of target <code>id</code>s.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold mb-2 text-white">Interactive Features</h3>
+        <ul class="list-disc list-inside text-sm text-slate-300 space-y-1 ml-1">
+          <li><strong class="text-emerald-400">Click</strong> a node to see details and highlight neighbors.</li>
+          <li><strong class="text-emerald-400">Ctrl + Click</strong> filters to select multiple items.</li>
+          <li><strong class="text-emerald-400">Trace Depth</strong>: Expand connection highlighting distance.</li>
+          <li><strong class="text-emerald-400">Export</strong>: Save your graph as an image.</li>
+        </ul>
+      </div>
+    </div>
+  </dialog>
 
 </body>
 
