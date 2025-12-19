@@ -1,0 +1,4 @@
+{
+    "workbench.externalBrowser": " /usr/bin/brave-browser",
+    "simpleBrowser.focusLockIndicator.enabled": true
+}

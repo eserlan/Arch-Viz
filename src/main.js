@@ -31,9 +31,11 @@ const renderGraph = (elements, skipped) => {
     style: stylesheet,
     wheelSensitivity: 0.2,
     selectionType: 'single',
-    minZoom: 0.2,
+    minZoom: 0.1, // Allow more zoom out for large graphs
     maxZoom: 2.5,
   });
+
+  window.cy = cy; // Export for debugging
 
   cy.ready(() => {
     cy.fit(undefined, 100);
@@ -75,23 +77,24 @@ if (layoutSelect) {
       animate: true,
       animationDuration: 1000,
       fit: true,
-      padding: 100, // Increased padding for safer fitting
+      padding: 150, // More padding for safety
       randomize: false,
       nodeDimensionsIncludeLabels: true,
+      spacingFactor: layoutName === 'circle' ? 0.75 : 1, // Compress circle layout
     };
 
     const finalConfig = layoutName === 'fcose' ?
-      { ...layoutConfig, animate: true, animationDuration: 1000, fit: true, padding: 100 } :
+      { ...layoutConfig, animate: true, animationDuration: 1000, fit: true, padding: 150 } :
       animationOptions;
 
     const layout = cy.layout(finalConfig);
 
-    // Ensure we fit again once the layout has finished moving nodes
     layout.one('layoutstop', () => {
       cy.animate({
-        fit: { padding: 100 },
+        fit: { padding: 150 },
         duration: 500
       });
+      updateStatus(`Layout: ${layoutName} applied`);
     });
 
     layout.run();
