@@ -1,14 +1,20 @@
 import { saveGraphData } from './storage';
 
 let currentSelectedNode = null;
-const servicePanel = document.getElementById('servicePanel');
-const panelContent = document.getElementById('panelContent');
-const editBtn = document.getElementById('editBtn');
-const editActions = document.getElementById('editActions');
-const saveBtn = document.getElementById('saveBtn');
-const cancelBtn = document.getElementById('cancelBtn');
+
+const getElements = () => ({
+    servicePanel: document.getElementById('servicePanel'),
+    panelContent: document.getElementById('panelContent'),
+    editBtn: document.getElementById('editBtn'),
+    editActions: document.getElementById('editActions'),
+    saveBtn: document.getElementById('saveBtn'),
+    cancelBtn: document.getElementById('cancelBtn'),
+});
 
 export const showPanel = (node) => {
+    const { servicePanel, panelContent, editBtn, editActions } = getElements();
+    if (!panelContent || !servicePanel) return;
+
     currentSelectedNode = node;
     const data = node.data();
 
@@ -40,16 +46,20 @@ export const showPanel = (node) => {
   `;
 
     servicePanel.classList.add('active');
-    editBtn.classList.remove('hidden');
-    editActions.classList.add('hidden');
+    editBtn?.classList.remove('hidden');
+    editActions?.classList.add('hidden');
 };
 
 export const hidePanel = () => {
+    const { servicePanel } = getElements();
     if (servicePanel) servicePanel.classList.remove('active');
     currentSelectedNode = null;
 };
 
 const toggleEdit = (editing) => {
+    const { panelContent, editBtn, editActions } = getElements();
+    if (!panelContent) return;
+
     const values = panelContent.querySelectorAll('.info-value[data-key]');
     values.forEach(el => {
         if (editing) {
@@ -64,20 +74,22 @@ const toggleEdit = (editing) => {
     });
 
     if (editing) {
-        editBtn.classList.add('hidden');
-        editActions.classList.remove('hidden');
+        editBtn?.classList.add('hidden');
+        editActions?.classList.remove('hidden');
     } else {
-        editBtn.classList.remove('hidden');
-        editActions.classList.add('hidden');
+        editBtn?.classList.remove('hidden');
+        editActions?.classList.add('hidden');
     }
 };
 
 export const initPanel = (cy, updateStatus) => {
+    const { editBtn, cancelBtn, saveBtn, panelContent } = getElements();
+
     editBtn?.addEventListener('click', () => toggleEdit(true));
     cancelBtn?.addEventListener('click', () => toggleEdit(false));
 
     saveBtn?.addEventListener('click', () => {
-        if (!currentSelectedNode) return;
+        if (!currentSelectedNode || !panelContent) return;
 
         const inputs = panelContent.querySelectorAll('input');
         const newData = {};

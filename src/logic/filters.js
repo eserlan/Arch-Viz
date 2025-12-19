@@ -1,8 +1,12 @@
-const searchInput = document.getElementById('searchInput');
-const domainFilter = document.getElementById('domainFilter');
+const getElements = () => ({
+    searchInput: document.getElementById('searchInput'),
+    domainFilter: document.getElementById('domainFilter'),
+});
 
 export const applyFilters = (cy) => {
     if (!cy) return;
+    const { searchInput, domainFilter } = getElements();
+
     const searchTerm = searchInput?.value.toLowerCase() || '';
     const selectedDomain = domainFilter?.value || 'all';
 
@@ -33,6 +37,9 @@ export const applyFilters = (cy) => {
 };
 
 export const populateDomainFilter = (elements) => {
+    const { domainFilter } = getElements();
+    if (!domainFilter) return;
+
     const domains = new Set();
     elements.forEach(el => {
         const data = el.data || el;
@@ -42,20 +49,20 @@ export const populateDomainFilter = (elements) => {
         }
     });
 
-    if (domainFilter) {
-        const currentDomain = domainFilter.value;
-        domainFilter.innerHTML = '<option value="all">All Domains</option>';
-        Array.from(domains).sort().forEach(domain => {
-            const option = document.createElement('option');
-            option.value = domain;
-            option.textContent = domain;
-            domainFilter.appendChild(option);
-        });
-        domainFilter.value = currentDomain || 'all';
-    }
+    const currentDomain = domainFilter.value;
+    domainFilter.innerHTML = '<option value="all">All Domains</option>';
+    Array.from(domains).sort().forEach(domain => {
+        const option = document.createElement('option');
+        option.value = domain;
+        option.textContent = domain;
+        domainFilter.appendChild(option);
+    });
+    domainFilter.value = currentDomain || 'all';
 };
 
 export const initFilters = (cy) => {
+    const { searchInput, domainFilter } = getElements();
+
     searchInput?.addEventListener('input', () => applyFilters(cy));
     domainFilter?.addEventListener('change', () => applyFilters(cy));
 };
