@@ -36,6 +36,9 @@ export const stylesheet = [
       'text-halign': 'center',
       'padding': '8px',
       'shape': 'ellipse',
+      'transition-property': 'background-color, border-color, opacity',
+      'transition-duration': '0.3s',
+      'transition-timing-function': 'ease-in-out',
     },
   },
   {
@@ -87,6 +90,9 @@ export const stylesheet = [
       'target-arrow-shape': 'triangle',
       'curve-style': 'bezier',
       'opacity': 0.85,
+      'transition-property': 'line-color, target-arrow-color, opacity, width',
+      'transition-duration': '0.3s',
+      'transition-timing-function': 'ease-in-out',
     },
   },
   {
