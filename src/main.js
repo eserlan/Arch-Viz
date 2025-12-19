@@ -13,11 +13,40 @@ import { initEdgeEditor, toggleEditMode, isInEditMode } from './logic/edgeEditor
 cytoscape.use(fcose);
 
 const cyContainer = document.getElementById('cy');
-const statusEl = document.getElementById('status');
+const toastContainer = document.getElementById('toastContainer');
 const csvUrl = `${import.meta.env.BASE_URL}data/services.csv`;
 
+const showToast = (message, type = 'info') => {
+  if (!toastContainer) return;
+
+  const colors = {
+    info: 'bg-slate-800 border-slate-600 text-slate-200',
+    success: 'bg-emerald-900/90 border-emerald-500 text-emerald-200',
+    warning: 'bg-amber-900/90 border-amber-500 text-amber-200',
+    error: 'bg-red-900/90 border-red-500 text-red-200'
+  };
+
+  const toast = document.createElement('div');
+  toast.className = `${colors[type] || colors.info} px-4 py-2 rounded-lg border backdrop-blur-sm shadow-lg text-sm font-medium transform transition-all duration-300 opacity-0 translate-y-2`;
+  toast.textContent = message;
+  toastContainer.appendChild(toast);
+
+  // Animate in
+  requestAnimationFrame(() => {
+    toast.classList.remove('opacity-0', 'translate-y-2');
+    toast.classList.add('opacity-100', 'translate-y-0');
+  });
+
+  // Auto dismiss after 3 seconds
+  setTimeout(() => {
+    toast.classList.remove('opacity-100', 'translate-y-0');
+    toast.classList.add('opacity-0', '-translate-y-2');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+};
+
 const updateStatus = (message) => {
-  if (statusEl) statusEl.textContent = message;
+  showToast(message, 'info');
 };
 
 let cy;
