@@ -3,6 +3,7 @@ import cytoscape from 'cytoscape';
 import fcose from 'cytoscape-fcose';
 import { parseCSV } from './logic/parser';
 import { layoutConfig, stylesheet } from './logic/graphConfig';
+import { initAccordion } from './logic/accordion';
 
 cytoscape.use(fcose);
 
@@ -111,20 +112,6 @@ const loadData = async () => {
   }
 };
 
-// Accordion Toggle Logic
-const infoToggle = document.getElementById('infoToggle');
-const infoContent = document.getElementById('infoContent');
-const infoChevron = document.getElementById('infoChevron');
-const infoExpandLabel = document.getElementById('infoExpandLabel');
-
-if (infoToggle && infoContent) {
-  infoToggle.addEventListener('click', () => {
-    const isOpen = infoContent.classList.toggle('is-open');
-    if (infoChevron) infoChevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-    if (infoExpandLabel) infoExpandLabel.textContent = isOpen ? '(Click to collapse details)' : '(Click to expand details)';
-  });
-}
-
 // Drag & Drop CSV Support
 const dropZone = document.getElementById('dropZone');
 const mainContainer = document.querySelector('main'); // Scope to main for better catch area
@@ -173,4 +160,5 @@ if (mainContainer && dropZone) {
   }, false);
 }
 
+initAccordion();
 loadData();
