@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Service Map Visualization Kit</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-l3nzwoC1.js"></script>
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-BCiCbl5P.js"></script>
   <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-Ble7dZ0-.css">
 </head>
 
@@ -30,11 +30,11 @@
             </div>
           </div>
           <div class="flex flex-col gap-1">
-            <label for="domainFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
-              Domain</label>
-            <select id="domainFilter"
+            <label for="labelFilter" class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter
+              Labels</label>
+            <select id="labelFilter"
               class="w-32 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
-              <option value="all">All Domains</option>
+              <option value="all">All Labels</option>
               <!-- Populated by JS -->
             </select>
           </div>
@@ -107,15 +107,16 @@
                 <p class="font-semibold text-emerald-400">Data contract</p>
                 <ul class="list-disc list-inside text-slate-300 space-y-1">
                   <li><span class="font-semibold text-slate-100">id</span>, <span
-                      class="font-semibold text-slate-100">label</span>, <span
-                      class="font-semibold text-slate-100">domain</span> required</li>
+                      class="font-semibold text-slate-100">name</span> required</li>
+                  <li><span class="font-semibold text-slate-100">labels</span>: semicolon-separated tags for filtering
+                  </li>
                   <li><span class="font-semibold text-slate-100">depends_on</span>: semicolon-separated</li>
                   <li><span class="font-semibold text-slate-100">tier</span>: 1 (Critical) → 3 (Internal)</li>
                 </ul>
                 <p class="text-xs text-slate-400 pt-2 border-t border-slate-700 flex items-center justify-between">
                   <span class="flex flex-col gap-1"><span class="font-semibold">Example CSV:</span><code
-                      class="text-[10px] leading-tight block whitespace-pre bg-slate-900 p-1.5 rounded">id,label,domain,tier,depends_on,owner,repo_url
-auth-srv,Auth Service,Identity,1,user-db,Identity Team,https://...</code></span>
+                      class="text-[10px] leading-tight block whitespace-pre bg-slate-900 p-1.5 rounded">id,name,labels,tier,depends_on,owner,repo_url
+auth-srv,Auth Service,Identity;Security,1,user-db,Identity Team,https://...</code></span>
                   <button id="resetDataBtn"
                     class="bg-red-500/20 hover:bg-red-500/40 text-red-300 text-[10px] px-2 py-0.5 rounded transition-colors border border-red-500/30">Reset
                     to Default</button>
