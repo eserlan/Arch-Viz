@@ -18,6 +18,7 @@ import { initLayoutManager } from './logic/layoutManager';
 import { initGraphEvents } from './logic/graphEvents';
 import { initServiceForm } from './logic/serviceForm';
 import { initGrouping } from './logic/grouping';
+import { initHistory } from './logic/history';
 import { CyInstance } from './types';
 
 cytoscape.use(fcose);
@@ -86,6 +87,7 @@ const renderGraph = (elements: ElementsDefinition | ElementDefinition[], skipped
         cy.fit(undefined, 100);
         updateStatus(`Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` + (skipped ? ` (skipped ${skipped} invalid rows)` : ''));
         updateDirtyUI(getDirtyState());
+        initHistory(cy, cy.elements().jsons(), { onStatus: updateStatus });
     });
 
     // Initialize modular controllers
