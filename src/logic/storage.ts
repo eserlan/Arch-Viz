@@ -1,12 +1,19 @@
 import { CyInstance } from '../types';
 import { ElementDefinition, NodeSingular, EdgeSingular } from 'cytoscape';
+import { recordSnapshot } from './history';
 
 const STORAGE_KEY = 'arch-viz-elements';
 const DIRTY_KEY = 'arch-viz-dirty';
 
 let isDirty = false;
 
-export const saveGraphData = (elements: ElementDefinition[]): void => {
+export const saveGraphData = (
+    elements: ElementDefinition[],
+    options?: { skipHistory?: boolean }
+): void => {
+    if (!options?.skipHistory) {
+        recordSnapshot(elements);
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(elements));
     setDirty(true);
 };
