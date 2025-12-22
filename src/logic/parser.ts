@@ -1,5 +1,6 @@
 import Papa from 'papaparse';
 import { ElementsDefinition, ElementDefinition } from 'cytoscape';
+import { getShapeClass } from './shapeUtils';
 
 const slugify = (value: string | number | null | undefined): string =>
     (value || '')
@@ -98,17 +99,8 @@ export const parseCSV = (csvString: string): ParseResult => {
         const labelClasses = labels.map((d) => `label-${slugify(d)}`).join(' ');
         const tierClass = slugify(`tier-${tier}`);
 
-        // Detect node type by name/id patterns
-        const isDatabase = /\b(db|database|postgres|mysql|mongo|redis|sql)\b/i.test(id) || /\b(db|database|postgres|mysql|mongo|redis|sql)\b/i.test(name);
-        const isQueue = /\b(topic|queue|kafka|rabbit|mq|sqs|sns|pubsub|stream|event)\b/i.test(id) || /\b(topic|queue|kafka|rabbit|mq|sqs|sns|pubsub|stream|event)\b/i.test(name);
-
         // Apply shape classes (queue takes precedence if both match)
-        let shapeClass = '';
-        if (isQueue) {
-            shapeClass = 'is-queue';
-        } else if (isDatabase) {
-            shapeClass = 'is-database';
-        }
+        const shapeClass = getShapeClass(id, name);
 
         const verifiedClass = verified ? 'verified' : '';
 

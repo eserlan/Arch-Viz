@@ -1,5 +1,6 @@
 import { CyInstance, ServiceData } from '../types';
 import { saveGraphData } from './storage';
+import { getShapeClass } from './shapeUtils';
 
 export const addNode = (cy: CyInstance, data: ServiceData): void => {
     if (cy.getElementById(data.id).nonempty()) {
@@ -25,18 +26,18 @@ export const addNode = (cy: CyInstance, data: ServiceData): void => {
             owner: data.owner,
             label: data.name // Fallback for display
         },
-        classes: tier ? `tier-${tier}` : '',
+        classes: `${tier ? `tier-${tier}` : ''} ${getShapeClass(data.id, data.name)}`.trim(),
         position: pos
     });
 
-    saveGraphData(cy.elements().jsons());
+    saveGraphData(cy.elements().jsons() as any);
 };
 
 export const deleteNode = (cy: CyInstance, nodeId: string): boolean => {
     const node = cy.getElementById(nodeId);
     if (node.nonempty()) {
         cy.remove(node);
-        saveGraphData(cy.elements().jsons());
+        saveGraphData(cy.elements().jsons() as any);
         return true;
     }
     return false;
