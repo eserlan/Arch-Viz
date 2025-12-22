@@ -87,13 +87,15 @@ export function initFloatingPanel(config: PanelConfig): void {
     const menu = document.getElementById(menuId);
     const moveBtn = document.getElementById(moveBtnId);
 
-    // Restore panel position
+    // Restore panel position and size
     const savedPos = localStorage.getItem(storageKey);
     if (savedPos) {
         try {
-            const { left, top } = JSON.parse(savedPos);
-            panel.style.left = left;
-            panel.style.top = top;
+            const { left, top, width, height } = JSON.parse(savedPos);
+            if (left) panel.style.left = left;
+            if (top) panel.style.top = top;
+            if (width) panel.style.width = width;
+            if (height) panel.style.height = height;
             if (defaultClasses.length) {
                 panel.classList.remove(...defaultClasses);
             }
@@ -102,6 +104,16 @@ export function initFloatingPanel(config: PanelConfig): void {
             console.error(`Error loading panel position for ${panelId}`, e);
         }
     }
+
+    // Save size changes when panel is resized
+    const resizeObserver = new ResizeObserver(() => {
+        const current = localStorage.getItem(storageKey);
+        const data = current ? JSON.parse(current) : {};
+        data.width = panel.style.width || `${panel.offsetWidth}px`;
+        data.height = panel.style.height || `${panel.offsetHeight}px`;
+        localStorage.setItem(storageKey, JSON.stringify(data));
+    });
+    resizeObserver.observe(panel);
 
     // Reveal panel after potential position update to avoid jump
     requestAnimationFrame(() => {

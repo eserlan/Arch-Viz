@@ -20,6 +20,13 @@ describe('UI Logic', () => {
         // Mock requestAnimationFrame
         vi.stubGlobal('requestAnimationFrame', (cb: any) => cb());
 
+        // Mock ResizeObserver (not available in jsdom)
+        vi.stubGlobal('ResizeObserver', class {
+            observe = vi.fn();
+            unobserve = vi.fn();
+            disconnect = vi.fn();
+        });
+
         // Mock showModal/close for dialog
         HTMLDialogElement.prototype.showModal = vi.fn();
         HTMLDialogElement.prototype.close = vi.fn();
