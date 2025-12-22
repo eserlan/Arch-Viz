@@ -22,7 +22,17 @@ export const loadGraphData = (): ElementDefinition[] | null => {
     const saved = localStorage.getItem(STORAGE_KEY);
     // Check if we have saved data (meaning user has made changes)
     isDirty = localStorage.getItem(DIRTY_KEY) === 'true';
-    return saved ? JSON.parse(saved) : null;
+    if (!saved) return null;
+
+    // Parse and strip selection state to ensure no node is pre-selected on reload
+    const elements = JSON.parse(saved) as ElementDefinition[];
+    return elements.map(el => {
+        if (el.selected !== undefined) {
+            const { selected, ...rest } = el;
+            return rest as ElementDefinition;
+        }
+        return el;
+    });
 };
 
 export const clearGraphData = (): void => {

@@ -34,6 +34,21 @@ describe('Storage Module', () => {
         expect(loaded).toBeNull();
     });
 
+    it('should strip selected property from loaded elements', () => {
+        const data: any[] = [
+            { data: { id: 'node1' }, selected: true },
+            { data: { id: 'node2' }, selected: false },
+            { data: { id: 'node3' } }
+        ];
+        localStorage.setItem('arch-viz-elements', JSON.stringify(data));
+
+        const loaded = loadGraphData();
+        expect(loaded).toHaveLength(3);
+        expect((loaded as any)[0].selected).toBeUndefined();
+        expect((loaded as any)[1].selected).toBeUndefined();
+        expect((loaded as any)[2].selected).toBeUndefined();
+    });
+
     it('should clear data from localStorage', () => {
         localStorage.setItem('arch-viz-elements', 'some-data');
         clearGraphData();
