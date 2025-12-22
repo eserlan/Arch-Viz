@@ -1,4 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+vi.mock('./history', () => ({
+    recordSnapshot: vi.fn()
+}));
+import { recordSnapshot } from './history';
 import { saveGraphData, loadGraphData, clearGraphData, getDirtyState, setDirty, exportToCSV, downloadCSV } from './storage';
 import { CyInstance } from '../types';
 
@@ -14,6 +18,7 @@ describe('Storage Module', () => {
         saveGraphData(data);
 
         expect(localStorage.getItem('arch-viz-elements')).toBe(JSON.stringify(data));
+        expect(recordSnapshot).toHaveBeenCalledWith(data);
     });
 
     it('should load data from localStorage', () => {
@@ -42,6 +47,13 @@ describe('Storage Module', () => {
 
         expect(getDirtyState()).toBe(true);
         expect(localStorage.getItem('arch-viz-dirty')).toBe('true');
+    });
+
+    it('should skip history when requested', () => {
+        const data: any[] = [{ data: { id: 'skip' } }];
+        saveGraphData(data, { skipHistory: true });
+
+        expect(recordSnapshot).not.toHaveBeenCalled();
     });
 
     it('should clear dirty state when clearing data', () => {
