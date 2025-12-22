@@ -83,15 +83,16 @@ const renderGraph = (elements: ElementsDefinition | ElementDefinition[], skipped
 
     (window as any).cy = cy;
 
+    initHistory(cy, cy.elements().jsons(), {
+        onStatus: updateStatus,
+        onPersist: (elements) => saveGraphData(elements, { skipHistory: true })
+    });
+
     cy.ready(() => {
         if (!cy) return;
         cy.fit(undefined, 100);
         updateStatus(`Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` + (skipped ? ` (skipped ${skipped} invalid rows)` : ''));
         updateDirtyUI(getDirtyState());
-        initHistory(cy, cy.elements().jsons(), {
-            onStatus: updateStatus,
-            onPersist: (elements) => saveGraphData(elements, { skipHistory: true })
-        });
     });
 
     // Initialize modular controllers

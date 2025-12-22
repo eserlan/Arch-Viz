@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { initHistory, recordSnapshot } from './history';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { cleanupHistory, initHistory, recordSnapshot } from './history';
 import { populateLabelFilter, populateTeamFilter } from './filters';
 import { hidePanel } from './panel';
 vi.mock('./filters', () => ({
@@ -34,6 +34,10 @@ describe('history', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         document.body.innerHTML = '';
+    });
+
+    afterEach(() => {
+        cleanupHistory();
     });
 
     it('undo restores the previous snapshot and updates UI', () => {
@@ -73,6 +77,61 @@ describe('history', () => {
 
         expect(add).toHaveBeenLastCalledWith(updated);
         expect(status).toHaveBeenCalledWith('Redo applied');
+    });
+
+    it('records snapshots and allows undo via keyboard shortcut', () => {
+        const { cy, add } = createCy();
+        const initial = [{ data: { id: 'start' } }];
+        const updated = [{ data: { id: 'next' } }];
+
+        initHistory(cy as any, initial);
+        recordSnapshot(updated);
+
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true }));
+
+        expect(add).toHaveBeenCalledWith(initial);
+    });
+
+    it('prevents duplicate snapshots from being recorded', () => {
+        const { cy, add } = createCy();
+        const initial = [{ data: { id: 'same' } }];
+
+        initHistory(cy as any, initial);
+        recordSnapshot(initial);
+
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true }));
+
+        expect(add).not.toHaveBeenCalled();
+    });
+
+    it('limits history to the most recent 50 snapshots', () => {
+        const { cy, add } = createCy();
+        const initial = [{ data: { id: '0' } }];
+        initHistory(cy as any, initial);
+
+        for (let i = 1; i <= 50; i += 1) {
+            recordSnapshot([{ data: { id: `${i}` } }]);
+        }
+
+        for (let i = 0; i < 49; i += 1) {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true }));
+        }
+
+        expect(add).toHaveBeenLastCalledWith([{ data: { id: '1' } }]);
+    });
+
+    it('supports redo via Ctrl+Y', () => {
+        const { cy, add } = createCy();
+        const initial = [{ data: { id: 'alpha' } }];
+        const updated = [{ data: { id: 'beta' } }];
+
+        initHistory(cy as any, initial);
+        recordSnapshot(updated);
+
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true }));
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'y', ctrlKey: true }));
+
+        expect(add).toHaveBeenLastCalledWith(updated);
     });
 
     it('ignores undo shortcuts while editing input fields', () => {
