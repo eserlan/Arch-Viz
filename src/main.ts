@@ -87,7 +87,10 @@ const renderGraph = (elements: ElementsDefinition | ElementDefinition[], skipped
         cy.fit(undefined, 100);
         updateStatus(`Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` + (skipped ? ` (skipped ${skipped} invalid rows)` : ''));
         updateDirtyUI(getDirtyState());
-        initHistory(cy, cy.elements().jsons(), { onStatus: updateStatus });
+        initHistory(cy, cy.elements().jsons(), {
+            onStatus: updateStatus,
+            onPersist: (elements) => saveGraphData(elements, { skipHistory: true })
+        });
     });
 
     // Initialize modular controllers

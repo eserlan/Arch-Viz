@@ -1,10 +1,10 @@
 import { ElementDefinition } from 'cytoscape';
 import { CyInstance } from '../types';
-import { saveGraphData } from './storage';
 import { populateLabelFilter, populateTeamFilter } from './filters';
 import { hidePanel } from './panel';
 
 type StatusHandler = (message: string) => void;
+type PersistHandler = (elements: ElementDefinition[]) => void;
 
 const isEditableTarget = (target: EventTarget | null): boolean => {
     if (!(target instanceof HTMLElement)) {
@@ -27,6 +27,7 @@ let historyEnabled = false;
 let isRestoring = false;
 let cyRef: CyInstance | null = null;
 let statusHandler: StatusHandler | null = null;
+let persistHandler: PersistHandler | null = null;
 let keyListenerRegistered = false;
 
 const applySnapshot = (snapshot: ElementDefinition[], message: string): void => {
@@ -39,7 +40,7 @@ const applySnapshot = (snapshot: ElementDefinition[], message: string): void => 
     hidePanel();
     populateLabelFilter(cyRef.nodes().toArray());
     populateTeamFilter(cyRef.nodes().toArray());
-    saveGraphData(snapshot, { skipHistory: true });
+    persistHandler?.(snapshot);
     statusHandler?.(message);
     isRestoring = false;
 };
@@ -86,10 +87,11 @@ const registerKeyListener = (): void => {
 export const initHistory = (
     cy: CyInstance,
     initialElements: ElementDefinition[],
-    options?: { onStatus?: StatusHandler }
+    options?: { onStatus?: StatusHandler; onPersist?: PersistHandler }
 ): void => {
     cyRef = cy;
     statusHandler = options?.onStatus ?? null;
+    persistHandler = options?.onPersist ?? null;
     historyPast = [cloneElements(initialElements)];
     historyFuture = [];
     historyEnabled = true;
