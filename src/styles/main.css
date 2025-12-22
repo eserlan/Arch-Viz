@@ -58,6 +58,40 @@ body {
   pointer-events: auto;
 }
 
+#minimap {
+  pointer-events: none;
+  width: 250px;
+}
+
+.minimap-frame {
+  position: relative;
+  width: 220px;
+  height: 160px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  background: #0f172a;
+}
+
+#minimapImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+#minimapViewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 1px solid rgba(16, 185, 129, 0.85);
+  background: rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8) inset;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
 .info-item label {
   display: block;
   font-size: 10px;

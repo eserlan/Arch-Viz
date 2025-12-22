@@ -19,6 +19,7 @@ import { initGraphEvents } from './logic/graphEvents';
 import { initServiceForm } from './logic/serviceForm';
 import { initGrouping } from './logic/grouping';
 import { initHistory } from './logic/history';
+import { initMiniMap } from './logic/minimap';
 import { CyInstance } from './types';
 
 cytoscape.use(fcose);
@@ -100,6 +101,7 @@ const renderGraph = (elements: ElementsDefinition | ElementDefinition[], skipped
     initGraphEvents(cy);
     initServiceForm(cy, () => updateDirtyUI(true));
     initGrouping(cy);
+    initMiniMap(cy);
 
     populateLabelFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
     populateTeamFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
@@ -159,7 +161,7 @@ initFloatingPanel({
     moveBtnId: 'moveTeamPanelBtn',
     containerId: 'teamFilterContainer',
     storageKey: 'team-panel-pos',
-    defaultClasses: ['right-6', 'top-6']
+    defaultClasses: ['right-72', 'top-6']
 });
 
 // Bootstrap
