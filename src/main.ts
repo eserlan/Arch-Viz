@@ -91,6 +91,7 @@ const renderGraph = (elements: ElementsDefinition | ElementDefinition[], skipped
     cy.ready(() => {
         if (!cy) return;
         cy.fit(undefined, 100);
+        cy.nodes().unselect(); // Ensure no node is selected on load
         updateStatus(`Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` + (skipped ? ` (skipped ${skipped} invalid rows)` : ''));
         updateDirtyUI(getDirtyState());
     });
