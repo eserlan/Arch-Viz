@@ -2,11 +2,13 @@ name: CI - Test & Verify
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
       
