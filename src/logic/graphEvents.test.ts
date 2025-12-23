@@ -16,7 +16,7 @@ vi.mock('./graphUtils', () => ({
 describe('Graph Events Logic', () => {
     let mockCy: any;
     let mockElements: any;
-    let eventHandlers: Record<string, Function> = {};
+    let eventHandlers: Record<string, Function[]> = {}; // Store multiple handlers
 
     beforeEach(() => {
         document.body.innerHTML = `
@@ -24,6 +24,9 @@ describe('Graph Events Logic', () => {
                 <option value="1">1</option>
             </select>
             <div id="graphTooltip" style="opacity: 0"></div>
+            <div id="contextMenu" class="hidden">
+                 <button id="ctxVerifiedBtn"><span id="ctxVerifiedCheck"></span></button>
+            </div>
         `;
 
         eventHandlers = {};
@@ -37,13 +40,18 @@ describe('Graph Events Logic', () => {
                 const selector = typeof args[0] === 'string' ? args[0] : null;
                 const handler = selector ? args[1] : args[0];
                 const key = selector ? `${event}:${selector}` : event;
-                eventHandlers[key] = handler;
+                if (!eventHandlers[key]) {
+                    eventHandlers[key] = [];
+                }
+                eventHandlers[key].push(handler);
             }),
             elements: vi.fn(() => mockElements),
             nodes: vi.fn(() => ({
                 length: 0,
                 unselect: vi.fn()
-            }))
+            })),
+             pan: vi.fn(() => ({ x: 0, y: 0 })),
+             zoom: vi.fn(() => 1)
         } as unknown as CyInstance;
 
         vi.clearAllMocks();
@@ -51,6 +59,7 @@ describe('Graph Events Logic', () => {
 
     it('should register core graph events', () => {
         initGraphEvents(mockCy);
+        // We now have multiple tap listeners
         expect(mockCy.on).toHaveBeenCalledWith('tap', 'node', expect.any(Function));
         expect(mockCy.on).toHaveBeenCalledWith('tap', expect.any(Function));
         expect(mockCy.on).toHaveBeenCalledWith('mouseover', 'node', expect.any(Function));
@@ -61,8 +70,9 @@ describe('Graph Events Logic', () => {
         (graphUtils.getNodesAtDepth as any).mockReturnValue(mockElements);
 
         initGraphEvents(mockCy);
-        const tapHandler = eventHandlers['tap:node'];
-        tapHandler({ target: mockNode });
+        const tapHandlers = eventHandlers['tap:node'];
+        // Execute the handler that shows the panel (should be the first one registered for tap:node)
+        tapHandlers[0]({ target: mockNode });
 
         expect(panel.showPanel).toHaveBeenCalledWith(mockNode as any);
         expect(mockElements.addClass).toHaveBeenCalledWith('dimmed');
@@ -71,8 +81,10 @@ describe('Graph Events Logic', () => {
 
     it('should hide panel on background tap', () => {
         initGraphEvents(mockCy);
-        const tapHandler = eventHandlers['tap'];
-        tapHandler({ target: mockCy });
+        const tapHandlers = eventHandlers['tap'];
+        // The one that hides the panel checks if target === cy
+        // We need to find the correct handler or execute all
+        tapHandlers.forEach(handler => handler({ target: mockCy }));
 
         expect(panel.hidePanel).toHaveBeenCalled();
         expect(mockElements.removeClass).toHaveBeenCalledWith('dimmed');
@@ -89,7 +101,7 @@ describe('Graph Events Logic', () => {
         };
 
         initGraphEvents(mockCy);
-        const mouseoverHandler = eventHandlers['mouseover:node'];
+        const mouseoverHandler = eventHandlers['mouseover:node'][0]; // Assuming only one for now
         mouseoverHandler({ target: mockNode });
 
         const tooltip = document.getElementById('graphTooltip')!;
