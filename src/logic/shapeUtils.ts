@@ -9,6 +9,12 @@ const QUEUE_TOKENS = ['topic', 'queue', 'kafka', 'rabbit', 'rabbitmq', 'mq', 'sq
  * Checks if a string contains any of the tokens as a "whole part".
  * Handles camelCase, common separators, and pluralization slightly.
  */
+const isPartMatch = (part: string, token: string): boolean => {
+    const lowerToken = token.toLowerCase();
+    // Exact match or matches singular version of plural part (e.g., 'events' matches 'event')
+    return part === lowerToken || (part.endsWith('s') && part.slice(0, -1) === lowerToken);
+};
+
 const matchesToken = (text: string, tokens: string[]): boolean => {
     if (!text) return false;
 
@@ -18,13 +24,7 @@ const matchesToken = (text: string, tokens: string[]): boolean => {
     // Split by common separators: -, _, ., / and spaces
     const parts = expanded.toLowerCase().split(/[-_./\s]+/);
 
-    return tokens.some(token => {
-        const lowerToken = token.toLowerCase();
-        return parts.some(part => {
-            // Exact match or matches singular version of plural part (e.g., 'events' matches 'event')
-            return part === lowerToken || (part.endsWith('s') && part.slice(0, -1) === lowerToken);
-        });
-    });
+    return tokens.some(token => parts.some(part => isPartMatch(part, token)));
 };
 
 export const getShapeClass = (id: string, name: string): string => {
