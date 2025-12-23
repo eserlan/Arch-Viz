@@ -4,12 +4,12 @@ import { deleteNode } from '../../graph/nodeOperations';
 import { populateLabelFilter, populateTeamFilter } from '../../graph/filters';
 import {
     getElements,
-    currentSelectedNode,
-    cyRef,
-    updateStatusRef,
-    originalData,
+    getCurrentSelectedNode,
+    getCyRef,
+    getUpdateStatusRef,
+    getOriginalData,
     setCyRef,
-    setUpdateStatusRef
+    setUpdateStatusRef,
 } from './state';
 import { showPanel, hidePanel } from './display';
 import { toggleEdit } from './edit';
@@ -24,7 +24,7 @@ export const updateSaveButtonState = (): void => {
     inputs.forEach(input => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
-        if (key && originalData[key] !== el.value) {
+        if (key && getOriginalData()[key] !== el.value) {
             isDirty = true;
         }
     });
@@ -35,6 +35,8 @@ export const updateSaveButtonState = (): void => {
 };
 
 export const handleSave = (): void => {
+    const currentSelectedNode = getCurrentSelectedNode();
+    const cyRef = getCyRef();
     if (!currentSelectedNode || !cyRef) {
         console.error('handleSave: No node or cy reference');
         return;
@@ -131,6 +133,7 @@ export const handleSave = (): void => {
     populateLabelFilter(cyRef.nodes().toArray());
     populateTeamFilter(cyRef.nodes().toArray());
 
+    const updateStatusRef = getUpdateStatusRef();
     if (updateStatusRef) {
         updateStatusRef(`Saved changes to ${newData.name || newData.label || currentSelectedNode.id()}`);
     }
@@ -157,6 +160,7 @@ export const initPanel = (cy: CyInstance, updateStatus: (msg: string) => void): 
         const newCancelBtn = cancelBtn.cloneNode(true) as HTMLElement;
         cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
         newCancelBtn.addEventListener('click', () => {
+            const currentSelectedNode = getCurrentSelectedNode();
             if (currentSelectedNode) {
                 showPanel(currentSelectedNode);
             }
@@ -174,6 +178,8 @@ export const initPanel = (cy: CyInstance, updateStatus: (msg: string) => void): 
         const newDeleteBtn = deleteNodeBtn.cloneNode(true) as HTMLElement;
         deleteNodeBtn.parentNode.replaceChild(newDeleteBtn, deleteNodeBtn);
         newDeleteBtn.addEventListener('click', () => {
+            const currentSelectedNode = getCurrentSelectedNode();
+            const updateStatusRef = getUpdateStatusRef();
             if (currentSelectedNode) {
                 const label = currentSelectedNode.data('name') || currentSelectedNode.id();
                 if (confirm(`Are you sure you want to delete "${label}"?\nThis action cannot be undone.`)) {

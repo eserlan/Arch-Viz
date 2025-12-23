@@ -1,15 +1,16 @@
 import { EdgeSingular } from 'cytoscape';
 import {
     getElements,
-    currentSelectedNode,
-    cyRef,
-    originalData,
-    TIER_LABELS
+    getCurrentSelectedNode,
+    getCyRef,
+    getOriginalData,
+    TIER_LABELS,
 } from './state';
 import { updateSaveButtonState } from './actions';
 
 export const toggleEdit = (editing: boolean): void => {
     const { panelContent, editBtn, editActions, saveBtn } = getElements();
+    const currentSelectedNode = getCurrentSelectedNode();
     if (!panelContent || !currentSelectedNode) return;
 
     const values = panelContent.querySelectorAll('.info-value[data-key]');
@@ -19,6 +20,7 @@ export const toggleEdit = (editing: boolean): void => {
         if (!key) return;
 
         if (editing) {
+            const originalData = getOriginalData();
             if (key === 'tier') {
                 const currentTier = parseInt(originalData.tier || '4', 10);
                 const options = Object.entries(TIER_LABELS).map(([val, label]) =>
@@ -67,6 +69,7 @@ export const toggleEdit = (editing: boolean): void => {
     }
 
     const connectionsList = panelContent.querySelector('.connections-list');
+    const cyRef = getCyRef();
     if (editing && cyRef && connectionsList) {
         const cy = cyRef;
         const outgoingEdges = currentSelectedNode.outgoers('edge');

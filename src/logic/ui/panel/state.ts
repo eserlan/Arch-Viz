@@ -1,10 +1,15 @@
-import { NodeSingular, EdgeSingular } from 'cytoscape';
-import { CyInstance, ServiceData } from '../../../types';
+import { NodeSingular } from 'cytoscape';
+import { CyInstance } from '../../../types';
 
-export let currentSelectedNode: NodeSingular | null = null;
-export let cyRef: CyInstance | null = null;
-export let updateStatusRef: ((msg: string) => void) | null = null;
-export let originalData: Record<string, string> = {};
+let currentSelectedNode: NodeSingular | null = null;
+let cyRef: CyInstance | null = null;
+let updateStatusRef: ((msg: string) => void) | null = null;
+let originalData: Record<string, string> = {};
+
+export const getCurrentSelectedNode = () => currentSelectedNode;
+export const getCyRef = () => cyRef;
+export const getUpdateStatusRef = () => updateStatusRef;
+export const getOriginalData = () => originalData;
 
 export const setSelectedNode = (node: NodeSingular | null) => {
     currentSelectedNode = node;

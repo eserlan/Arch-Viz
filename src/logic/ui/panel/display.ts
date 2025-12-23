@@ -4,11 +4,10 @@ import { updateStatus } from '../ui';
 import { initPanel } from './actions';
 import {
     getElements,
-    currentSelectedNode,
-    cyRef,
+    getCyRef,
     setSelectedNode,
     setOriginalData,
-    TIER_LABELS
+    TIER_LABELS,
 } from './state';
 
 export const showPanel = (node: NodeSingular): void => {
@@ -17,7 +16,7 @@ export const showPanel = (node: NodeSingular): void => {
 
     // Auto-initialize listeners if cy instance changed
     const cy = node.cy() as CyInstance;
-    if (cyRef !== cy) {
+    if (getCyRef() !== cy) {
         initPanel(cy, updateStatus);
     }
 
