@@ -4,5 +4,11 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+            all: true,
+            include: ['src/**/*.ts']
+        }
     },
 });
