@@ -71,4 +71,30 @@ export const initPanelsAndModals = (): void => {
         storageKey: 'team-panel-pos',
         defaultClasses: ['right-72', 'top-6']
     });
+
+    initMobileSidebar();
+};
+
+export const initMobileSidebar = (): void => {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+
+    if (!mobileMenuBtn || !sidebar || !backdrop || !closeSidebarBtn) return;
+
+    const toggleSidebar = () => {
+        const isClosed = sidebar.classList.contains('-translate-x-full');
+        if (isClosed) {
+            sidebar.classList.remove('-translate-x-full');
+            backdrop.classList.remove('hidden');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            backdrop.classList.add('hidden');
+        }
+    };
+
+    mobileMenuBtn.addEventListener('click', toggleSidebar);
+    closeSidebarBtn.addEventListener('click', toggleSidebar);
+    backdrop.addEventListener('click', toggleSidebar);
 };
