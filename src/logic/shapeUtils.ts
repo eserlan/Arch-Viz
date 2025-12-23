@@ -2,7 +2,7 @@
  * Detects if a node should have a specific shape based on its ID or name.
  */
 
-const DB_TOKENS = ['db', 'database', 'postgres', 'mysql', 'mongo', 'redis', 'sql', 'store', 'storage', 'warehouse', 'repository'];
+const DB_TOKENS = ['db', 'database', 'postgres', 'mysql', 'mongo', 'redis', 'sql', 'store', 'storage', 'warehouse', 'repository', 'persistence'];
 const QUEUE_TOKENS = ['topic', 'queue', 'kafka', 'rabbit', 'rabbitmq', 'mq', 'sqs', 'sns', 'pubsub', 'stream', 'event', 'bus', 'broker', 'messaging'];
 
 /**
