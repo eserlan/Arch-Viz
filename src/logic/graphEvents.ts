@@ -6,28 +6,66 @@ import { showToast } from './ui';
 import { populateLabelFilter, populateTeamFilter } from './filters';
 import { CyInstance } from '../types';
 
-/**
- * Graph interaction events and UI feedback
- */
+export const toggleVerifiedState = (node: NodeSingular, cy: CyInstance) => {
+    const isVerified = node.hasClass('verified');
+    const nodeName = node.data('name') || node.data('label') || node.id();
+
+    let labels: string[] = node.data('labels') || [];
+    labels = Array.isArray(labels) ? [...labels] : [];
+
+    if (isVerified) {
+        node.removeClass('verified');
+        node.data('verified', false);
+        labels = labels.filter(l => l !== 'Verified');
+        showToast(`Unverified: ${nodeName}`, 'info');
+    } else {
+        node.addClass('verified');
+        node.data('verified', true);
+        if (!labels.includes('Verified')) {
+            labels.push('Verified');
+        }
+        showToast(`Verified: ${nodeName}`, 'success');
+    }
+
+    node.data('labels', labels);
+    node.data('labelsDisplay', labels.join(', '));
+
+    const elements = cy.elements().jsons();
+    saveGraphData(elements as any);
+
+    populateLabelFilter(cy.nodes().toArray());
+    populateTeamFilter(cy.nodes().toArray());
+
+    showPanel(node);
+};
+
 export const initGraphEvents = (cy: CyInstance): void => {
     if (!cy) return;
+
+    const contextMenu = document.getElementById('contextMenu');
+    const verifiedToggleBtn = document.getElementById('context-menu-verified-toggle');
+    let activeNode: NodeSingular | null = null;
+
+    const hideContextMenu = () => {
+        if (contextMenu) contextMenu.classList.add('hidden');
+        activeNode = null;
+    };
 
     const highlightConnections = (node: NodeSingular) => {
         const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
         const depthVal = depthSelect?.value || '1';
         const highlightCollection = getNodesAtDepth(node, depthVal, cy);
-
         cy.elements().addClass('dimmed');
         highlightCollection.removeClass('dimmed');
     };
 
     cy.on('tap', 'node', (evt: EventObject) => {
         const node = evt.target as NodeSingular;
-        // Select this node (enables layout centering around selected node)
         cy.nodes().unselect();
         node.select();
         showPanel(node);
         highlightConnections(node);
+        hideContextMenu();
     });
 
     cy.on('tap', (evt: EventObject) => {
@@ -35,58 +73,34 @@ export const initGraphEvents = (cy: CyInstance): void => {
             hidePanel();
             cy.nodes().unselect();
             cy.elements().removeClass('dimmed');
+            hideContextMenu();
         }
     });
 
-    // Right-click to toggle verified state
     cy.on('cxttap', 'node', (evt: EventObject) => {
-        const node = evt.target as NodeSingular;
-        const isVerified = node.hasClass('verified');
-        const nodeName = node.data('name') || node.data('label') || node.id();
+        evt.preventDefault();
+        activeNode = evt.target as NodeSingular;
 
-        // Get current labels array
-        let labels: string[] = node.data('labels') || [];
-        labels = Array.isArray(labels) ? [...labels] : [];
-
-        if (isVerified) {
-            node.removeClass('verified');
-            node.data('verified', false);
-            // Remove 'Verified' from labels
-            labels = labels.filter(l => l !== 'Verified');
-            showToast(`Unverified: ${nodeName}`, 'info');
-        } else {
-            node.addClass('verified');
-            node.data('verified', true);
-            // Add 'Verified' to labels if not present
-            if (!labels.includes('Verified')) {
-                labels.push('Verified');
-            }
-            showToast(`Verified: ${nodeName}`, 'success');
+        if (contextMenu) {
+            contextMenu.style.left = `${evt.renderedPosition.x}px`;
+            contextMenu.style.top = `${evt.renderedPosition.y}px`;
+            contextMenu.classList.remove('hidden');
         }
-
-        // Update labels data
-        node.data('labels', labels);
-        node.data('labelsDisplay', labels.join(', '));
-
-        // Save the change
-        const elements = cy.elements().jsons();
-        saveGraphData(elements as any);
-
-        // Refresh filter panels
-        populateLabelFilter(cy.nodes().toArray());
-        populateTeamFilter(cy.nodes().toArray());
-
-        // Refresh panel if this node is selected
-        showPanel(node);
     });
 
-    // Depth select interaction
+    if (verifiedToggleBtn) {
+        verifiedToggleBtn.addEventListener('click', () => {
+            if (activeNode) {
+                toggleVerifiedState(activeNode, cy);
+            }
+            hideContextMenu();
+        });
+    }
+
     const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
     if (depthSelect && depthSelect.parentNode) {
-        // Simple way to ensure only one listener
         const newSelect = depthSelect.cloneNode(true) as HTMLSelectElement;
         depthSelect.parentNode.replaceChild(newSelect, depthSelect);
-
         newSelect.addEventListener('change', () => {
             const selected = cy.nodes(':selected');
             if (selected.length > 0) {
@@ -95,7 +109,6 @@ export const initGraphEvents = (cy: CyInstance): void => {
         });
     }
 
-    // Tooltip Logic
     const tooltip = document.getElementById('graphTooltip');
     if (tooltip) {
         cy.on('mouseover', 'node', (evt: EventObject) => {
