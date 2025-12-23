@@ -5,3 +5,6 @@ node_modules
 .vite
 coverage
 dist
+playwright-report/
+test-results/
+*.log
