@@ -1,10 +1,18 @@
 import { NodeSingular, EdgeSingular } from 'cytoscape';
 import { CyInstance, ServiceData } from '../../../types';
 
-export let currentSelectedNode: NodeSingular | null = null;
-export let cyRef: CyInstance | null = null;
-export let updateStatusRef: ((msg: string) => void) | null = null;
-export let originalData: Record<string, string> = {};
+// Keep state variables private to the module
+let currentSelectedNode: NodeSingular | null = null;
+let cyRef: CyInstance | null = null;
+let updateStatusRef: ((msg: string) => void) | null = null;
+let originalData: Record<string, string> = {};
+
+// Export getters to access the state
+export const getCurrentSelectedNode = () => currentSelectedNode;
+export const getCyRef = () => cyRef;
+export const getUpdateStatusRef = () => updateStatusRef;
+export const getOriginalData = () => originalData;
+
 
 export const setSelectedNode = (node: NodeSingular | null) => {
     currentSelectedNode = node;
