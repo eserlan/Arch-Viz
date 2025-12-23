@@ -2,11 +2,12 @@ name: Google Jules AI Reviewer
 
 on:
   pull_request_target:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   review:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     permissions:
       contents: write
       pull-requests: write
