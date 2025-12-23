@@ -3,9 +3,6 @@ import { saveGraphData } from './storage';
 import { CyInstance, ToastType } from '../types';
 import { ElementsDefinition, ElementDefinition } from 'cytoscape';
 
-const dropZone = document.getElementById('dropZone');
-const mainContainer = document.querySelector('main');
-
 type RenderCallback = (elements: ElementsDefinition | ElementDefinition[], skipped: number) => void;
 type UpdateStatus = (msg: string) => void;
 type ShowToast = (msg: string, type: ToastType) => void;
@@ -17,6 +14,9 @@ export const initUploader = (
     getCyInstance: GetCyInstance,
     showToast?: ShowToast
 ): void => {
+    const dropZone = document.getElementById('dropZone');
+    const mainContainer = document.querySelector('main');
+
     if (!mainContainer || !dropZone) return;
 
     ['dragenter', 'dragover'].forEach(eventName => {
