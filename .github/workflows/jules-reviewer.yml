@@ -1,0 +1,38 @@
+name: Jules - AI PR Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Jules Reviewer
+        uses: anc95/ChatGPT-github-action@master
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_event: ${{ toJson(github.event) }}
+          prompt: |
+            You are "Jules", a thorough and helpful senior software engineer.
+            Your goal is to review this Pull Request for the "Arch Viz" project.
+            
+            Focus on:
+            1. Logic errors and edge cases.
+            2. Test coverage: Ensure new features have corresponding tests (especially unit tests in Vitest or E2E in Playwright).
+            3. Consistency: Check if the code follows existing patterns in the codebase.
+            4. Performance: Identify potential bottlenecks.
+            
+            Style Guidelines:
+            - Be encouraging but professional.
+            - Provide clear, actionable suggestions.
+            - If the code is excellent, give a brief "LGTM from Jules!".
+          # Optional: Use a specific model
+          # openai_model: "gpt-4-turbo-preview"
