@@ -72,7 +72,18 @@ describe('Panel Module', () => {
             outgoers: () => mockEdgeCollection,
             id: () => nodeData.id,
             cy: () => mockCy,
-            hasClass: (cls: string) => nodeClasses.includes(cls)
+            hasClass: (cls: string) => nodeClasses.includes(cls),
+            toggleClass: vi.fn((cls, status) => {
+                const hasClass = nodeClasses.includes(cls);
+                if (status === undefined) status = !hasClass;
+
+                if (status && !hasClass) {
+                    nodeClasses.push(cls);
+                } else if (!status && hasClass) {
+                    nodeClasses = nodeClasses.filter((c: string) => c !== cls);
+                }
+                return mockNode;
+            })
         };
         return mockNode;
     };

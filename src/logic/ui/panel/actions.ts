@@ -14,6 +14,23 @@ import {
 import { showPanel, hidePanel } from './display';
 import { toggleEdit } from './edit';
 
+const parseLabelsFromString = (labelsStr: string | undefined): string[] => {
+    if (typeof labelsStr !== 'string' || !labelsStr) return [];
+    return labelsStr.split(/[;,]/).map(d => d.trim()).filter(Boolean);
+};
+
+interface NodeUpdateData {
+    [key: string]: any;
+    name?: string;
+    label?: string;
+    owner?: string;
+    tier?: number;
+    labels?: string[];
+    labelsDisplay?: string;
+    repoUrl?: string;
+    verified?: boolean;
+}
+
 export const updateSaveButtonState = (): void => {
     const { saveBtn, panelContent } = getElements();
     if (!saveBtn || !panelContent) return;
@@ -46,96 +63,60 @@ export const handleSave = (): void => {
     }
 
     const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
-    const newData: any = {};
+    const formData: { [key: string]: string | boolean } = {};
     inputs.forEach(input => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
         if (key) {
-            if (el.type === 'checkbox') {
-                newData[key] = (el as HTMLInputElement).checked;
-            } else {
-                newData[key] = el.value;
-            }
+            formData[key] = el.type === 'checkbox' ? (el as HTMLInputElement).checked : el.value;
         }
     });
 
-    // Handle verified toggle - update class and add/remove Verified label
-    if (typeof newData.verified === 'boolean') {
-        // Get current labels or parse from form input
-        let labels: string[] = [];
-        if (newData.labels && Array.isArray(newData.labels)) {
-            labels = [...newData.labels];
-        } else if (newData.labels && typeof newData.labels === 'string') {
-            labels = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
-        } else {
-            labels = currentSelectedNode.data('labels') || [];
-            labels = Array.isArray(labels) ? [...labels] : [];
-        }
+    const nodeUpdateData: NodeUpdateData = { ...formData };
 
-        if (newData.verified) {
-            currentSelectedNode.addClass('verified');
-            if (!labels.includes('Verified')) {
-                labels.push('Verified');
-            }
-        } else {
-            currentSelectedNode.removeClass('verified');
+    let labels = parseLabelsFromString(formData.labels as string | undefined);
+
+    if (typeof formData.verified === 'boolean') {
+        const isVerified = formData.verified;
+        currentSelectedNode.toggleClass('verified', isVerified);
+        const hasVerifiedLabel = labels.includes('Verified');
+        if (isVerified && !hasVerifiedLabel) {
+            labels.push('Verified');
+        } else if (!isVerified && hasVerifiedLabel) {
             labels = labels.filter(l => l !== 'Verified');
         }
+    }
+    nodeUpdateData.labels = labels;
+    nodeUpdateData.labelsDisplay = labels.join(', ');
 
-        newData.labels = labels;
-        newData.labelsDisplay = labels.join(', ');
+    if (formData.tier) {
+        const tier = parseInt(String(formData.tier), 10);
+        nodeUpdateData.tier = tier;
+        [1, 2, 3, 4].forEach(t => currentSelectedNode.removeClass(`tier-${t}`));
+        currentSelectedNode.addClass(`tier-${tier}`);
     }
 
-    if (newData.tier) {
-        newData.tier = parseInt(newData.tier, 10);
-
-        // Update classes to reflect new tier color
-        [1, 2, 3, 4].forEach(t => currentSelectedNode!.removeClass(`tier-${t}`));
-        currentSelectedNode.addClass(`tier-${newData.tier}`);
+    if (formData.name) {
+        nodeUpdateData.label = String(formData.name);
     }
 
-    // Handle 'name' field - also update 'label' for Cytoscape display
-    if (newData.name) {
-        newData.label = newData.name;
-    }
+    const currentClasses = (currentSelectedNode.classes() as string[]) || [];
+    const nonLabelClasses = currentClasses.filter(c => !c.startsWith('label-'));
+    const newLabelClasses = labels.map(l => `label-${l.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+    currentSelectedNode.classes([...nonLabelClasses, ...newLabelClasses]);
 
-    // Handle 'labels' field - parse semicolon or comma separated values and update classes
-    if (newData.labels && Array.isArray(newData.labels)) {
-        const labels = newData.labels;
-        const newLabelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
-        // Get current classes as array, filter out old label classes, add new ones
-        const currentClasses = currentSelectedNode.classes();
-        const classArray = Array.isArray(currentClasses) ? currentClasses : [];
-        const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
-        currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
-    } else if (newData.labels && typeof newData.labels === 'string') {
-        const labels = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
-        newData.labelsDisplay = labels.join(', ');
-        newData.labels = labels;
-        const newLabelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
-        // Get current classes as array, filter out old label classes, add new ones
-        const currentClasses = currentSelectedNode.classes();
-        const classArray = Array.isArray(currentClasses) ? currentClasses : [];
-        const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
-        currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
-    }
+    currentSelectedNode.data(nodeUpdateData);
 
-    // Update node data
-    currentSelectedNode.data(newData);
-
-    // Save to localStorage
     const elements = cyRef.elements().jsons();
     saveGraphData(elements as any);
 
-    // Refresh filter panels with new labels/teams
     populateLabelFilter(cyRef.nodes().toArray());
     populateTeamFilter(cyRef.nodes().toArray());
 
     if (updateStatusRef) {
-        updateStatusRef(`Saved changes to ${newData.name || newData.label || currentSelectedNode.id()}`);
+        updateStatusRef(`Saved changes to ${nodeUpdateData.name || nodeUpdateData.label || currentSelectedNode.id()}`);
     }
 
-    // Refresh panel to show saved state
     showPanel(currentSelectedNode);
 };
 
