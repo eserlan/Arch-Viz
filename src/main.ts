@@ -1,12 +1,12 @@
 import './styles/main.css';
-import { initAccordion } from './logic/accordion';
-import { clearGraphData } from './logic/storage';
-import { initUploader } from './logic/uploader';
-import { showToast, updateStatus } from './logic/ui';
+import { initAccordion } from './logic/ui/accordion';
+import { clearGraphData } from './logic/core/storage';
+import { initUploader } from './logic/utils/uploader';
+import { showToast, updateStatus } from './logic/ui/ui';
 import { CyInstance } from './types';
-import { createGraphRenderer } from './logic/appGraph';
-import { loadGraphElements } from './logic/appData';
-import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions } from './logic/appUi';
+import { createGraphRenderer } from './logic/graph/appGraph';
+import { loadGraphElements } from './logic/core/appData';
+import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions } from './logic/ui/appUi';
 
 const cyContainer = document.getElementById('cy') as HTMLElement | null;
 const csvUrl = `${(import.meta as any).env.BASE_URL}data/services.csv`;
