@@ -5,3 +5,4 @@ node_modules
 .vite
 coverage
 dist
+\n# Test reports\nplaywright-report/\ntest-results/\n\n# Logs\n*.log
