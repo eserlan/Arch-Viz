@@ -27,14 +27,25 @@ describe('getShapeClass', () => {
         expect(getShapeClass('service', 'my-topic-name')).toBe('is-queue');
     });
 
-    it('should handle underscore parts', () => {
-        expect(getShapeClass('user_db', 'User Service')).toBe('is-database');
-        expect(getShapeClass('service', 'event_queue')).toBe('is-queue');
+    it('should handle camelCase', () => {
+        expect(getShapeClass('userService', 'KafkaTopic')).toBe('is-queue');
+        expect(getShapeClass('orderDb', 'Order Service')).toBe('is-database');
+    });
+
+    it('should handle pluralization', () => {
+        expect(getShapeClass('service', 'Billing Events')).toBe('is-queue');
+        expect(getShapeClass('database-clusters', 'Stores')).toBe('is-database');
+    });
+
+    it('should match new keywords', () => {
+        expect(getShapeClass('payment-rabbitmq', 'Messaging')).toBe('is-queue');
+        expect(getShapeClass('event-bus', 'RabbitMQ/Kafka')).toBe('is-queue');
+        expect(getShapeClass('data-storage', 'Primary Warehouse')).toBe('is-database');
     });
 
     it('should not match partial words', () => {
-        expect(getShapeClass('adhub', 'Ad Hub')).toBe(''); // matches 'db' if not careful
-        expect(getShapeClass('topicana', 'Topicana')).toBe(''); // matches 'topic' if not careful
+        expect(getShapeClass('adhub', 'Ad Hub')).toBe('');
+        expect(getShapeClass('topicana', 'Topicana')).toBe('');
     });
 
     it('should prioritize queue over database if both match', () => {
