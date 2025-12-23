@@ -1,5 +1,5 @@
 import { NodeSingular, EventObject } from 'cytoscape';
-import { showPanel, hidePanel } from '../ui/panel';
+import { showPanel, hidePanel } from '../ui/panel/display';
 import { getNodesAtDepth } from './graphUtils';
 import { saveGraphData } from '../core/storage';
 import { showToast } from '../ui/ui';

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { showPanel, hidePanel, initPanel } from './index';
+import { initPanel } from './actions';
+import { showPanel, hidePanel } from './display';
 import { CyInstance } from '../../../types';
 
 // Mock storage module

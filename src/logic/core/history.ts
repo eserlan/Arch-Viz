@@ -1,7 +1,7 @@
 import { ElementDefinition } from 'cytoscape';
 import { CyInstance } from '../../types';
 import { populateLabelFilter, populateTeamFilter } from '../graph/filters';
-import { hidePanel } from '../ui/panel';
+import { hidePanel } from '../ui/panel/display';
 
 type StatusHandler = (message: string) => void;
 type PersistHandler = (elements: ElementDefinition[]) => void;

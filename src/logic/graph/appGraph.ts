@@ -9,6 +9,7 @@ import { initEdgeEditor } from './edgeEditor';
 import { calculateDynamicZoom } from '../ui/zoom';
 import { initLayoutManager } from './layoutManager';
 import { initGraphEvents } from './graphEvents';
+import { initPanel } from '../ui/panel/actions';
 import { initServiceForm } from '../ui/serviceForm';
 import { initGrouping } from './grouping';
 import { initHistory } from '../core/history';
@@ -71,6 +72,7 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
         initEdgeEditor(cy, onStatus);
         initLayoutManager(cy);
         initGraphEvents(cy);
+        initPanel(cy, onStatus);
         initServiceForm(cy, () => onDirtyStateChange(true));
         initGrouping(cy);
         initMiniMap(cy);

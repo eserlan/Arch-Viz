@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanupHistory, initHistory, recordSnapshot } from './history';
 import { populateLabelFilter, populateTeamFilter } from '../graph/filters';
-import { hidePanel } from '../ui/panel';
+import { hidePanel } from '../ui/panel/display';
 vi.mock('../graph/filters', () => ({
     populateLabelFilter: vi.fn(),
     populateTeamFilter: vi.fn()
 }));
-vi.mock('../ui/panel/index', () => ({ hidePanel: vi.fn() }));
+vi.mock('../ui/panel/display', () => ({ hidePanel: vi.fn() }));
 
 const createCy = () => {
     const add = vi.fn();

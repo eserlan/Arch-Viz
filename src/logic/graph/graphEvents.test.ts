@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { initGraphEvents } from './graphEvents';
-import * as panel from '../ui/panel';
+import * as panel from '../ui/panel/display';
 import * as graphUtils from './graphUtils';
 import { CyInstance } from '../../types';
 
-vi.mock('../ui/panel/index', () => ({
+vi.mock('../ui/panel/display', () => ({
     showPanel: vi.fn(),
     hidePanel: vi.fn()
 }));
