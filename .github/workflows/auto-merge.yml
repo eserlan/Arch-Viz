@@ -1,22 +1,30 @@
-name: Enable Auto Merge
-
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review]
-  check_suite:
-    types: [completed]
+  workflow_run:
+    workflows: ["CI - Test & Verify"]
+    types:
+      - completed
 
 jobs:
-  enable-auto-merge:
+  merge-on-success:
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'pull_request_target' && github.event.pull_request.draft == false) ||
-      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'success')
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
     permissions:
       pull-requests: write
       contents: write
     steps:
-      - name: Enable Auto Merge
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Merge PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh pr merge --auto --rebase "${{ github.event.pull_request.html_url }}"
+        run: |
+          PR_NUMBER=$(gh pr list -R "${{ github.repository }}" --head "${{ github.event.workflow_run.head_branch }}" --json number -q '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            echo "Merging PR #$PR_NUMBER..."
+            gh pr merge "$PR_NUMBER" --rebase --delete-branch
+          else
+            echo "No open PR found for branch ${{ github.event.workflow_run.head_branch }}"
+          fi
