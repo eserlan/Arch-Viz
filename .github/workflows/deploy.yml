@@ -1,25 +1,26 @@
 name: Deploy to GitHub Pages
 
 on:
-  pull_request:
+  workflow_run:
+    workflows: ["CI - Test & Verify"]
+    types:
+      - completed
     branches:
       - main
-    types:
-      - closed
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
-    # Only run if the PR was merged (not just closed)
-    if: github.event.pull_request.merged == true
+    # Only run if the triggering workflow was successful
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
-        with:
-          ref: main # Ensure we are deploying the merged main branch
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
