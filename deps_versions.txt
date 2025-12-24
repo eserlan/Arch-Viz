@@ -1,0 +1,17 @@
+service-map-viz@0.1.3 /home/espen/proj/arch-viz
+├─┬ @typescript-eslint/eslint-plugin@8.50.1 invalid: "^6.0.0" from the root project
+│ ├─┬ @typescript-eslint/type-utils@8.50.1
+│ │ └── eslint@9.39.2 deduped invalid: "^8.0.0" from the root project
+│ ├─┬ @typescript-eslint/utils@8.50.1
+│ │ └── eslint@9.39.2 deduped invalid: "^8.0.0" from the root project
+│ └── eslint@9.39.2 deduped invalid: "^8.0.0" from the root project
+├─┬ @typescript-eslint/parser@8.50.1 invalid: "^6.0.0" from the root project
+│ └── eslint@9.39.2 deduped invalid: "^8.0.0" from the root project
+└─┬ eslint@9.39.2 invalid: "^8.0.0" from the root project
+  └─┬ @eslint-community/eslint-utils@4.9.0
+    └── eslint@9.39.2 deduped invalid: "^8.0.0" from the root project
+
+npm error code ELSPROBLEMS
+npm error invalid: @typescript-eslint/eslint-plugin@8.50.1 /home/espen/proj/arch-viz/node_modules/@typescript-eslint/eslint-plugin
+npm error invalid: eslint@9.39.2 /home/espen/proj/arch-viz/node_modules/eslint
+npm error A complete log of this run can be found in: /home/espen/.npm/_logs/2025-12-24T00_29_42_450Z-debug-0.log

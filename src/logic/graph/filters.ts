@@ -1,5 +1,5 @@
 import { CyInstance } from '../../types';
-import { NodeDefinition, EdgeDefinition, NodeSingular, EdgeSingular } from 'cytoscape';
+import { NodeSingular, EdgeSingular } from 'cytoscape';
 
 interface FilterElements {
     searchInput: HTMLInputElement | null;

@@ -28,8 +28,10 @@ export const loadGraphData = (): ElementDefinition[] | null => {
     const elements = JSON.parse(saved) as ElementDefinition[];
     return elements.map(el => {
         if (el.selected !== undefined) {
-            const { selected, ...rest } = el;
-            return rest as ElementDefinition;
+            // Create a copy and remove selected property
+            const newEl = { ...el };
+            delete newEl.selected;
+            return newEl;
         }
         return el;
     });

@@ -16,7 +16,7 @@ vi.mock('./graphUtils', () => ({
 describe('Graph Events Logic', () => {
     let mockCy: any;
     let mockElements: any;
-    let eventHandlers: Record<string, Function[]> = {}; // Store multiple handlers
+    let eventHandlers: Record<string, ((...args: any[]) => any)[]> = {}; // Store multiple handlers
 
     beforeEach(() => {
         document.body.innerHTML = `
@@ -50,8 +50,8 @@ describe('Graph Events Logic', () => {
                 length: 0,
                 unselect: vi.fn()
             })),
-             pan: vi.fn(() => ({ x: 0, y: 0 })),
-             zoom: vi.fn(() => 1)
+            pan: vi.fn(() => ({ x: 0, y: 0 })),
+            zoom: vi.fn(() => 1)
         } as unknown as CyInstance;
 
         vi.clearAllMocks();

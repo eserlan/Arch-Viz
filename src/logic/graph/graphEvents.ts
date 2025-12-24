@@ -48,8 +48,6 @@ export const initGraphEvents = (cy: CyInstance): void => {
         if (!contextMenu || !checkIcon || !verifiedBtn) return;
 
         // Position menu
-        const pan = cy.pan();
-        const zoom = cy.zoom();
         const originalEvent = (evt as any).originalEvent;
         const x = originalEvent.clientX;
         const y = originalEvent.clientY;

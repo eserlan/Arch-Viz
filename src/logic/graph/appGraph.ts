@@ -1,7 +1,7 @@
 import cytoscape, { ElementsDefinition, ElementDefinition } from 'cytoscape';
-// @ts-ignore
+// @ts-expect-error - cytoscape-fcose lacks type definitions
 import fcose from 'cytoscape-fcose';
-// @ts-ignore
+// @ts-expect-error - cytoscape-dagre lacks type definitions
 import dagre from 'cytoscape-dagre';
 import { layoutConfig, stylesheet } from './graphConfig';
 import { initFilters, populateLabelFilter, populateTeamFilter } from './filters';
@@ -55,7 +55,7 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
 
         (window as any).cy = cy;
 
-        initHistory(cy, cy.elements().jsons(), {
+        initHistory(cy, cy.elements().jsons() as ElementDefinition[], {
             onStatus,
             onPersist: (graphElements) => saveGraphData(graphElements, { skipHistory: true })
         });
