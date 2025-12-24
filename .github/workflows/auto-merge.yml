@@ -3,11 +3,15 @@ name: Enable Auto Merge
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
+  check_suite:
+    types: [completed]
 
 jobs:
   enable-auto-merge:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    if: |
+      (github.event_name == 'pull_request_target' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'success')
     permissions:
       pull-requests: write
       contents: write
