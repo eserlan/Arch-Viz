@@ -1,6 +1,8 @@
 name: CI - Test & Verify
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
