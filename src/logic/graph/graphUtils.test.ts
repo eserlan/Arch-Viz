@@ -44,7 +44,7 @@ describe('getNodesAtDepth', () => {
         const node = { id: () => 'target' } as any;
 
         const componentWithNode = { contains: (n: any) => n === node, type: 'component' };
-        const componentWithoutNode = { contains: (_n: any) => false };
+        const componentWithoutNode = { contains: () => false };
 
         const cyMock = {
             elements: () => ({

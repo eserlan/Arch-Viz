@@ -1,0 +1,215 @@
+
+/home/espen/proj/arch-viz/src/logic/core/appData.test.ts
+  20:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:98  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/core/history.test.ts
+   51:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   87:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   99:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  128:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/core/history.ts
+  46:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/core/parser.test.ts
+  15:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  80:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/core/storage.test.ts
+   17:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   25:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   47:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   68:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  176:73  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/core/storage.ts
+  31:21  error  'selected' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  31:21  error  'selected' is assigned a value but never used  no-unused-vars
+
+/home/espen/proj/arch-viz/src/logic/graph/appGraph.ts
+  56:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/edgeEditor.test.ts
+  10:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  80:69  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/edgeEditor.ts
+  10:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:99  error    '_addedEdge' is defined but never used    no-unused-vars
+  40:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/filters.test.ts
+    2:51  error    'applyFilters' is defined but never used  @typescript-eslint/no-unused-vars
+    2:51  error    'applyFilters' is defined but never used  no-unused-vars
+   14:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   47:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:73  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/filters.ts
+    2:10  error    'NodeDefinition' is defined but never used  @typescript-eslint/no-unused-vars
+    2:10  error    'NodeDefinition' is defined but never used  no-unused-vars
+    2:26  error    'EdgeDefinition' is defined but never used  @typescript-eslint/no-unused-vars
+    2:26  error    'EdgeDefinition' is defined but never used  no-unused-vars
+  139:47  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  156:46  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/graphConfig.test.ts
+   9:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/graphConfig.ts
+    3:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   25:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  164:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/graphEvents.test.ts
+  17:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  77:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/graphEvents.ts
+  51:15  error    'pan' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  51:15  error    'pan' is assigned a value but never used   no-unused-vars
+  52:15  error    'zoom' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:15  error    'zoom' is assigned a value but never used  no-unused-vars
+  53:39  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  97:39  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/graphUtils.test.ts
+   7:67  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:51  error    '_n' is defined but never used            no-unused-vars
+  47:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/grouping.test.ts
+   10:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   11:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   36:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   44:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   52:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/grouping.ts
+  174:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/layoutManager.test.ts
+  5:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  6:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/layoutManager.ts
+   50:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/nodeOperations.test.ts
+  29:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/graph/nodeOperations.ts
+  33:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/ui/appUi.test.ts
+  52:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/ui/minimap.test.ts
+  17:75  error  'FrameRequestCallback' is not defined  no-undef
+
+/home/espen/proj/arch-viz/src/logic/ui/panel/actions.ts
+   52:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/ui/panel/panel.test.ts
+   26:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   40:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   44:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  119:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/ui/panel/state.ts
+  1:24  error  'EdgeSingular' is defined but never used  @typescript-eslint/no-unused-vars
+  1:24  error  'EdgeSingular' is defined but never used  no-unused-vars
+  2:22  error  'ServiceData' is defined but never used   @typescript-eslint/no-unused-vars
+  2:22  error  'ServiceData' is defined but never used   no-unused-vars
+
+/home/espen/proj/arch-viz/src/logic/ui/serviceForm.test.ts
+  17:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/ui/serviceForm.ts
+  69:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/ui/ui.test.ts
+   8:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/utils/exports.test.ts
+  10:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/logic/utils/uploader.test.ts
+   15:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   16:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   17:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   82:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/espen/proj/arch-viz/src/main.ts
+  12:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 146 problems (19 errors, 127 warnings)
+

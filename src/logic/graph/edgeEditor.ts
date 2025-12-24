@@ -1,5 +1,5 @@
 import cytoscape from 'cytoscape';
-// @ts-ignore
+// @ts-expect-error - cytoscape-edgehandles lacks type definitions
 import edgehandles from 'cytoscape-edgehandles';
 import { saveGraphData } from '../core/storage';
 import { CyInstance } from '../../types';
@@ -36,7 +36,7 @@ export const initEdgeEditor = (cy: CyInstance, updateStatus: (msg: string) => vo
     eh = (cy as any).edgehandles(edgehandlesDefaults);
 
     // Listen for new edge creation
-    cy.on('ehcomplete', (_event: EventObject, sourceNode: NodeSingular, targetNode: NodeSingular, _addedEdge: EdgeSingular) => {
+    cy.on('ehcomplete', (_event: EventObject, sourceNode: NodeSingular, targetNode: NodeSingular, _: EdgeSingular) => {
         saveGraphData(cy.elements().jsons() as any);
         updateStatus(`Connected ${sourceNode.data('label') || sourceNode.id()} → ${targetNode.data('label') || targetNode.id()}`);
     });

@@ -76,7 +76,7 @@ export const toggleEdit = (editing: boolean): void => {
         const existingTargets = new Set(outgoingEdges.targets().map(n => n.id()));
 
         // Build "Remove" view for connections
-        let connectionsHtml = outgoingEdges.map((edge: EdgeSingular) => `
+        const connectionsHtml = outgoingEdges.map((edge: EdgeSingular) => `
             <div class="flex items-center justify-between mb-1 bg-slate-800/50 p-1 rounded group">
                 <span class="text-xs truncate mr-2">${edge.target().data('label') || edge.target().id()}</span>
                 <button class="remove-connection btn-icon text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" data-id="${edge.id()}">
@@ -87,7 +87,7 @@ export const toggleEdit = (editing: boolean): void => {
 
         // Build "Add" dropdown
         const allNodes = cy.nodes().filter(n => n.id() !== currentSelectedNode!.id() && !existingTargets.has(n.id()));
-        let optionsHtml = allNodes.map(n => `<option value="${n.id()}">${n.data('label') || n.id()}</option>`).sort().join('');
+        const optionsHtml = allNodes.map(n => `<option value="${n.id()}">${n.data('label') || n.id()}</option>`).sort().join('');
 
         connectionsList.innerHTML = `
             <div id="editConnectionsList">${connectionsHtml}</div>

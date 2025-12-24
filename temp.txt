@@ -1,0 +1,60 @@
+total 308
+drwxr-xr-x 1 espen espen    670 des.  24 01:37 .
+drwxr-xr-x 1 espen espen    252 des.  18 22:12 ..
+-rw-r--r-- 1 espen espen   1189 des.  24 01:23 AGENTS.md
+drwxr-xr-x 1 espen espen    208 des.  23 16:09 coverage
+-rw-r--r-- 1 espen espen   1171 des.  24 01:29 deps_versions.txt
+drwxr-xr-x 1 espen espen     62 des.  23 15:59 dist
+drwxr-xr-x 1 espen espen     56 des.  23 16:08 e2e
+-rw-r--r-- 1 espen espen    508 des.  24 01:33 .eslintrc.json
+-rw-r--r-- 1 espen espen    216 des.  24 01:23 final_status.txt
+drwxr-xr-x 1 espen espen    166 des.  24 01:36 .git
+drwxr-xr-x 1 espen espen     18 des.  22 11:13 .github
+-rw-r--r-- 1 espen espen     93 des.  24 01:23 .gitignore
+-rw-r--r-- 1 espen espen  18147 des.  24 01:23 index.html
+-rw-r--r-- 1 espen espen  15662 des.  24 01:31 lint_output_8_simple.txt
+-rw-r--r-- 1 espen espen    412 des.  24 01:23 merge_conflicts.txt
+drwxr-xr-x 1 espen espen   5726 des.  24 01:36 node_modules
+-rw-r--r-- 1 espen espen   1054 des.  24 01:33 package.json
+-rw-r--r-- 1 espen espen 211601 des.  24 01:36 package-lock.json
+-rw-r--r-- 1 espen espen    658 des.  23 15:59 playwright.config.ts
+-rw-r--r-- 1 espen espen     81 des.  18 22:48 postcss.config.js
+drwxr-xr-x 1 espen espen     42 des.  22 11:13 public
+-rw-r--r-- 1 espen espen   2255 des.  22 11:13 README.md
+drwxr-xr-x 1 espen espen     50 des.  22 11:13 screenshots
+-rw-r--r-- 1 espen espen   4341 des.  22 11:13 spec.md
+drwxr-xr-x 1 espen espen     52 des.  24 01:23 src
+-rw-r--r-- 1 espen espen    187 des.  18 22:48 tailwind.config.js
+-rw-r--r-- 1 espen espen      0 des.  24 01:37 temp.txt
+-rw-r--r-- 1 espen espen    739 des.  22 11:13 tsconfig.json
+-rw-r--r-- 1 espen espen    154 des.  22 11:13 vite.config.js
+-rw-r--r-- 1 espen espen    359 des.  23 16:09 vitest.config.js
+drwxr-xr-x 1 espen espen     26 des.  22 11:13 .vscode
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   package-lock.json
+	modified:   package.json
+	modified:   src/logic/core/storage.ts
+	modified:   src/logic/graph/appGraph.ts
+	modified:   src/logic/graph/edgeEditor.ts
+	modified:   src/logic/graph/filters.test.ts
+	modified:   src/logic/graph/filters.ts
+	modified:   src/logic/graph/graphEvents.test.ts
+	modified:   src/logic/graph/graphEvents.ts
+	modified:   src/logic/graph/graphUtils.test.ts
+	modified:   src/logic/graph/grouping.test.ts
+	modified:   src/logic/ui/minimap.test.ts
+	modified:   src/logic/ui/panel/edit.ts
+	modified:   src/logic/ui/panel/state.ts
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	deps_versions.txt
+	lint_output_8_simple.txt
+	temp.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")

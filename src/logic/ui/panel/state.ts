@@ -1,5 +1,5 @@
-import { NodeSingular, EdgeSingular } from 'cytoscape';
-import { CyInstance, ServiceData } from '../../../types';
+import { NodeSingular } from 'cytoscape';
+import { CyInstance } from '../../../types';
 
 // Keep state variables private to the module
 let currentSelectedNode: NodeSingular | null = null;

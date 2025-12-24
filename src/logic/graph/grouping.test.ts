@@ -58,13 +58,13 @@ describe('Grouping Module', () => {
         ];
 
         const mockCollection = {
-            forEach: (fn: Function) => mockNodes.forEach(fn),
-            filter: (fn: Function) => {
+            forEach: (fn: (...args: any[]) => any) => mockNodes.forEach(fn),
+            filter: (fn: (...args: any[]) => any) => {
                 const filtered = mockNodes.filter(fn);
                 return {
-                    forEach: (f: Function) => filtered.forEach(f),
-                    filter: (f: Function) => ({
-                        forEach: (ff: Function) => filtered.filter(f).forEach(ff),
+                    forEach: (f: (...args: any[]) => any) => filtered.forEach(f),
+                    filter: (f: (...args: any[]) => any) => ({
+                        forEach: (ff: (...args: any[]) => any) => filtered.filter(f).forEach(ff),
                         length: filtered.filter(f).length,
                     }),
                     length: filtered.length,

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { populateLabelFilter, populateTeamFilter, applyFilters, initFilters } from './filters';
+import { populateLabelFilter, populateTeamFilter, initFilters } from './filters';
 import { CyInstance } from '../../types';
 
 describe('Filters Module', () => {

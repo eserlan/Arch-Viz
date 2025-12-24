@@ -3,7 +3,7 @@ import { initMiniMap } from './minimap';
 import { CyInstance } from '../../types';
 
 describe('Mini map logic', () => {
-    let eventHandlers: Record<string, Function> = {};
+    let eventHandlers: Record<string, (...args: any[]) => any> = {};
     let mockCy: CyInstance;
     let extent: { x1: number; y1: number; x2: number; y2: number };
 
@@ -14,7 +14,7 @@ describe('Mini map logic', () => {
             <div id="minimapViewport"></div>
         `;
 
-        vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+        vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: any) => {
             cb(0);
             return 1;
         });
@@ -29,7 +29,7 @@ describe('Mini map logic', () => {
             })),
             extent: vi.fn(() => extent),
             png: vi.fn(() => 'data:image/png;base64,mini-map'),
-            on: vi.fn((event: string, handler: Function) => {
+            on: vi.fn((event: string, handler: (...args: any[]) => any) => {
                 eventHandlers[event] = handler;
             })
         } as unknown as CyInstance;
