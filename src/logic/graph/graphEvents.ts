@@ -6,6 +6,10 @@ import { showToast } from '../ui/ui';
 import { populateLabelFilter, populateTeamFilter } from './filters';
 import { CyInstance } from '../../types';
 
+interface CytoscapeEventWithOriginal extends EventObject {
+    originalEvent?: MouseEvent;
+}
+
 /**
  * Graph interaction events and UI feedback
  */
@@ -23,10 +27,10 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
     cy.on('tap', 'node', (evt: EventObject) => {
         const node = evt.target as NodeSingular;
-        const originalEvent = (evt as any).originalEvent;
+        const eventWithOriginal = evt as CytoscapeEventWithOriginal;
         
         // Multi-select with Ctrl/Cmd key, otherwise single select
-        if (!originalEvent?.ctrlKey && !originalEvent?.metaKey) {
+        if (!eventWithOriginal.originalEvent?.ctrlKey && !eventWithOriginal.originalEvent?.metaKey) {
             cy.nodes().unselect();
         }
         
@@ -53,9 +57,9 @@ export const initGraphEvents = (cy: CyInstance): void => {
         if (!contextMenu || !checkIcon || !verifiedBtn) return;
 
         // Position menu
-        const originalEvent = (evt as any).originalEvent;
-        const x = originalEvent.clientX;
-        const y = originalEvent.clientY;
+        const eventWithOriginal = evt as CytoscapeEventWithOriginal;
+        const x = eventWithOriginal.originalEvent?.clientX ?? 0;
+        const y = eventWithOriginal.originalEvent?.clientY ?? 0;
 
         contextMenu.style.left = `${x}px`;
         contextMenu.style.top = `${y}px`;
