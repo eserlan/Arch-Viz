@@ -16,6 +16,7 @@ import { initGrouping } from './grouping';
 import { initHistory } from '../core/history';
 import { initMiniMap } from '../ui/minimap';
 import { getDirtyState, saveGraphData } from '../core/storage';
+import { initSelectionInfo } from '../ui/selectionInfo';
 import { CyInstance } from '../../types';
 
 cytoscape.use(fcose);
@@ -43,7 +44,7 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
             style: stylesheet,
             userZoomingEnabled: true,
             wheelSensitivity: 0,
-            selectionType: 'single',
+            selectionType: 'additive',
             minZoom: 0.1,
             maxZoom: 2.5,
         }) as CyInstance;
@@ -79,6 +80,7 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
         initServiceForm(cy, () => onDirtyStateChange(true));
         initGrouping(cy);
         initMiniMap(cy);
+        initSelectionInfo(cy);
 
         populateLabelFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
         populateTeamFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
