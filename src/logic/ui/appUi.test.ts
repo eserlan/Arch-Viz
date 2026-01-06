@@ -76,4 +76,30 @@ describe('appUi helpers', () => {
         expect(initModal).toHaveBeenCalledWith('helpModal', 'openHelpBtn', 'closeHelpBtn', 'helpContent');
         expect(initFloatingPanel).toHaveBeenCalledTimes(2);
     });
+
+    it('initializes panel highlight buttons', () => {
+        document.body.innerHTML = `
+            <button id="highlightLabelsPanel"></button>
+            <button id="highlightTeamsPanel"></button>
+            <div id="floatingFilterPanel"></div>
+            <div id="floatingTeamPanel"></div>
+        `;
+
+        initPanelsAndModals();
+
+        const labelsBtn = document.getElementById('highlightLabelsPanel');
+        const teamsBtn = document.getElementById('highlightTeamsPanel');
+        const labelsPanel = document.getElementById('floatingFilterPanel');
+        const teamsPanel = document.getElementById('floatingTeamPanel');
+
+        // Click labels button
+        labelsBtn?.click();
+        expect(labelsPanel?.classList.contains('ring-4')).toBe(true);
+        expect(labelsPanel?.classList.contains('ring-emerald-400')).toBe(true);
+
+        // Click teams button
+        teamsBtn?.click();
+        expect(teamsPanel?.classList.contains('ring-4')).toBe(true);
+        expect(teamsPanel?.classList.contains('ring-emerald-400')).toBe(true);
+    });
 });
