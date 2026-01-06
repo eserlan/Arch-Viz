@@ -7,6 +7,7 @@ import { layoutConfig, stylesheet } from './graphConfig';
 import { initFilters, populateLabelFilter, populateTeamFilter } from './filters';
 import { initEdgeEditor } from './edgeEditor';
 import { registerEdgeEditorKeyListener } from './edgeEditorKeyboard';
+import { registerSearchKeyListener } from '../ui/searchKeyboard';
 import { calculateDynamicZoom } from '../ui/zoom';
 import { initLayoutManager } from './layoutManager';
 import { initGraphEvents } from './graphEvents';
@@ -72,6 +73,7 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
         initFilters(cy);
         initEdgeEditor(cy, onStatus);
         registerEdgeEditorKeyListener(onStatus);
+        registerSearchKeyListener();
         initLayoutManager(cy);
         initGraphEvents(cy);
         initServiceForm(cy, () => onDirtyStateChange(true));
