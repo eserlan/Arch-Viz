@@ -11,6 +11,10 @@ const isEditableTarget = (target: EventTarget | null): boolean => {
     return tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable;
 };
 
+const hasModifierKeys = (event: KeyboardEvent): boolean => {
+    return event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+};
+
 let keyListenerRegistered = false;
 let keyListener: ((event: KeyboardEvent) => void) | null = null;
 
@@ -19,7 +23,7 @@ const handleKeyPress = (event: KeyboardEvent): void => {
     if (isEditableTarget(event.target)) return;
 
     // Check if 'e' key was pressed (without modifier keys)
-    if (event.key.toLowerCase() === 'e' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
+    if (event.key.toLowerCase() === 'e' && !hasModifierKeys(event)) {
         const currentNode = getCurrentSelectedNode();
         
         // Only toggle if a node is selected (panel is visible)
@@ -47,9 +51,9 @@ export const registerPanelKeyListener = (): void => {
 };
 
 export const cleanupPanelKeyListener = (): void => {
-    if (keyListenerRegistered && keyListener) {
+    if (keyListener) {
         window.removeEventListener('keydown', keyListener);
+        keyListener = null;
     }
     keyListenerRegistered = false;
-    keyListener = null;
 };
