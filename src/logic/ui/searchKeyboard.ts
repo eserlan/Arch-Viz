@@ -58,6 +58,13 @@ const handleKeyPress = (event: KeyboardEvent): void => {
     }
 };
 
+/**
+ * Registers a global keyboard listener for the F key to manage search input focus.
+ * This is registered once per page load and persists across graph reloads.
+ * The guard (keyListenerRegistered) prevents duplicate registration if called multiple times.
+ * 
+ * Note: Follows the same pattern as registerEdgeEditorKeyListener and registerPanelKeyListener.
+ */
 export const registerSearchKeyListener = (): void => {
     if (keyListenerRegistered) return;
     
