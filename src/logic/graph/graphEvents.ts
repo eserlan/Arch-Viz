@@ -23,8 +23,13 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
     cy.on('tap', 'node', (evt: EventObject) => {
         const node = evt.target as NodeSingular;
-        // Select this node (enables layout centering around selected node)
-        cy.nodes().unselect();
+        const originalEvent = (evt as any).originalEvent;
+        
+        // Multi-select with Ctrl/Cmd key, otherwise single select
+        if (!originalEvent?.ctrlKey && !originalEvent?.metaKey) {
+            cy.nodes().unselect();
+        }
+        
         node.select();
         showPanel(node);
         highlightConnections(node);
