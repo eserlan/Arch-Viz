@@ -75,4 +75,26 @@ export const HELP_CONTENT_HTML: string = `
       <li><strong class="text-emerald-400">Export</strong>: Save your graph as an image or clipboard.</li>
     </ul>
   </div>
+
+  <div>
+    <h3 class="text-lg font-semibold mb-2 text-white">Keyboard Shortcuts</h3>
+    <div class="bg-slate-800 rounded p-3 border border-slate-700">
+      <table class="w-full text-left text-xs">
+        <tbody class="text-slate-300">
+          <tr class="border-b border-slate-700/50">
+            <td class="py-2 px-2 font-mono text-emerald-300">E</td>
+            <td class="py-2 px-2">Toggle edit mode for selected service</td>
+          </tr>
+          <tr class="border-b border-slate-700/50">
+            <td class="py-2 px-2 font-mono text-emerald-300">Ctrl+Z</td>
+            <td class="py-2 px-2">Undo last change</td>
+          </tr>
+          <tr>
+            <td class="py-2 px-2 font-mono text-emerald-300">Ctrl+Y / Ctrl+Shift+Z</td>
+            <td class="py-2 px-2">Redo last undone change</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 `;

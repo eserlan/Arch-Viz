@@ -4,6 +4,7 @@ import {
     getCurrentSelectedNode,
     getCyRef,
     getOriginalData,
+    setIsEditMode,
     TIER_LABELS
 } from './state';
 import { updateSaveButtonState } from './actions';
@@ -142,4 +143,7 @@ export const toggleEdit = (editing: boolean): void => {
         editBtn?.classList.remove('hidden');
         editActions?.classList.add('hidden');
     }
+
+    // Update edit mode state
+    setIsEditMode(editing);
 };

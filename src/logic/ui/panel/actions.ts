@@ -13,6 +13,7 @@ import {
 } from './state';
 import { showPanel, hidePanel } from './display';
 import { toggleEdit } from './edit';
+import { registerPanelKeyListener } from './keyboard';
 
 export const updateSaveButtonState = (): void => {
     const { saveBtn, panelContent } = getElements();
@@ -146,6 +147,9 @@ export const initPanel = (cy: CyInstance, updateStatus: (msg: string) => void): 
     // Update module-level references every time
     setCyRef(cy);
     setUpdateStatusRef(updateStatus);
+
+    // Register keyboard listener once
+    registerPanelKeyListener();
 
     const { editBtn, cancelBtn, saveBtn } = getElements();
 
