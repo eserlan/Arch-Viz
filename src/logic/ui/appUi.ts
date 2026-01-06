@@ -5,6 +5,10 @@ import { initFloatingPanel, initModal } from './ui';
 
 type StatusHandler = (message: string) => void;
 
+const HIGHLIGHT_DURATION_MS = 1500;
+const HIGHLIGHT_CLASSES = ['ring-4', 'ring-emerald-400', 'ring-opacity-50'];
+const PULSE_ANIMATION = 'pulse 0.5s ease-in-out 3';
+
 export const initDirtyStateIndicator = (containerId = 'dirtyStateContainer'): ((isDirty: boolean) => void) => {
     const dirtyStateContainer = document.getElementById(containerId);
     const updateDirtyUI = (isDirty: boolean): void => {
@@ -53,16 +57,16 @@ const highlightPanel = (panelId: string): void => {
     if (!panel) return;
 
     // Add highlight effect
-    panel.classList.add('ring-4', 'ring-emerald-400', 'ring-opacity-50');
+    panel.classList.add(...HIGHLIGHT_CLASSES);
     
     // Briefly pulse the panel
-    panel.style.animation = 'pulse 0.5s ease-in-out 3';
+    panel.style.animation = PULSE_ANIMATION;
     
     // Remove highlight after animation
     setTimeout(() => {
-        panel.classList.remove('ring-4', 'ring-emerald-400', 'ring-opacity-50');
+        panel.classList.remove(...HIGHLIGHT_CLASSES);
         panel.style.animation = '';
-    }, 1500);
+    }, HIGHLIGHT_DURATION_MS);
 };
 
 export const initPanelsAndModals = (): void => {
