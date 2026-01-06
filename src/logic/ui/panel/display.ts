@@ -7,6 +7,7 @@ import {
     getCyRef,
     setSelectedNode,
     setOriginalData,
+    setIsEditMode,
     TIER_LABELS
 } from './state';
 
@@ -87,6 +88,9 @@ export const showPanel = (node: NodeSingular): void => {
     servicePanel.classList.add('active');
     editBtn?.classList.remove('hidden');
     editActions?.classList.add('hidden');
+
+    // Reset edit mode state
+    setIsEditMode(false);
 };
 
 export const hidePanel = (): void => {
@@ -94,4 +98,5 @@ export const hidePanel = (): void => {
     if (servicePanel) servicePanel.classList.remove('active');
     setSelectedNode(null);
     setOriginalData({});
+    setIsEditMode(false);
 };

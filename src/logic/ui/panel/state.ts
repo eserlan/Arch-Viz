@@ -6,12 +6,14 @@ let currentSelectedNode: NodeSingular | null = null;
 let cyRef: CyInstance | null = null;
 let updateStatusRef: ((msg: string) => void) | null = null;
 let originalData: Record<string, string> = {};
+let isEditMode = false;
 
 // Export getters to access the state
 export const getCurrentSelectedNode = () => currentSelectedNode;
 export const getCyRef = () => cyRef;
 export const getUpdateStatusRef = () => updateStatusRef;
 export const getOriginalData = () => originalData;
+export const getIsEditMode = () => isEditMode;
 
 
 export const setSelectedNode = (node: NodeSingular | null) => {
@@ -32,6 +34,10 @@ export const setOriginalData = (data: Record<string, string>) => {
 
 export const resetOriginalData = () => {
     originalData = {};
+};
+
+export const setIsEditMode = (editing: boolean) => {
+    isEditMode = editing;
 };
 
 export interface PanelElements {
