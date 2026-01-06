@@ -17,7 +17,7 @@ export const updateSelectionInfo = (cy: CyInstance): void => {
  * Initializes the selection info panel listeners
  */
 export const initSelectionInfo = (cy: CyInstance): void => {
-    if (!cy) return;
+    if (!cy || cy === null) return;
 
     // Update on selection/unselection
     cy.on('select unselect', 'node', () => {

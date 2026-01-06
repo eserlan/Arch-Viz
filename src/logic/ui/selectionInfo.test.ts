@@ -111,7 +111,7 @@ describe('selectionInfo', () => {
         });
 
         it('should handle missing cy instance gracefully', () => {
-            expect(() => initSelectionInfo(null as any)).not.toThrow();
+            expect(() => initSelectionInfo(undefined as unknown as CyInstance)).not.toThrow();
         });
     });
 });
