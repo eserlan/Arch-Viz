@@ -86,6 +86,10 @@ export const HELP_CONTENT_HTML: string = `
             <td class="py-2 px-2">Toggle edit mode for selected service</td>
           </tr>
           <tr class="border-b border-slate-700/50">
+            <td class="py-2 px-2 font-mono text-emerald-300">M</td>
+            <td class="py-2 px-2">Toggle map/connections edit mode</td>
+          </tr>
+          <tr class="border-b border-slate-700/50">
             <td class="py-2 px-2 font-mono text-emerald-300">Ctrl+Z</td>
             <td class="py-2 px-2">Undo last change</td>
           </tr>
