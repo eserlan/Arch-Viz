@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
   <title>Arch Viz - Mapping the Chaos</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-C-AX2qfR.js"></script>
-  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-BS02h4DU.css">
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-CNAdheK4.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-CqLbYoYX.css">
 </head>
 
 <body class="bg-slate-950 text-slate-100">
@@ -84,9 +84,20 @@
         </select>
       </div>
 
-      <!-- Label Filter Moved to Floating Panel -->
-
-      <!-- Team Filter moved to floating panel -->
+      <!-- Filter Panels Info -->
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Filter Panels</label>
+        <div class="bg-slate-800/50 border border-slate-700/50 rounded px-3 py-2.5 space-y-2">
+          <button id="highlightLabelsPanel" class="w-full flex items-center gap-2 text-xs text-slate-300 hover:text-emerald-400 transition-colors">
+            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+            <span>Labels (Top Center)</span>
+          </button>
+          <button id="highlightTeamsPanel" class="w-full flex items-center gap-2 text-xs text-slate-300 hover:text-blue-400 transition-colors">
+            <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            <span>Teams (Top Right)</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Divider -->
       <div class="border-t border-slate-800 pt-4 space-y-3">
