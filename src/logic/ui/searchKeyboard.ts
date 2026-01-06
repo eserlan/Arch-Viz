@@ -34,22 +34,25 @@ const handleKeyPress = (event: KeyboardEvent): void => {
         // Check if we're already focused on the search input
         const isFocusedOnSearch = document.activeElement === searchInput;
         
-        if (isFocusedOnSearch && timeSinceLastPress < DOUBLE_TAP_THRESHOLD) {
-            // Double tap detected while focused - clear and blur
+        if (isFocusedOnSearch) {
+            // When focused on search input, ALWAYS prevent default to avoid typing 'f'
             event.preventDefault();
-            searchInput.value = '';
-            // Trigger input event to update any listeners (like filter updates)
-            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-            searchInput.blur();
-            lastFKeyPress = 0; // Reset to prevent triple-tap behavior
+            
+            if (timeSinceLastPress < DOUBLE_TAP_THRESHOLD) {
+                // Double tap detected while focused - clear and blur
+                searchInput.value = '';
+                // Trigger input event to update any listeners (like filter updates)
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                searchInput.blur();
+                lastFKeyPress = 0; // Reset to prevent triple-tap behavior
+            } else {
+                // Single tap while focused - just update timestamp
+                lastFKeyPress = now;
+            }
         } else if (!isEditableTarget(event.target)) {
             // Single tap from outside any input - focus search
             event.preventDefault();
             searchInput.focus();
-            lastFKeyPress = now;
-        }
-        // If focused on search input (but not double-tap), just update timestamp
-        else if (isFocusedOnSearch) {
             lastFKeyPress = now;
         }
     }
