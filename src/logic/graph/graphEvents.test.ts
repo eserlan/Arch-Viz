@@ -135,6 +135,9 @@ describe('Graph Events Logic', () => {
         selectedCollection.length = 0;
         selectedCollection[0] = undefined;
 
+        // Clear mock to specifically test the depth change event
+        vi.clearAllMocks();
+
         const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement;
         depthSelect.value = '1';
         depthSelect.dispatchEvent(new Event('change'));
