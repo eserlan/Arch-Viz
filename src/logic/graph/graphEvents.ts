@@ -16,6 +16,8 @@ interface CytoscapeEventWithOriginal extends EventObject {
 export const initGraphEvents = (cy: CyInstance): void => {
     if (!cy) return;
 
+    let lastFocusedNode: NodeSingular | null = null;
+
     const highlightConnections = (node: NodeSingular) => {
         const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
         const depthVal = depthSelect?.value || '1';
@@ -23,6 +25,14 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
         cy.elements().addClass('dimmed');
         highlightCollection.removeClass('dimmed');
+    };
+
+    const getHighlightTarget = (): NodeSingular | null => {
+        const selected = cy.nodes(':selected');
+        if (selected.length > 0) {
+            return selected[0];
+        }
+        return lastFocusedNode;
     };
 
     cy.on('tap', 'node', (evt: EventObject) => {
@@ -35,6 +45,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
         }
         
         node.select();
+        lastFocusedNode = node;
         showPanel(node);
         highlightConnections(node);
     });
@@ -44,6 +55,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
             hidePanel();
             cy.nodes().unselect();
             cy.elements().removeClass('dimmed');
+            lastFocusedNode = null;
         }
     });
 
@@ -141,9 +153,9 @@ export const initGraphEvents = (cy: CyInstance): void => {
         depthSelect.parentNode.replaceChild(newSelect, depthSelect);
 
         newSelect.addEventListener('change', () => {
-            const selected = cy.nodes(':selected');
-            if (selected.length > 0) {
-                highlightConnections(selected[0]);
+            const highlightTarget = getHighlightTarget();
+            if (highlightTarget) {
+                highlightConnections(highlightTarget);
             }
         });
     }
