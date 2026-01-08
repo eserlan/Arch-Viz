@@ -17,6 +17,7 @@ describe('Graph Events Logic', () => {
     let mockCy: any;
     let mockElements: any;
     let eventHandlers: Record<string, ((...args: any[]) => any)[]> = {}; // Store multiple handlers
+    let selectedCollection: any;
 
     beforeEach(() => {
         document.body.innerHTML = `
@@ -35,6 +36,11 @@ describe('Graph Events Logic', () => {
             removeClass: vi.fn().mockReturnThis()
         };
 
+        selectedCollection = {
+            length: 0,
+            0: undefined
+        };
+
         mockCy = {
             on: vi.fn((event, ...args) => {
                 const selector = typeof args[0] === 'string' ? args[0] : null;
@@ -46,10 +52,15 @@ describe('Graph Events Logic', () => {
                 eventHandlers[key].push(handler);
             }),
             elements: vi.fn(() => mockElements),
-            nodes: vi.fn(() => ({
-                length: 0,
-                unselect: vi.fn()
-            })),
+            nodes: vi.fn((selector?: string) => {
+                if (selector === ':selected') {
+                    return selectedCollection;
+                }
+                return {
+                    length: 0,
+                    unselect: vi.fn()
+                };
+            }),
             pan: vi.fn(() => ({ x: 0, y: 0 })),
             zoom: vi.fn(() => 1)
         } as unknown as CyInstance;
@@ -108,5 +119,26 @@ describe('Graph Events Logic', () => {
         expect(tooltip.innerHTML).toContain('Node A');
         expect(tooltip.innerHTML).toContain('Core, Auth');
         expect(tooltip.style.opacity).toBe('1');
+    });
+
+    it('should refresh highlighted connections when depth changes', () => {
+        const mockNode = { id: () => 'n1', select: vi.fn() };
+        const highlightCollection = {
+            removeClass: vi.fn()
+        };
+        (graphUtils.getNodesAtDepth as any).mockReturnValue(highlightCollection);
+
+        initGraphEvents(mockCy);
+        const tapHandlers = eventHandlers['tap:node'];
+        tapHandlers[0]({ target: mockNode });
+
+        selectedCollection.length = 0;
+        selectedCollection[0] = undefined;
+
+        const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement;
+        depthSelect.value = '1';
+        depthSelect.dispatchEvent(new Event('change'));
+
+        expect(graphUtils.getNodesAtDepth).toHaveBeenCalledWith(mockNode, '1', mockCy);
     });
 });
