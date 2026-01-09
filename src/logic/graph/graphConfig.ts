@@ -98,7 +98,7 @@ export const stylesheet: any[] = [
     {
         selector: '.is-verified',
         style: {
-            'border-color': '#22c55e',
+            'border-color': '#94a3b8',
             'border-width': 4,
         },
     },
