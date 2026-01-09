@@ -15,6 +15,30 @@ export const toggleEdit = (editing: boolean): void => {
     const originalData = getOriginalData();
     if (!panelContent || !currentSelectedNode) return;
 
+    if (!editing) {
+        panelContent.querySelectorAll('[data-edit-only="verified"]').forEach(el => el.remove());
+    }
+
+    if (editing) {
+        const existing = panelContent.querySelector('[data-edit-only="verified"]');
+        if (!existing) {
+            const verifiedItem = document.createElement('div');
+            verifiedItem.className = 'info-item';
+            verifiedItem.dataset.editOnly = 'verified';
+            verifiedItem.innerHTML = `
+                <label>Verified</label>
+                <div class="info-value" data-key="verified"></div>
+            `;
+
+            const outboundItem = panelContent.querySelector('.connections-list')?.closest('.info-item');
+            if (outboundItem && outboundItem.parentNode) {
+                outboundItem.parentNode.insertBefore(verifiedItem, outboundItem);
+            } else {
+                panelContent.appendChild(verifiedItem);
+            }
+        }
+    }
+
     const values = panelContent.querySelectorAll('.info-value[data-key]');
     values.forEach(el => {
         const htmlEl = el as HTMLElement;
@@ -28,6 +52,14 @@ export const toggleEdit = (editing: boolean): void => {
                     `<option value="${val}" ${parseInt(val) === currentTier ? 'selected' : ''}>${label}</option>`
                 ).join('');
                 htmlEl.innerHTML = `<select data-key="tier" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-emerald-500">${options}</select>`;
+            } else if (key === 'verified') {
+                const isVerified = Boolean(originalData.verified);
+                htmlEl.innerHTML = `
+                    <label class="flex items-center gap-2 text-xs text-slate-300">
+                        <input type="checkbox" data-key="verified" class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500" ${isVerified ? 'checked' : ''} />
+                        Toggle verification
+                    </label>
+                `;
             } else {
                 const currentVal = originalData[key] || htmlEl.textContent;
                 htmlEl.innerHTML = `<input type="text" data-key="${key}" value="${currentVal}" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm">`;

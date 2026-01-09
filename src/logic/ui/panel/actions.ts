@@ -26,7 +26,8 @@ export const updateSaveButtonState = (): void => {
     inputs.forEach(input => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
-        if (key && getOriginalData()[key] !== el.value) {
+        const currentValue = el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value;
+        if (key && getOriginalData()[key] !== currentValue) {
             isDirty = true;
         }
     });
@@ -56,7 +57,7 @@ export const handleSave = (): void => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
         if (key) {
-            newData[key] = el.value;
+            newData[key] = el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value;
         }
     });
 
@@ -95,6 +96,10 @@ export const handleSave = (): void => {
         const classArray = Array.isArray(currentClasses) ? currentClasses : [];
         const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
         currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
+    }
+
+    if (typeof newData.verified === 'boolean') {
+        currentSelectedNode.toggleClass('is-verified', newData.verified);
     }
 
     // Update node data

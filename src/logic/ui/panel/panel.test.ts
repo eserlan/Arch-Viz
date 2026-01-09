@@ -32,6 +32,7 @@ describe('Panel Module', () => {
             tier: 1,
             owner: 'Test Owner',
             repoUrl: 'http://test.com',
+            verified: false,
             ...data
         };
         let nodeClasses = data.classes || ['tier-1'];
@@ -67,6 +68,14 @@ describe('Panel Module', () => {
             }),
             removeClass: vi.fn((cls) => {
                 nodeClasses = nodeClasses.filter((c: string) => c !== cls);
+                return mockNode;
+            }),
+            toggleClass: vi.fn((cls, state) => {
+                if (state) {
+                    if (!nodeClasses.includes(cls)) nodeClasses.push(cls);
+                } else {
+                    nodeClasses = nodeClasses.filter((c: string) => c !== cls);
+                }
                 return mockNode;
             }),
             outgoers: () => mockEdgeCollection,
@@ -174,6 +183,29 @@ describe('Panel Module', () => {
         expect(saveBtn.disabled).toBe(false);
     });
 
+    it('should render verified toggle only in edit mode', () => {
+        const mockNode = createMockNode({ verified: true });
+        initPanel(mockCy, vi.fn());
+        showPanel(mockNode);
+        expect(document.querySelector('input[data-key="verified"]')).toBeNull();
+        document.getElementById('editBtn')!.click();
+        const verifiedToggle = document.querySelector('input[data-key="verified"]') as HTMLInputElement;
+        expect(verifiedToggle).toBeTruthy();
+        expect(verifiedToggle.checked).toBe(true);
+    });
+
+    it('should mark verified as dirty when toggled', () => {
+        const mockNode = createMockNode({ verified: false });
+        initPanel(mockCy, vi.fn());
+        showPanel(mockNode);
+        document.getElementById('editBtn')!.click();
+        const verifiedToggle = document.querySelector('input[data-key="verified"]') as HTMLInputElement;
+        verifiedToggle.checked = true;
+        verifiedToggle.dispatchEvent(new Event('change', { bubbles: true }));
+        const saveBtn = document.getElementById('saveBtn') as HTMLButtonElement;
+        expect(saveBtn.disabled).toBe(false);
+    });
+
     it('should correctly update node tier and classes when saving', () => {
         const mockNode = createMockNode({ tier: 1, classes: ['tier-1'] });
         initPanel(mockCy, vi.fn());
@@ -186,6 +218,19 @@ describe('Panel Module', () => {
         expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({ tier: 3 }));
         expect(mockNode.removeClass).toHaveBeenCalledWith('tier-1');
         expect(mockNode.addClass).toHaveBeenCalledWith('tier-3');
+    });
+
+    it('should update verified state and classes when saving', () => {
+        const mockNode = createMockNode({ verified: false });
+        initPanel(mockCy, vi.fn());
+        showPanel(mockNode);
+        document.getElementById('editBtn')!.click();
+        const verifiedToggle = document.querySelector('input[data-key="verified"]') as HTMLInputElement;
+        verifiedToggle.checked = true;
+        verifiedToggle.dispatchEvent(new Event('change', { bubbles: true }));
+        document.getElementById('saveBtn')!.click();
+        expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', true);
+        expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({ verified: true }));
     });
 
     it('should parse multi-label input correctly', () => {

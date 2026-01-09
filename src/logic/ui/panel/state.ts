@@ -5,7 +5,7 @@ import { CyInstance } from '../../../types';
 let currentSelectedNode: NodeSingular | null = null;
 let cyRef: CyInstance | null = null;
 let updateStatusRef: ((msg: string) => void) | null = null;
-let originalData: Record<string, string> = {};
+let originalData: Record<string, string | boolean> = {};
 let isEditMode = false;
 
 // Export getters to access the state
@@ -28,7 +28,7 @@ export const setUpdateStatusRef = (fn: (msg: string) => void) => {
     updateStatusRef = fn;
 };
 
-export const setOriginalData = (data: Record<string, string>) => {
+export const setOriginalData = (data: Record<string, string | boolean>) => {
     originalData = data;
 };
 
