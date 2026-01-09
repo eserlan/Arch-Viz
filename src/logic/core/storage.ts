@@ -1,6 +1,7 @@
 import { CyInstance } from '../../types';
 import { ElementDefinition, NodeSingular, EdgeSingular } from 'cytoscape';
 import { recordSnapshot } from './history';
+import { getNodeLabelDisplay } from '../graph/labelDisplay';
 
 const STORAGE_KEY = 'arch-viz-elements';
 const DIRTY_KEY = 'arch-viz-dirty';
@@ -31,7 +32,21 @@ export const loadGraphData = (): ElementDefinition[] | null => {
             // Create a copy and remove selected property
             const newEl = { ...el };
             delete newEl.selected;
+            if (newEl.group === 'nodes' && newEl.data) {
+                const nodeData = newEl.data as Record<string, unknown>;
+                if (!nodeData.labelDisplay) {
+                    const baseLabel = (nodeData.name || nodeData.label || nodeData.id || '') as string;
+                    nodeData.labelDisplay = getNodeLabelDisplay(baseLabel, Boolean(nodeData.verified));
+                }
+            }
             return newEl;
+        }
+        if (el.group === 'nodes' && el.data) {
+            const nodeData = el.data as Record<string, unknown>;
+            if (!nodeData.labelDisplay) {
+                const baseLabel = (nodeData.name || nodeData.label || nodeData.id || '') as string;
+                nodeData.labelDisplay = getNodeLabelDisplay(baseLabel, Boolean(nodeData.verified));
+            }
         }
         return el;
     });

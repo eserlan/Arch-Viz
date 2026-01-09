@@ -14,6 +14,7 @@ import {
 import { showPanel, hidePanel } from './display';
 import { toggleEdit } from './edit';
 import { registerPanelKeyListener } from './keyboard';
+import { getNodeLabelDisplay } from '../../graph/labelDisplay';
 
 export const updateSaveButtonState = (): void => {
     const { saveBtn, panelContent } = getElements();
@@ -102,6 +103,10 @@ export const handleSave = (): void => {
     if (newData.name) {
         newData.label = newData.name;
     }
+
+    const displayName = newData.name || currentSelectedNode.data('name') || currentSelectedNode.data('label') || currentSelectedNode.id();
+    const isVerified = typeof newData.verified === 'boolean' ? newData.verified : Boolean(currentSelectedNode.data('verified'));
+    newData.labelDisplay = getNodeLabelDisplay(displayName, isVerified);
 
     // Handle 'labels' field - parse semicolon or comma separated values and update classes
     if (newData.labels && Array.isArray(newData.labels)) {
