@@ -110,6 +110,20 @@ export const stylesheet: any[] = [
         } as any,
     },
     {
+        selector: 'edge.edge-outbound',
+        style: {
+            'line-color': '#38bdf8',
+            'target-arrow-color': '#38bdf8',
+        } as any,
+    },
+    {
+        selector: 'edge.edge-inbound',
+        style: {
+            'line-color': '#f59e0b',
+            'target-arrow-color': '#f59e0b',
+        } as any,
+    },
+    {
         selector: 'node:selected',
         style: {
             'border-color': '#22c55e',
