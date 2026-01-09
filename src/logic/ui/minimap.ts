@@ -20,6 +20,7 @@ export const initMiniMap = (cy: CyInstance): void => {
 
     let viewportFrame = 0;
     let imageTimer = 0;
+    let isDragging = false;
 
     const updateImage = (): void => {
         if (!cy || cy.elements().length === 0) return;
@@ -65,6 +66,34 @@ export const initMiniMap = (cy: CyInstance): void => {
         });
     };
 
+    const panToMiniMapPosition = (clientX: number, clientY: number): void => {
+        if (!cy || cy.elements().length === 0) return;
+
+        const rect = image.getBoundingClientRect();
+        const bounds = cy.elements().boundingBox();
+        if (bounds.w === 0 || bounds.h === 0) return;
+
+        const width = rect.width || MINI_MAP_IMAGE_WIDTH;
+        const height = rect.height || MINI_MAP_IMAGE_HEIGHT;
+        const scaleX = width / bounds.w;
+        const scaleY = height / bounds.h;
+
+        const x = clamp(clientX - rect.left, 0, width);
+        const y = clamp(clientY - rect.top, 0, height);
+
+        const targetX = bounds.x1 + x / scaleX;
+        const targetY = bounds.y1 + y / scaleY;
+
+        const zoom = cy.zoom();
+        const pan = {
+            x: cy.width() / 2 - targetX * zoom,
+            y: cy.height() / 2 - targetY * zoom,
+        };
+
+        cy.pan(pan);
+        scheduleViewportUpdate();
+    };
+
     const scheduleImageUpdate = (): void => {
         window.clearTimeout(imageTimer);
         imageTimer = window.setTimeout(updateImage, 120);
@@ -75,6 +104,30 @@ export const initMiniMap = (cy: CyInstance): void => {
     cy.on('render zoom pan resize', scheduleViewportUpdate);
     cy.on('layoutstop', scheduleImageUpdate);
     cy.on('add remove data position', scheduleImageUpdate);
+
+    const handlePointerMove = (event: PointerEvent | MouseEvent): void => {
+        if (!isDragging) return;
+        event.preventDefault();
+        panToMiniMapPosition(event.clientX, event.clientY);
+    };
+
+    const handlePointerUp = (): void => {
+        if (!isDragging) return;
+        isDragging = false;
+        container.classList.remove('dragging');
+    };
+
+    container.addEventListener('pointerdown', (event: PointerEvent) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        isDragging = true;
+        container.classList.add('dragging');
+        panToMiniMapPosition(event.clientX, event.clientY);
+    });
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
 
     updateImage();
     updateViewport();

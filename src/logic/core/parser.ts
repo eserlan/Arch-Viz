@@ -103,15 +103,13 @@ export const parseCSV = (csvString: string): ParseResult => {
         // Apply shape classes (queue takes precedence if both match)
         const shapeClass = getShapeClass(id, name);
 
-        const verifiedClass = verified ? 'verified' : '';
-
         elements.push({
             group: 'nodes',
             data: {
                 id,
                 name,
                 label: name, // Keep 'label' for Cytoscape's label display
-                labelDisplay: getNodeLabelDisplay(name, verified),
+                labelDisplay: getNodeLabelDisplay(name),
                 labelsDisplay: labels.join(', '), // For display in panel
                 labels, // For filtering logic (array)
                 tier,
@@ -119,7 +117,7 @@ export const parseCSV = (csvString: string): ParseResult => {
                 repoUrl,
                 verified,
             },
-            classes: `${tierClass} ${labelClasses} ${shapeClass} ${verifiedClass}`.trim(),
+            classes: `${tierClass} ${labelClasses} ${shapeClass}`.trim(),
         });
 
         if (row.depends_on) {

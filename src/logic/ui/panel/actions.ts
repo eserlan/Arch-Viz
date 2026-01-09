@@ -56,40 +56,9 @@ export const handleSave = (): void => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
         if (key) {
-            if (el.type === 'checkbox') {
-                newData[key] = (el as HTMLInputElement).checked;
-            } else {
-                newData[key] = el.value;
-            }
+            newData[key] = el.value;
         }
     });
-
-    // Handle verified toggle - update class and add/remove Verified label
-    if (typeof newData.verified === 'boolean') {
-        // Get current labels or parse from form input
-        let labels: string[] = [];
-        if (newData.labels && Array.isArray(newData.labels)) {
-            labels = [...newData.labels];
-        } else if (newData.labels && typeof newData.labels === 'string') {
-            labels = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
-        } else {
-            labels = currentSelectedNode.data('labels') || [];
-            labels = Array.isArray(labels) ? [...labels] : [];
-        }
-
-        if (newData.verified) {
-            currentSelectedNode.addClass('verified');
-            if (!labels.includes('Verified')) {
-                labels.push('Verified');
-            }
-        } else {
-            currentSelectedNode.removeClass('verified');
-            labels = labels.filter(l => l !== 'Verified');
-        }
-
-        newData.labels = labels;
-        newData.labelsDisplay = labels.join(', ');
-    }
 
     if (newData.tier) {
         newData.tier = parseInt(newData.tier, 10);
@@ -105,8 +74,7 @@ export const handleSave = (): void => {
     }
 
     const displayName = newData.name || currentSelectedNode.data('name') || currentSelectedNode.data('label') || currentSelectedNode.id();
-    const isVerified = typeof newData.verified === 'boolean' ? newData.verified : Boolean(currentSelectedNode.data('verified'));
-    newData.labelDisplay = getNodeLabelDisplay(displayName, isVerified);
+    newData.labelDisplay = getNodeLabelDisplay(displayName);
 
     // Handle 'labels' field - parse semicolon or comma separated values and update classes
     if (newData.labels && Array.isArray(newData.labels)) {

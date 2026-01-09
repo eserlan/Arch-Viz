@@ -26,7 +26,7 @@ export const addNode = (cy: CyInstance, data: ServiceData): void => {
             tier: tier,
             owner: data.owner,
             label: data.name, // Fallback for display
-            labelDisplay: getNodeLabelDisplay(data.name, Boolean(data.verified)),
+            labelDisplay: getNodeLabelDisplay(data.name),
         },
         classes: `${tier ? `tier-${tier}` : ''} ${getShapeClass(data.id, data.name)}`.trim(),
         position: pos

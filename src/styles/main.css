@@ -59,7 +59,7 @@ body {
 }
 
 #minimap {
-  pointer-events: none;
+  pointer-events: auto;
   width: 250px;
 }
 
@@ -71,6 +71,11 @@ body {
   border-radius: 12px;
   border: 1px solid rgba(51, 65, 85, 0.7);
   background: #0f172a;
+  cursor: grab;
+}
+
+#minimap.dragging .minimap-frame {
+  cursor: grabbing;
 }
 
 #minimapImage {
