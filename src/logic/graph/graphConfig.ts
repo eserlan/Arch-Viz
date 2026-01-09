@@ -103,6 +103,13 @@ export const stylesheet: any[] = [
         },
     },
     {
+        selector: '.tier-4',
+        style: {
+            'background-color': '#D4CEC3',
+            'border-color': '#E3DED6',
+        },
+    },
+    {
         selector: '.is-verified',
         style: {
             'border-color': '#94a3b8',
