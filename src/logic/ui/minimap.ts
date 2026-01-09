@@ -117,17 +117,30 @@ export const initMiniMap = (cy: CyInstance): void => {
         container.classList.remove('dragging');
     };
 
-    container.addEventListener('pointerdown', (event: PointerEvent) => {
+    const handlePointerDown = (event: PointerEvent): void => {
         if (event.button !== 0) return;
         event.preventDefault();
         isDragging = true;
         container.classList.add('dragging');
         panToMiniMapPosition(event.clientX, event.clientY);
-    });
+    };
 
+    container.addEventListener('pointerdown', handlePointerDown);
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
     window.addEventListener('pointercancel', handlePointerUp);
+
+    cy.on('destroy', () => {
+        image.removeEventListener('load', updateViewport);
+        cy.off('render zoom pan resize', scheduleViewportUpdate);
+        cy.off('layoutstop', scheduleImageUpdate);
+        cy.off('add remove data position', scheduleImageUpdate);
+
+        container.removeEventListener('pointerdown', handlePointerDown);
+        window.removeEventListener('pointermove', handlePointerMove);
+        window.removeEventListener('pointerup', handlePointerUp);
+        window.removeEventListener('pointercancel', handlePointerUp);
+    });
 
     updateImage();
     updateViewport();

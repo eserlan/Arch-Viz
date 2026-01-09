@@ -35,7 +35,8 @@ describe('Mini map logic', () => {
             height: vi.fn(() => 100),
             on: vi.fn((event: string, handler: (...args: any[]) => any) => {
                 eventHandlers[event] = handler;
-            })
+            }),
+            off: vi.fn()
         } as unknown as CyInstance;
 
         const image = document.getElementById('minimapImage') as HTMLImageElement;
@@ -44,6 +45,10 @@ describe('Mini map logic', () => {
     });
 
     afterEach(() => {
+        // Trigger destroy cleanup if it was registered
+        if (eventHandlers['destroy']) {
+            eventHandlers['destroy']();
+        }
         vi.useRealTimers();
         vi.restoreAllMocks();
     });
