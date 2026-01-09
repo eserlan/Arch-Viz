@@ -4,6 +4,7 @@ import { getNodesAtDepth } from './graphUtils';
 import { saveGraphData } from '../core/storage';
 import { showToast } from '../ui/ui';
 import { populateLabelFilter, populateTeamFilter } from './filters';
+import { getNodeLabelDisplay } from './labelDisplay';
 import { CyInstance } from '../../types';
 
 interface CytoscapeEventWithOriginal extends EventObject {
@@ -92,6 +93,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
             const nodeName = node.data('name') || node.data('label') || node.id();
             let labels: string[] = node.data('labels') || [];
             labels = Array.isArray(labels) ? [...labels] : [];
+            const nextVerified = !isVerified;
 
             if (isVerified) {
                 node.removeClass('verified');
@@ -110,6 +112,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
             // Update labels data
             node.data('labels', labels);
             node.data('labelsDisplay', labels.join(', '));
+            node.data('labelDisplay', getNodeLabelDisplay(nodeName, nextVerified));
 
             // Save the change
             const elements = cy.elements().jsons();

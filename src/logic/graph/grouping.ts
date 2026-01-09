@@ -1,5 +1,6 @@
 import { CyInstance } from '../../types';
 import { showToast } from '../ui/ui';
+import { getNodeLabelDisplay } from './labelDisplay';
 
 let cyRef: CyInstance | null = null;
 
@@ -29,6 +30,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
                 data: {
                     id: teamId,
                     label: team,
+                    labelDisplay: getNodeLabelDisplay(team, false),
                     isTeamGroup: true,
                 },
                 classes: 'team-group',
@@ -53,6 +55,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
                 data: {
                     id: unassignedId,
                     label: 'Unassigned',
+                    labelDisplay: getNodeLabelDisplay('Unassigned', false),
                     isTeamGroup: true,
                 },
                 classes: 'team-group',
@@ -92,6 +95,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
                 data: {
                     id: labelId,
                     label: label,
+                    labelDisplay: getNodeLabelDisplay(label, false),
                     isLabelGroup: true,
                 },
                 classes: 'label-group team-group',
@@ -121,6 +125,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
                 data: {
                     id: unlabeledId,
                     label: 'Unlabeled',
+                    labelDisplay: getNodeLabelDisplay('Unlabeled', false),
                     isLabelGroup: true,
                 },
                 classes: 'label-group team-group',

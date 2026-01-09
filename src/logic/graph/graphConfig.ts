@@ -46,7 +46,7 @@ export const stylesheet: any[] = [
     {
         selector: 'node[label]',
         style: {
-            'label': 'data(label)',
+            'label': 'data(labelDisplay)',
         },
     },
     {

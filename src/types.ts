@@ -11,6 +11,7 @@ export interface ServiceData {
     repoUrl?: string;
     depends_on?: string[];
     verified?: boolean;
+    labelDisplay?: string;
 }
 
 export interface GraphNode {

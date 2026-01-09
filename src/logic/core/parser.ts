@@ -1,6 +1,7 @@
 import Papa from 'papaparse';
 import { ElementsDefinition, ElementDefinition } from 'cytoscape';
 import { getShapeClass } from '../graph/shapeUtils';
+import { getNodeLabelDisplay } from '../graph/labelDisplay';
 
 const slugify = (value: string | number | null | undefined): string =>
     (value || '')
@@ -110,6 +111,7 @@ export const parseCSV = (csvString: string): ParseResult => {
                 id,
                 name,
                 label: name, // Keep 'label' for Cytoscape's label display
+                labelDisplay: getNodeLabelDisplay(name, verified),
                 labelsDisplay: labels.join(', '), // For display in panel
                 labels, // For filtering logic (array)
                 tier,

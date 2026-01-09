@@ -1,6 +1,7 @@
 import { CyInstance, ServiceData } from '../../types';
 import { saveGraphData } from '../core/storage';
 import { getShapeClass } from './shapeUtils';
+import { getNodeLabelDisplay } from './labelDisplay';
 
 export const addNode = (cy: CyInstance, data: ServiceData): void => {
     if (cy.getElementById(data.id).nonempty()) {
@@ -24,7 +25,8 @@ export const addNode = (cy: CyInstance, data: ServiceData): void => {
             name: data.name,
             tier: tier,
             owner: data.owner,
-            label: data.name // Fallback for display
+            label: data.name, // Fallback for display
+            labelDisplay: getNodeLabelDisplay(data.name, Boolean(data.verified)),
         },
         classes: `${tier ? `tier-${tier}` : ''} ${getShapeClass(data.id, data.name)}`.trim(),
         position: pos
