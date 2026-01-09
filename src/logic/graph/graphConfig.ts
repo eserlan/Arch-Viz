@@ -76,37 +76,29 @@ export const stylesheet: any[] = [
     {
         selector: '.tier-1',
         style: {
-            'background-color': '#CB854D',
-            'border-color': '#E2B186',
+            'background-color': '#f97316',
+            'border-color': '#fdba74',
             'font-weight': 'bold',
         },
     },
     {
         selector: '.tier-2',
         style: {
-            'background-color': '#607D8B',
-            'border-color': '#9FB0B8',
+            'background-color': '#0ea5e9',
+            'border-color': '#7dd3fc',
         },
     },
     {
         selector: '.tier-3',
         style: {
-            'background-color': '#8A9A5B',
-            'border-color': '#C0CBA0',
+            'background-color': '#10b981',
+            'border-color': '#6ee7b7',
         },
-    },
-    {
+    },    {
         selector: '.tier-4',
         style: {
-            'background-color': '#DBC6A4',
-            'border-color': '#E8D9C2',
-        },
-    },
-    {
-        selector: '.tier-4',
-        style: {
-            'background-color': '#D4CEC3',
-            'border-color': '#E3DED6',
+            'background-color': '#64748b',
+            'border-color': '#94a3b8',
         },
     },
     {
