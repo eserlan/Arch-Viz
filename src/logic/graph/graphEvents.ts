@@ -19,6 +19,8 @@ export const initGraphEvents = (cy: CyInstance): void => {
     let contextMenuNode: NodeSingular | null = null;
     const contextMenuId = 'nodeContextMenu';
     const toggleVerifiedId = 'toggleVerifiedBtn';
+    const CONTEXT_MENU_VIEWPORT_PADDING = 8;
+    let globalClickListenerAdded = false;
 
     const ensureContextMenu = (): HTMLElement => {
         let menu = document.getElementById(contextMenuId) as HTMLElement | null;
@@ -29,8 +31,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
         menu.className = 'hidden absolute z-50 min-w-[160px] bg-slate-900/95 border border-slate-700 rounded-lg shadow-xl text-xs text-slate-200';
         menu.innerHTML = `
             <button id="${toggleVerifiedId}" class="w-full px-3 py-2 text-left hover:bg-slate-800 transition-colors flex items-center gap-2">
-                <span class="text-emerald-400">✓</span>
-                <span>Mark verified</span>
+                <span data-role="toggle-verified-text">Mark verified</span>
             </button>
         `;
         document.body.appendChild(menu);
@@ -121,7 +122,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
         contextMenuNode = node;
 
         const menu = ensureContextMenu();
-        const toggleBtn = menu.querySelector(`#${toggleVerifiedId} span:last-child`) as HTMLElement | null;
+        const toggleBtn = menu.querySelector(`#${toggleVerifiedId} [data-role="toggle-verified-text"]`) as HTMLElement | null;
         if (toggleBtn) {
             toggleBtn.textContent = node.data('verified') ? 'Unmark verified' : 'Mark verified';
         }
@@ -144,10 +145,10 @@ export const initGraphEvents = (cy: CyInstance): void => {
         menu.style.top = `${top}px`;
 
         const menuRect = menu.getBoundingClientRect();
-        const maxLeft = window.innerWidth - menuRect.width - 8;
-        const maxTop = window.innerHeight - menuRect.height - 8;
-        if (left > maxLeft) menu.style.left = `${Math.max(8, maxLeft)}px`;
-        if (top > maxTop) menu.style.top = `${Math.max(8, maxTop)}px`;
+        const maxLeft = window.innerWidth - menuRect.width - CONTEXT_MENU_VIEWPORT_PADDING;
+        const maxTop = window.innerHeight - menuRect.height - CONTEXT_MENU_VIEWPORT_PADDING;
+        if (left > maxLeft) menu.style.left = `${Math.max(CONTEXT_MENU_VIEWPORT_PADDING, maxLeft)}px`;
+        if (top > maxTop) menu.style.top = `${Math.max(CONTEXT_MENU_VIEWPORT_PADDING, maxTop)}px`;
     });
 
     cy.on('cxttap', (evt: EventObject) => {
@@ -200,7 +201,10 @@ export const initGraphEvents = (cy: CyInstance): void => {
         });
     }
 
-    document.addEventListener('click', () => {
-        closeContextMenu();
-    });
+    if (!globalClickListenerAdded) {
+        document.addEventListener('click', () => {
+            closeContextMenu();
+        });
+        globalClickListenerAdded = true;
+    }
 };
