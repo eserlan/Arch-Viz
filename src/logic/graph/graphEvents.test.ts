@@ -25,9 +25,6 @@ describe('Graph Events Logic', () => {
                 <option value="1">1</option>
             </select>
             <div id="graphTooltip" style="opacity: 0"></div>
-            <div id="contextMenu" class="hidden">
-                 <button id="ctxVerifiedBtn"><span id="ctxVerifiedCheck"></span></button>
-            </div>
         `;
 
         eventHandlers = {};

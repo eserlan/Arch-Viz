@@ -29,6 +29,10 @@ describe('Mini map logic', () => {
             })),
             extent: vi.fn(() => extent),
             png: vi.fn(() => 'data:image/png;base64,mini-map'),
+            pan: vi.fn(),
+            zoom: vi.fn(() => 1),
+            width: vi.fn(() => 200),
+            height: vi.fn(() => 100),
             on: vi.fn((event: string, handler: (...args: any[]) => any) => {
                 eventHandlers[event] = handler;
             })
@@ -83,5 +87,31 @@ describe('Mini map logic', () => {
         vi.advanceTimersByTime(120);
 
         expect(mockCy.png).toHaveBeenCalledTimes(2);
+    });
+
+    it('pans the graph when dragging inside the minimap', () => {
+        initMiniMap(mockCy);
+
+        const container = document.getElementById('minimap') as HTMLElement;
+        const image = document.getElementById('minimapImage') as HTMLImageElement;
+        vi.spyOn(image, 'getBoundingClientRect').mockReturnValue({
+            left: 0,
+            top: 0,
+            width: 220,
+            height: 160,
+            right: 220,
+            bottom: 160,
+            x: 0,
+            y: 0,
+            toJSON: () => ({})
+        } as DOMRect);
+
+        container.dispatchEvent(new MouseEvent('pointerdown', { clientX: 110, clientY: 80, button: 0 }));
+        window.dispatchEvent(new MouseEvent('pointermove', { clientX: 110, clientY: 80 }));
+
+        expect(mockCy.pan).toHaveBeenCalled();
+        const lastCall = (mockCy.pan as any).mock.calls.at(-1)[0];
+        expect(lastCall.x).toBeCloseTo(50, 5);
+        expect(lastCall.y).toBeCloseTo(0, 5);
     });
 });

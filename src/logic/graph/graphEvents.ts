@@ -1,10 +1,6 @@
 import { NodeSingular, EventObject } from 'cytoscape';
 import { showPanel, hidePanel } from '../ui/panel';
 import { getNodesAtDepth } from './graphUtils';
-import { saveGraphData } from '../core/storage';
-import { showToast } from '../ui/ui';
-import { populateLabelFilter, populateTeamFilter } from './filters';
-import { getNodeLabelDisplay } from './labelDisplay';
 import { CyInstance } from '../../types';
 
 interface CytoscapeEventWithOriginal extends EventObject {
@@ -62,94 +58,6 @@ export const initGraphEvents = (cy: CyInstance): void => {
             cy.elements().removeClass('dimmed edge-inbound edge-outbound');
             lastFocusedNode = null;
         }
-    });
-
-    // Right-click context menu
-    cy.on('cxttap', 'node', (evt: EventObject) => {
-        const node = evt.target as NodeSingular;
-        const contextMenu = document.getElementById('contextMenu');
-        const checkIcon = document.getElementById('ctxVerifiedCheck');
-        const verifiedBtn = document.getElementById('ctxVerifiedBtn');
-
-        if (!contextMenu || !checkIcon || !verifiedBtn) return;
-
-        // Position menu
-        const eventWithOriginal = evt as CytoscapeEventWithOriginal;
-        const x = eventWithOriginal.originalEvent?.clientX ?? 0;
-        const y = eventWithOriginal.originalEvent?.clientY ?? 0;
-
-        contextMenu.style.left = `${x}px`;
-        contextMenu.style.top = `${y}px`;
-        contextMenu.classList.remove('hidden');
-
-        // Update verified status in menu
-        const isVerified = node.hasClass('verified');
-        if (isVerified) {
-            checkIcon.classList.remove('opacity-0');
-        } else {
-            checkIcon.classList.add('opacity-0');
-        }
-
-        // Handle click on verified button
-        const handleVerifyClick = (e: Event) => {
-            e.stopPropagation();
-
-            const nodeName = node.data('name') || node.data('label') || node.id();
-            let labels: string[] = node.data('labels') || [];
-            labels = Array.isArray(labels) ? [...labels] : [];
-            const nextVerified = !isVerified;
-
-            if (isVerified) {
-                node.removeClass('verified');
-                node.data('verified', false);
-                labels = labels.filter(l => l !== 'Verified');
-                showToast(`Unverified: ${nodeName}`, 'info');
-            } else {
-                node.addClass('verified');
-                node.data('verified', true);
-                if (!labels.includes('Verified')) {
-                    labels.push('Verified');
-                }
-                showToast(`Verified: ${nodeName}`, 'success');
-            }
-
-            // Update labels data
-            node.data('labels', labels);
-            node.data('labelsDisplay', labels.join(', '));
-            node.data('labelDisplay', getNodeLabelDisplay(nodeName, nextVerified));
-
-            // Save the change
-            const elements = cy.elements().jsons();
-            saveGraphData(elements as any);
-
-            // Refresh filter panels
-            populateLabelFilter(cy.nodes().toArray());
-            populateTeamFilter(cy.nodes().toArray());
-
-            // Refresh panel if this node is selected
-            showPanel(node);
-
-            // Hide menu and clean up
-            contextMenu.classList.add('hidden');
-            verifiedBtn.removeEventListener('click', handleVerifyClick);
-        };
-
-        // One-time listener for this menu opening
-        // We clone the button to remove old listeners effectively
-        const newVerifiedBtn = verifiedBtn.cloneNode(true);
-        verifiedBtn.parentNode?.replaceChild(newVerifiedBtn, verifiedBtn);
-        newVerifiedBtn.addEventListener('click', handleVerifyClick);
-    });
-
-    // Close context menu on any tap or viewport interaction
-    cy.on('tap', () => {
-        const contextMenu = document.getElementById('contextMenu');
-        if (contextMenu) contextMenu.classList.add('hidden');
-    });
-
-    cy.on('viewport', () => {
-        const contextMenu = document.getElementById('contextMenu');
-        if (contextMenu) contextMenu.classList.add('hidden');
     });
 
     // Depth select interaction

@@ -36,7 +36,7 @@ export const loadGraphData = (): ElementDefinition[] | null => {
                 const nodeData = newEl.data as Record<string, unknown>;
                 if (!nodeData.labelDisplay) {
                     const baseLabel = (nodeData.name || nodeData.label || nodeData.id || '') as string;
-                    nodeData.labelDisplay = getNodeLabelDisplay(baseLabel, Boolean(nodeData.verified));
+                    nodeData.labelDisplay = getNodeLabelDisplay(baseLabel);
                 }
             }
             return newEl;
@@ -45,7 +45,7 @@ export const loadGraphData = (): ElementDefinition[] | null => {
             const nodeData = el.data as Record<string, unknown>;
             if (!nodeData.labelDisplay) {
                 const baseLabel = (nodeData.name || nodeData.label || nodeData.id || '') as string;
-                nodeData.labelDisplay = getNodeLabelDisplay(baseLabel, Boolean(nodeData.verified));
+                nodeData.labelDisplay = getNodeLabelDisplay(baseLabel);
             }
         }
         return el;

@@ -30,7 +30,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
                 data: {
                     id: teamId,
                     label: team,
-                    labelDisplay: getNodeLabelDisplay(team, false),
+                    labelDisplay: getNodeLabelDisplay(team),
                     isTeamGroup: true,
                 },
                 classes: 'team-group',
@@ -55,7 +55,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
                 data: {
                     id: unassignedId,
                     label: 'Unassigned',
-                    labelDisplay: getNodeLabelDisplay('Unassigned', false),
+                    labelDisplay: getNodeLabelDisplay('Unassigned'),
                     isTeamGroup: true,
                 },
                 classes: 'team-group',
@@ -95,7 +95,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
                 data: {
                     id: labelId,
                     label: label,
-                    labelDisplay: getNodeLabelDisplay(label, false),
+                    labelDisplay: getNodeLabelDisplay(label),
                     isLabelGroup: true,
                 },
                 classes: 'label-group team-group',
@@ -125,7 +125,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
                 data: {
                     id: unlabeledId,
                     label: 'Unlabeled',
-                    labelDisplay: getNodeLabelDisplay('Unlabeled', false),
+                    labelDisplay: getNodeLabelDisplay('Unlabeled'),
                     isLabelGroup: true,
                 },
                 classes: 'label-group team-group',
