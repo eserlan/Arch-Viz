@@ -49,9 +49,30 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
             maxZoom: 2.5,
         }) as CyInstance;
 
-        cy.nodes().forEach(node => {
-            node.toggleClass('is-verified', Boolean(node.data('verified')));
-        });
+        // Apply the 'is-verified' class in small asynchronous batches to avoid
+        // blocking initial render for very large graphs.
+        const verifiedNodes = cy.nodes().toArray();
+        const BATCH_SIZE = 500;
+        let verifiedIndex = 0;
+
+        const processVerifiedBatch = () => {
+            const end = Math.min(verifiedIndex + BATCH_SIZE, verifiedNodes.length);
+            for (let i = verifiedIndex; i < end; i++) {
+                const node = verifiedNodes[i];
+                node.toggleClass('is-verified', Boolean(node.data('verified')));
+            }
+            verifiedIndex = end;
+
+            if (verifiedIndex < verifiedNodes.length) {
+                const schedule =
+                    typeof (window as any).requestIdleCallback === 'function'
+                        ? (window as any).requestIdleCallback
+                        : (cb: () => void) => setTimeout(cb, 0);
+                schedule(processVerifiedBatch);
+            }
+        };
+
+        processVerifiedBatch();
 
         container.addEventListener('wheel', (e: WheelEvent) => {
             e.preventDefault();
