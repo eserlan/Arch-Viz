@@ -184,7 +184,8 @@ describe('Graph Events Logic', () => {
                 return nodeData;
             }),
             toggleClass: vi.fn(),
-            id: () => nodeData.id
+            id: () => nodeData.id,
+            renderedPosition: vi.fn(() => ({ x: 100, y: 120 }))
         };
 
         mockElements.jsons = vi.fn(() => [{ data: { id: 'n1' } }]);
