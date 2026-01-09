@@ -26,6 +26,10 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
         cy.elements().addClass('dimmed');
         highlightCollection.removeClass('dimmed');
+
+        cy.elements().removeClass('edge-inbound edge-outbound');
+        node.outgoers('edge').addClass('edge-outbound');
+        node.incomers('edge').addClass('edge-inbound');
     };
 
     const getHighlightTarget = (): NodeSingular | null => {
@@ -55,7 +59,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
         if (evt.target === cy) {
             hidePanel();
             cy.nodes().unselect();
-            cy.elements().removeClass('dimmed');
+            cy.elements().removeClass('dimmed edge-inbound edge-outbound');
             lastFocusedNode = null;
         }
     });

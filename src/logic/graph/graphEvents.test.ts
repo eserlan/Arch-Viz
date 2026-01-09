@@ -77,7 +77,14 @@ describe('Graph Events Logic', () => {
     });
 
     it('should show panel and highlight connections on node tap', () => {
-        const mockNode = { id: () => 'n1', select: vi.fn() };
+        const outboundEdges = { addClass: vi.fn() };
+        const inboundEdges = { addClass: vi.fn() };
+        const mockNode = {
+            id: () => 'n1',
+            select: vi.fn(),
+            outgoers: vi.fn(() => outboundEdges),
+            incomers: vi.fn(() => inboundEdges),
+        };
         (graphUtils.getNodesAtDepth as any).mockReturnValue(mockElements);
 
         initGraphEvents(mockCy);
@@ -88,6 +95,9 @@ describe('Graph Events Logic', () => {
         expect(panel.showPanel).toHaveBeenCalledWith(mockNode as any);
         expect(mockElements.addClass).toHaveBeenCalledWith('dimmed');
         expect(mockElements.removeClass).toHaveBeenCalledWith('dimmed');
+        expect(mockElements.removeClass).toHaveBeenCalledWith('edge-inbound edge-outbound');
+        expect(outboundEdges.addClass).toHaveBeenCalledWith('edge-outbound');
+        expect(inboundEdges.addClass).toHaveBeenCalledWith('edge-inbound');
     });
 
     it('should hide panel on background tap', () => {
@@ -98,7 +108,7 @@ describe('Graph Events Logic', () => {
         tapHandlers.forEach(handler => handler({ target: mockCy }));
 
         expect(panel.hidePanel).toHaveBeenCalled();
-        expect(mockElements.removeClass).toHaveBeenCalledWith('dimmed');
+        expect(mockElements.removeClass).toHaveBeenCalledWith('dimmed edge-inbound edge-outbound');
     });
 
     it('should update tooltip on node mouseover', () => {
@@ -122,7 +132,12 @@ describe('Graph Events Logic', () => {
     });
 
     it('should refresh highlighted connections when depth changes', () => {
-        const mockNode = { id: () => 'n1', select: vi.fn() };
+        const mockNode = {
+            id: () => 'n1',
+            select: vi.fn(),
+            outgoers: vi.fn(() => ({ addClass: vi.fn() })),
+            incomers: vi.fn(() => ({ addClass: vi.fn() })),
+        };
         const highlightCollection = {
             removeClass: vi.fn()
         };
