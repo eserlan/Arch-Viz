@@ -104,6 +104,8 @@ export const handleSave = (): void => {
         newData.label = newData.name;
     }
 
+    // Note: the final fallback uses the Cytoscape element's ID string (id()) rather than a data() property.
+    // This is intentional so that we always have some identifier to display even if name/label data is missing.
     const displayName = newData.name || currentSelectedNode.data('name') || currentSelectedNode.data('label') || currentSelectedNode.id();
     const isVerified = typeof newData.verified === 'boolean' ? newData.verified : Boolean(currentSelectedNode.data('verified'));
     newData.labelDisplay = getNodeLabelDisplay(displayName, isVerified);

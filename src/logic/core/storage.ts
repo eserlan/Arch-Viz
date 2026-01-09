@@ -29,8 +29,8 @@ export const loadGraphData = (): ElementDefinition[] | null => {
     const elements = JSON.parse(saved) as ElementDefinition[];
     return elements.map(el => {
         if (el.selected !== undefined) {
-            // Create a copy and remove selected property
-            const newEl = { ...el };
+            // Create a deep copy of data to avoid mutating the original
+            const newEl = { ...el, data: { ...el.data } };
             delete newEl.selected;
             if (newEl.group === 'nodes' && newEl.data) {
                 const nodeData = newEl.data as Record<string, unknown>;
@@ -42,11 +42,14 @@ export const loadGraphData = (): ElementDefinition[] | null => {
             return newEl;
         }
         if (el.group === 'nodes' && el.data) {
-            const nodeData = el.data as Record<string, unknown>;
+            // Create a deep copy of data to avoid mutating the original when backfilling labelDisplay
+            const newEl = { ...el, data: { ...el.data } };
+            const nodeData = newEl.data as Record<string, unknown>;
             if (!nodeData.labelDisplay) {
                 const baseLabel = (nodeData.name || nodeData.label || nodeData.id || '') as string;
                 nodeData.labelDisplay = getNodeLabelDisplay(baseLabel, Boolean(nodeData.verified));
             }
+            return newEl;
         }
         return el;
     });
