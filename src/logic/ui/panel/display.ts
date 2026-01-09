@@ -24,10 +24,14 @@ export const showPanel = (node: NodeSingular): void => {
     setSelectedNode(node);
     const data = node.data();
     const outgoingEdges = node.outgoers('edge');
-    const connections = outgoingEdges.map((edge: EdgeSingular) => ({
+    const incomingEdges = node.incomers('edge');
+    const outboundConnections = outgoingEdges.map((edge: EdgeSingular) => ({
         id: edge.id(),
-        target: edge.target().data('name') || edge.target().data('label') || edge.target().id(),
-        targetId: edge.target().id()
+        target: edge.target().data('name') || edge.target().data('label') || edge.target().id()
+    }));
+    const inboundConnections = incomingEdges.map((edge: EdgeSingular) => ({
+        id: edge.id(),
+        source: edge.source().data('name') || edge.source().data('label') || edge.source().id()
     }));
 
     // Store original data for dirty checking
@@ -76,11 +80,19 @@ export const showPanel = (node: NodeSingular): void => {
             : '<span class="text-slate-500 italic">Not set</span>'}</div>
     </div>
     <div class="info-item">
-      <label>Depends On</label>
+      <label>Outbound Connections</label>
       <div class="info-value connections-list">
-        ${connections.length > 0
-            ? connections.map(c => `<span class="connection-tag" data-id="${c.id}">${c.target}</span>`).join('')
-            : '<span class="text-slate-500 italic text-xs">No dependencies</span>'}
+        ${outboundConnections.length > 0
+            ? outboundConnections.map(c => `<span class="connection-tag connection-tag--outbound" data-id="${c.id}">→ ${c.target}</span>`).join('')
+            : '<span class="text-slate-500 italic text-xs">No outbound connections</span>'}
+      </div>
+    </div>
+    <div class="info-item">
+      <label>Inbound Connections</label>
+      <div class="info-value connections-list">
+        ${inboundConnections.length > 0
+            ? inboundConnections.map(c => `<span class="connection-tag connection-tag--inbound" data-id="${c.id}">← ${c.source}</span>`).join('')
+            : '<span class="text-slate-500 italic text-xs">No inbound connections</span>'}
       </div>
     </div>
   `;
