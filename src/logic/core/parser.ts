@@ -99,6 +99,7 @@ export const parseCSV = (csvString: string): ParseResult => {
         const labels = labelsRaw ? labelsRaw.split(';').map((d) => d.trim()).filter(Boolean) : [];
         const labelClasses = labels.map((d) => `label-${slugify(d)}`).join(' ');
         const tierClass = slugify(`tier-${tier}`);
+        const verifiedClass = verified ? 'is-verified' : '';
 
         // Apply shape classes (queue takes precedence if both match)
         const shapeClass = getShapeClass(id, name);
@@ -117,7 +118,7 @@ export const parseCSV = (csvString: string): ParseResult => {
                 repoUrl,
                 verified,
             },
-            classes: `${tierClass} ${labelClasses} ${shapeClass}`.trim(),
+            classes: `${tierClass} ${labelClasses} ${shapeClass} ${verifiedClass}`.trim(),
         });
 
         if (row.depends_on) {

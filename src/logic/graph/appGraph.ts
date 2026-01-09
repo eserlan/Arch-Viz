@@ -49,6 +49,10 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
             maxZoom: 2.5,
         }) as CyInstance;
 
+        cy.nodes().forEach(node => {
+            node.toggleClass('is-verified', Boolean(node.data('verified')));
+        });
+
         container.addEventListener('wheel', (e: WheelEvent) => {
             e.preventDefault();
             const currentZoom = cy.zoom();

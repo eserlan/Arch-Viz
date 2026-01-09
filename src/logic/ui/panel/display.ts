@@ -40,7 +40,8 @@ export const showPanel = (node: NodeSingular): void => {
         labels: data.labelsDisplay || '',
         tier: data.tier?.toString() || '',
         owner: data.owner || '',
-        repoUrl: data.repoUrl || ''
+        repoUrl: data.repoUrl || '',
+        verified: Boolean(data.verified)
     });
 
     panelContent.innerHTML = `

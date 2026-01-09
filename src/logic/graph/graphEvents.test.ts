@@ -3,6 +3,8 @@ import { initGraphEvents } from './graphEvents';
 import * as panel from '../ui/panel';
 import * as graphUtils from './graphUtils';
 import { CyInstance } from '../../types';
+import { saveGraphData } from '../core/storage';
+import { showToast } from '../ui/ui';
 
 vi.mock('../ui/panel/index', () => ({
     showPanel: vi.fn(),
@@ -11,6 +13,14 @@ vi.mock('../ui/panel/index', () => ({
 
 vi.mock('./graphUtils', () => ({
     getNodesAtDepth: vi.fn()
+}));
+
+vi.mock('../core/storage', () => ({
+    saveGraphData: vi.fn()
+}));
+
+vi.mock('../ui/ui', () => ({
+    showToast: vi.fn()
 }));
 
 describe('Graph Events Logic', () => {
@@ -25,6 +35,7 @@ describe('Graph Events Logic', () => {
                 <option value="1">1</option>
             </select>
             <div id="graphTooltip" style="opacity: 0"></div>
+            <div id="cy"></div>
         `;
 
         eventHandlers = {};
@@ -58,6 +69,7 @@ describe('Graph Events Logic', () => {
                     unselect: vi.fn()
                 };
             }),
+            container: vi.fn(() => document.getElementById('cy')),
             pan: vi.fn(() => ({ x: 0, y: 0 })),
             zoom: vi.fn(() => 1)
         } as unknown as CyInstance;
@@ -71,6 +83,7 @@ describe('Graph Events Logic', () => {
         expect(mockCy.on).toHaveBeenCalledWith('tap', 'node', expect.any(Function));
         expect(mockCy.on).toHaveBeenCalledWith('tap', expect.any(Function));
         expect(mockCy.on).toHaveBeenCalledWith('mouseover', 'node', expect.any(Function));
+        expect(mockCy.on).toHaveBeenCalledWith('cxttap', 'node', expect.any(Function));
     });
 
     it('should show panel and highlight connections on node tap', () => {
@@ -155,5 +168,45 @@ describe('Graph Events Logic', () => {
         depthSelect.dispatchEvent(new Event('change'));
 
         expect(graphUtils.getNodesAtDepth).toHaveBeenCalledWith(mockNode, '1', mockCy);
+    });
+
+    it('should toggle verified state from context menu', () => {
+        const nodeData: Record<string, any> = { id: 'n1', name: 'Node A', verified: false };
+        const mockNode = {
+            data: vi.fn((key?: string, val?: any) => {
+                if (key && val !== undefined) {
+                    nodeData[key] = val;
+                    return mockNode;
+                }
+                if (typeof key === 'string') {
+                    return nodeData[key];
+                }
+                return nodeData;
+            }),
+            toggleClass: vi.fn(),
+            id: () => nodeData.id
+        };
+
+        mockElements.jsons = vi.fn(() => [{ data: { id: 'n1' } }]);
+
+        initGraphEvents(mockCy);
+        const cxttapHandler = eventHandlers['cxttap:node'][0];
+        cxttapHandler({
+            target: mockNode,
+            originalEvent: {
+                clientX: 100,
+                clientY: 120,
+                preventDefault: vi.fn()
+            }
+        });
+
+        const toggleBtn = document.getElementById('toggleVerifiedBtn') as HTMLButtonElement;
+        expect(toggleBtn).toBeTruthy();
+        toggleBtn.click();
+
+        expect(mockNode.data).toHaveBeenCalledWith('verified', true);
+        expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', true);
+        expect(saveGraphData).toHaveBeenCalled();
+        expect(showToast).toHaveBeenCalled();
     });
 });

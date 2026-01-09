@@ -17,6 +17,7 @@ export const addNode = (cy: CyInstance, data: ServiceData): void => {
 
     // Ensure numeric tier if provided
     const tier = data.tier ? parseInt(data.tier.toString(), 10) : undefined;
+    const isVerified = Boolean(data.verified);
 
     cy.add({
         group: 'nodes',
@@ -25,10 +26,11 @@ export const addNode = (cy: CyInstance, data: ServiceData): void => {
             name: data.name,
             tier: tier,
             owner: data.owner,
+            verified: isVerified,
             label: data.name, // Fallback for display
             labelDisplay: getNodeLabelDisplay(data.name),
         },
-        classes: `${tier ? `tier-${tier}` : ''} ${getShapeClass(data.id, data.name)}`.trim(),
+        classes: `${tier ? `tier-${tier}` : ''} ${getShapeClass(data.id, data.name)} ${isVerified ? 'is-verified' : ''}`.trim(),
         position: pos
     });
 

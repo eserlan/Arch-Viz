@@ -2,6 +2,8 @@ import { NodeSingular, EventObject } from 'cytoscape';
 import { showPanel, hidePanel } from '../ui/panel';
 import { getNodesAtDepth } from './graphUtils';
 import { CyInstance } from '../../types';
+import { saveGraphData } from '../core/storage';
+import { showToast } from '../ui/ui';
 
 interface CytoscapeEventWithOriginal extends EventObject {
     originalEvent?: MouseEvent;
@@ -14,6 +16,56 @@ export const initGraphEvents = (cy: CyInstance): void => {
     if (!cy) return;
 
     let lastFocusedNode: NodeSingular | null = null;
+    let contextMenuNode: NodeSingular | null = null;
+    const contextMenuId = 'nodeContextMenu';
+    const toggleVerifiedId = 'toggleVerifiedBtn';
+
+    const ensureContextMenu = (): HTMLElement => {
+        let menu = document.getElementById(contextMenuId) as HTMLElement | null;
+        if (menu) return menu;
+
+        menu = document.createElement('div');
+        menu.id = contextMenuId;
+        menu.className = 'hidden absolute z-50 min-w-[160px] bg-slate-900/95 border border-slate-700 rounded-lg shadow-xl text-xs text-slate-200';
+        menu.innerHTML = `
+            <button id="${toggleVerifiedId}" class="w-full px-3 py-2 text-left hover:bg-slate-800 transition-colors flex items-center gap-2">
+                <span class="text-emerald-400">✓</span>
+                <span>Mark verified</span>
+            </button>
+        `;
+        document.body.appendChild(menu);
+
+        menu.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        menu.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
+
+        const toggleBtn = menu.querySelector(`#${toggleVerifiedId}`) as HTMLButtonElement | null;
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                if (!contextMenuNode) return;
+                const newState = !contextMenuNode.data('verified');
+                contextMenuNode.data('verified', newState);
+                contextMenuNode.toggleClass('is-verified', newState);
+                saveGraphData(cy.elements().jsons() as any);
+                showToast(`${contextMenuNode.data('name') || contextMenuNode.id()} ${newState ? 'marked' : 'unmarked'} as verified`, 'success');
+                closeContextMenu();
+            });
+        }
+
+        return menu;
+    };
+
+    const closeContextMenu = (): void => {
+        const menu = document.getElementById(contextMenuId);
+        if (menu) {
+            menu.classList.add('hidden');
+        }
+        contextMenuNode = null;
+    };
 
     const highlightConnections = (node: NodeSingular) => {
         const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
@@ -37,6 +89,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
     };
 
     cy.on('tap', 'node', (evt: EventObject) => {
+        closeContextMenu();
         const node = evt.target as NodeSingular;
         const eventWithOriginal = evt as CytoscapeEventWithOriginal;
         
@@ -53,10 +106,53 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
     cy.on('tap', (evt: EventObject) => {
         if (evt.target === cy) {
+            closeContextMenu();
             hidePanel();
             cy.nodes().unselect();
             cy.elements().removeClass('dimmed edge-inbound edge-outbound');
             lastFocusedNode = null;
+        }
+    });
+
+    cy.on('cxttap', 'node', (evt: EventObject) => {
+        const node = evt.target as NodeSingular;
+        const eventWithOriginal = evt as CytoscapeEventWithOriginal;
+        eventWithOriginal.originalEvent?.preventDefault();
+        contextMenuNode = node;
+
+        const menu = ensureContextMenu();
+        const toggleBtn = menu.querySelector(`#${toggleVerifiedId} span:last-child`) as HTMLElement | null;
+        if (toggleBtn) {
+            toggleBtn.textContent = node.data('verified') ? 'Unmark verified' : 'Mark verified';
+        }
+
+        menu.classList.remove('hidden');
+
+        const { clientX, clientY } = eventWithOriginal.originalEvent || { clientX: 0, clientY: 0 };
+        let left = clientX;
+        let top = clientY;
+
+        if (!eventWithOriginal.originalEvent && node.renderedPosition) {
+            const rendered = node.renderedPosition();
+            const container = cy.container?.() || document.body;
+            const rect = container.getBoundingClientRect();
+            left = rect.left + rendered.x;
+            top = rect.top + rendered.y;
+        }
+
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+
+        const menuRect = menu.getBoundingClientRect();
+        const maxLeft = window.innerWidth - menuRect.width - 8;
+        const maxTop = window.innerHeight - menuRect.height - 8;
+        if (left > maxLeft) menu.style.left = `${Math.max(8, maxLeft)}px`;
+        if (top > maxTop) menu.style.top = `${Math.max(8, maxTop)}px`;
+    });
+
+    cy.on('cxttap', (evt: EventObject) => {
+        if (evt.target === cy) {
+            closeContextMenu();
         }
     });
 
@@ -103,4 +199,8 @@ export const initGraphEvents = (cy: CyInstance): void => {
             tooltip.style.opacity = '0';
         });
     }
+
+    document.addEventListener('click', () => {
+        closeContextMenu();
+    });
 };
