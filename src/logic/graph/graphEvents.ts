@@ -4,6 +4,7 @@ import { getNodesAtDepth } from './graphUtils';
 import { CyInstance } from '../../types';
 import { saveGraphData } from '../core/storage';
 import { showToast } from '../ui/ui';
+import { updateSelectionInfo } from '../ui/selectionInfo';
 
 interface CytoscapeEventWithOriginal extends EventObject {
     originalEvent?: MouseEvent;
@@ -97,6 +98,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
         // Multi-select with Ctrl/Cmd key, otherwise single select
         if (!eventWithOriginal.originalEvent?.ctrlKey && !eventWithOriginal.originalEvent?.metaKey) {
             cy.nodes().unselect();
+            updateSelectionInfo(cy);
         }
         
         node.select();
@@ -110,6 +112,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
             closeContextMenu();
             hidePanel();
             cy.nodes().unselect();
+            updateSelectionInfo(cy);
             cy.elements().removeClass('dimmed edge-inbound edge-outbound');
             lastFocusedNode = null;
         }
@@ -129,26 +132,28 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
         menu.classList.remove('hidden');
 
-        const { clientX, clientY } = eventWithOriginal.originalEvent || { clientX: 0, clientY: 0 };
-        let left = clientX;
-        let top = clientY;
-
-        if (!eventWithOriginal.originalEvent && node.renderedPosition) {
-            const rendered = node.renderedPosition();
-            const container = cy.container?.() || document.body;
-            const rect = container.getBoundingClientRect();
-            left = rect.left + rendered.x;
-            top = rect.top + rendered.y;
-        }
+        const rendered = node.renderedPosition();
+        const container = cy.container?.() || document.body;
+        const rect = container.getBoundingClientRect();
+        let left = rect.left + rendered.x;
+        let top = rect.top + rendered.y;
 
         menu.style.left = `${left}px`;
         menu.style.top = `${top}px`;
 
         const menuRect = menu.getBoundingClientRect();
+        left -= menuRect.width / 2;
+        top -= menuRect.height / 2;
+
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+
         const maxLeft = window.innerWidth - menuRect.width - CONTEXT_MENU_VIEWPORT_PADDING;
         const maxTop = window.innerHeight - menuRect.height - CONTEXT_MENU_VIEWPORT_PADDING;
         if (left > maxLeft) menu.style.left = `${Math.max(CONTEXT_MENU_VIEWPORT_PADDING, maxLeft)}px`;
         if (top > maxTop) menu.style.top = `${Math.max(CONTEXT_MENU_VIEWPORT_PADDING, maxTop)}px`;
+        if (left < CONTEXT_MENU_VIEWPORT_PADDING) menu.style.left = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
+        if (top < CONTEXT_MENU_VIEWPORT_PADDING) menu.style.top = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
     });
 
     cy.on('cxttap', (evt: EventObject) => {
