@@ -9,6 +9,11 @@ import {
 } from './state';
 import { updateSaveButtonState } from './actions';
 
+// Constants for verified checkbox styling and text
+const VERIFIED_CHECKBOX_LABEL_CLASSES = 'flex items-center gap-2 text-xs text-slate-300';
+const VERIFIED_CHECKBOX_INPUT_CLASSES = 'h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500';
+const VERIFIED_CHECKBOX_LABEL_TEXT = 'Toggle verification';
+
 export const toggleEdit = (editing: boolean): void => {
     const { panelContent, editBtn, editActions, saveBtn } = getElements();
     const currentSelectedNode = getCurrentSelectedNode();
@@ -55,9 +60,9 @@ export const toggleEdit = (editing: boolean): void => {
             } else if (key === 'verified') {
                 const isVerified = Boolean(originalData.verified);
                 htmlEl.innerHTML = `
-                    <label class="flex items-center gap-2 text-xs text-slate-300">
-                        <input type="checkbox" data-key="verified" class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500" ${isVerified ? 'checked' : ''} />
-                        Toggle verification
+                    <label class="${VERIFIED_CHECKBOX_LABEL_CLASSES}">
+                        <input type="checkbox" data-key="verified" class="${VERIFIED_CHECKBOX_INPUT_CLASSES}" ${isVerified ? 'checked' : ''} />
+                        ${VERIFIED_CHECKBOX_LABEL_TEXT}
                     </label>
                 `;
             } else {
