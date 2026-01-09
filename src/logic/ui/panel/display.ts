@@ -87,6 +87,8 @@ export const showPanel = (node: NodeSingular): void => {
             : '<span class="text-slate-500 italic text-xs">No outbound connections</span>'}
       </div>
     </div>
+    <!-- Note: Edit mode intentionally only affects the outbound connections list.
+         The inbound connections list remains visible for context. -->
     <div class="info-item">
       <label>Inbound Connections</label>
       <div class="info-value connections-list">
