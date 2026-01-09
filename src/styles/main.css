@@ -141,6 +141,18 @@ body {
   border: 1px solid #475569;
 }
 
+.connection-tag--outbound {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #a7f3d0;
+}
+
+.connection-tag--inbound {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(129, 140, 248, 0.6);
+  color: #c7d2fe;
+}
+
 .btn-icon {
   display: flex;
   align-items: center;

@@ -70,6 +70,7 @@ describe('Panel Module', () => {
                 return mockNode;
             }),
             outgoers: () => mockEdgeCollection,
+            incomers: () => mockEdgeCollection,
             id: () => nodeData.id,
             cy: () => mockCy,
             hasClass: (cls: string) => nodeClasses.includes(cls)
@@ -115,12 +116,35 @@ describe('Panel Module', () => {
         const mockNode = {
             data: () => ({ id: 'source-id', name: 'Source', label: 'Source' }),
             outgoers: () => ({ map: (fn: any) => [mockEdge].map(fn) }),
+            incomers: () => ({ map: (fn: any) => [].map(fn) }),
             cy: () => mockCy
         } as any;
 
         showPanel(mockNode);
         const content = document.getElementById('panelContent')!;
         expect(content.innerHTML).toContain('Target Service');
+        expect(content.innerHTML).toContain('connection-tag--outbound');
+    });
+
+    it('should display inbound connections in panel', () => {
+        const mockEdge = {
+            id: () => 'edge-2',
+            source: () => ({
+                data: (key: string) => key === 'name' ? 'Source Service' : (key === 'label' ? 'Source Service' : 'source-id'),
+                id: () => 'source-id'
+            })
+        };
+        const mockNode = {
+            data: () => ({ id: 'target-id', name: 'Target', label: 'Target' }),
+            outgoers: () => ({ map: (fn: any) => [].map(fn) }),
+            incomers: () => ({ map: (fn: any) => [mockEdge].map(fn) }),
+            cy: () => mockCy
+        } as any;
+
+        showPanel(mockNode);
+        const content = document.getElementById('panelContent')!;
+        expect(content.innerHTML).toContain('Source Service');
+        expect(content.innerHTML).toContain('connection-tag--inbound');
     });
 
     it('should initialize panel and attach listeners', () => {
@@ -205,6 +229,7 @@ describe('Panel Module', () => {
         const mockNode = createMockNode();
         showPanel(mockNode);
         const content = document.getElementById('panelContent')!;
-        expect(content.innerHTML).toContain('No dependencies');
+        expect(content.innerHTML).toContain('No outbound connections');
+        expect(content.innerHTML).toContain('No inbound connections');
     });
 });
