@@ -41,6 +41,7 @@ export const showPanel = (node: NodeSingular): void => {
         tier: data.tier?.toString() || '',
         owner: data.owner || '',
         repoUrl: data.repoUrl || '',
+        comment: data.comment || '',
         verified: Boolean(data.verified)
     });
 
@@ -70,6 +71,10 @@ export const showPanel = (node: NodeSingular): void => {
       <div class="info-value" data-key="repoUrl">${data.repoUrl
             ? `<a href="${data.repoUrl}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline break-all">${data.repoUrl}</a>`
             : '<span class="text-slate-500 italic">Not set</span>'}</div>
+    </div>
+    <div class="info-item">
+      <label>Comment</label>
+      <div class="info-value whitespace-pre-wrap" data-key="comment">${data.comment || '<span class="text-slate-500 italic">Not set</span>'}</div>
     </div>
     <div class="info-item">
       <label>Outbound Connections</label>

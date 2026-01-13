@@ -135,10 +135,50 @@ describe('Storage Module', () => {
         const csv = exportToCSV(mockCy);
         const lines = csv.split('\n');
 
-        expect(lines[0]).toBe('id,name,labels,tier,depends_on,owner,repo_url,verified');
+        expect(lines[0]).toBe('id,name,labels,tier,depends_on,owner,repo_url,comment,verified');
         expect(lines[1]).toContain('svc-a');
         expect(lines[1]).toContain('Service A');
         expect(lines[1]).toContain('svc-b'); // depends_on
+    });
+
+    it('should export comment field in CSV', () => {
+        const mockCy = {
+            nodes: () => [{
+                id: () => 'node1',
+                data: () => ({
+                    id: 'node1',
+                    name: 'Node 1',
+                    comment: 'My Comment',
+                    verified: true
+                })
+            }],
+            edges: () => []
+        } as unknown as CyInstance;
+
+        const csv = exportToCSV(mockCy);
+        const rows = csv.split('\n');
+
+        expect(rows[0]).toContain('comment');
+        expect(rows[1]).toContain('My Comment');
+    });
+
+    it('should handle multiline comments in CSV export', () => {
+        const mockCy = {
+            nodes: () => [{
+                id: () => 'node1',
+                data: () => ({
+                    id: 'node1',
+                    name: 'Node 1',
+                    comment: 'Line 1\nLine 2',
+                    verified: false
+                })
+            }],
+            edges: () => []
+        } as unknown as CyInstance;
+
+        const csv = exportToCSV(mockCy);
+
+        expect(csv).toContain('"Line 1\nLine 2"');
     });
 
     it('should generate timestamped filename in downloadCSV', () => {
