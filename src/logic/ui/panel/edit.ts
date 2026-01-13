@@ -65,27 +65,38 @@ export const toggleEdit = (editing: boolean): void => {
                         ${VERIFIED_CHECKBOX_LABEL_TEXT}
                     </label>
                 `;
+            } else if (key === 'comment') {
+                const currentVal = originalData[key] || '';
+                htmlEl.innerHTML = `<textarea data-key="${key}" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm h-24 resize-y"></textarea>`;
+                const textarea = htmlEl.querySelector('textarea');
+                if (textarea) textarea.value = String(currentVal);
             } else {
                 const currentVal = originalData[key] || htmlEl.textContent;
                 htmlEl.innerHTML = `<input type="text" data-key="${key}" value="${currentVal}" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm">`;
             }
         } else {
             const input = htmlEl.querySelector('input');
+            const textarea = htmlEl.querySelector('textarea');
             const select = htmlEl.querySelector('select');
 
             if (select) {
                 const val = parseInt(select.value, 10);
                 htmlEl.textContent = TIER_LABELS[val] || val.toString();
             } else {
-                const val = input ? input.value : htmlEl.textContent || '';
-                htmlEl.textContent = val;
+                const val = input ? input.value : (textarea ? textarea.value : htmlEl.textContent || '');
+                // For comments, we want to show placeholder if empty
+                if (key === 'comment' && !val) {
+                    htmlEl.innerHTML = '<span class="text-slate-500 italic">Not set</span>';
+                } else {
+                    htmlEl.textContent = val;
+                }
             }
         }
     });
 
     // Add input listeners for dirty checking
     if (editing) {
-        const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
+        const inputs = panelContent.querySelectorAll('input[data-key], select[data-key], textarea[data-key]');
         inputs.forEach(input => {
             input.addEventListener('input', updateSaveButtonState);
             input.addEventListener('change', updateSaveButtonState);

@@ -112,4 +112,19 @@ legacy-srv,Legacy Service,OldDomain,2,`;
         expect(skipped).toBe(2);
         expect((hints as string[])).toContain("Each row needs at least 'id' and 'name' values.");
     });
+
+    it('should parse comments correctly', () => {
+        const csv = `id,name,comment
+service-a,Service A,"This is a comment"
+service-b,Service B,"Multiline
+comment"`;
+        const { elements } = parseCSV(csv);
+
+        expect(elements).toHaveLength(2);
+        const nodeA = (elements as any[]).find(n => n.data.id === 'service-a');
+        const nodeB = (elements as any[]).find(n => n.data.id === 'service-b');
+
+        expect(nodeA.data.comment).toBe('This is a comment');
+        expect(nodeB.data.comment).toContain('Multiline\ncomment');
+    });
 });

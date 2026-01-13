@@ -9,6 +9,7 @@ export interface ServiceData {
     tier?: Tier;
     labels?: string[];
     repoUrl?: string;
+    comment?: string;
     depends_on?: string[];
     verified?: boolean;
     labelDisplay?: string;
