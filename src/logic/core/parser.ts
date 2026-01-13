@@ -93,7 +93,9 @@ export const parseCSV = (csvString: string): ParseResult => {
         const tier = row.tier?.toString().trim() || '3';
         const owner = row.owner?.trim();
         const repoUrl = row.repo_url?.trim();
-        const comment = row.comment?.trim();
+        const comment = row.comment
+            ? row.comment.replace(/^[ \t]+|[ \t]+$/g, '')
+            : undefined;
         const verified = row.verified?.trim().toLowerCase() === 'true' || row.verified?.trim() === '1';
 
         // Parse semicolon-separated labels
