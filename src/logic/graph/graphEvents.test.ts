@@ -171,7 +171,7 @@ describe('Graph Events Logic', () => {
     });
 
     it('should toggle verified state from context menu', () => {
-        const nodeData: Record<string, any> = { id: 'n1', name: 'Node A', verified: false };
+        const nodeData: Record<string, any> = { id: 'n1', name: 'Node A', verified: false, labels: [] };
         const mockNode = {
             data: vi.fn((key?: string, val?: any) => {
                 if (key && val !== undefined) {
@@ -203,11 +203,28 @@ describe('Graph Events Logic', () => {
 
         const toggleBtn = document.getElementById('toggleVerifiedBtn') as HTMLButtonElement;
         expect(toggleBtn).toBeTruthy();
+
+        // --- Test: Mark as verified ---
         toggleBtn.click();
 
         expect(mockNode.data).toHaveBeenCalledWith('verified', true);
         expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', true);
+        // CHECK 1: Expect 'Verified' label to be added
+        expect(mockNode.data).toHaveBeenCalledWith('labels', expect.arrayContaining(['Verified']));
+
         expect(saveGraphData).toHaveBeenCalled();
         expect(showToast).toHaveBeenCalled();
+
+        // Update mock state to reflect change (simulating cytoscape behavior)
+        nodeData.verified = true;
+        nodeData.labels = ['Verified'];
+
+        // --- Test: Unmark as verified ---
+        toggleBtn.click();
+
+        expect(mockNode.data).toHaveBeenCalledWith('verified', false);
+        expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', false);
+        // CHECK 2: Expect 'Verified' label to be removed
+        expect(mockNode.data).toHaveBeenCalledWith('labels', expect.not.arrayContaining(['Verified']));
     });
 });
