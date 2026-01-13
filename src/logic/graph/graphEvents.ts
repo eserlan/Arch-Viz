@@ -52,6 +52,22 @@ export const initGraphEvents = (cy: CyInstance): void => {
                 const newState = !contextMenuNode.data('verified');
                 contextMenuNode.data('verified', newState);
                 contextMenuNode.toggleClass('is-verified', newState);
+
+                let labels = contextMenuNode.data('labels');
+                if (!Array.isArray(labels)) {
+                    labels = [];
+                }
+                labels = [...labels];
+
+                if (newState) {
+                    if (!labels.includes('Verified')) {
+                        labels.push('Verified');
+                    }
+                } else {
+                    labels = labels.filter((l: string) => l !== 'Verified');
+                }
+                contextMenuNode.data('labels', labels);
+
                 saveGraphData(cy.elements().jsons() as any);
                 showToast(`${contextMenuNode.data('name') || contextMenuNode.id()} ${newState ? 'marked' : 'unmarked'} as verified`, 'success');
                 closeContextMenu();
