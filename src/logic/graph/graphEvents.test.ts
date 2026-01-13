@@ -219,6 +219,16 @@ describe('Graph Events Logic', () => {
         nodeData.verified = true;
         nodeData.labels = ['Verified'];
 
+        // Re-open context menu to reset contextMenuNode (which is nulled on close)
+        cxttapHandler({
+            target: mockNode,
+            originalEvent: {
+                clientX: 100,
+                clientY: 120,
+                preventDefault: vi.fn()
+            }
+        });
+
         // --- Test: Unmark as verified ---
         toggleBtn.click();
 
