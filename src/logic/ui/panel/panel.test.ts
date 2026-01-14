@@ -230,7 +230,11 @@ describe('Panel Module', () => {
         verifiedToggle.dispatchEvent(new Event('change', { bubbles: true }));
         document.getElementById('saveBtn')!.click();
         expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', true);
-        expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({ verified: true }));
+        expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({
+            verified: true,
+            labels: expect.arrayContaining(['Verified']),
+            labelsDisplay: expect.stringContaining('Verified')
+        }));
     });
 
     it('should parse multi-label input correctly', () => {

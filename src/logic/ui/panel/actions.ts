@@ -16,6 +16,34 @@ import { toggleEdit } from './edit';
 import { registerPanelKeyListener } from './keyboard';
 import { getNodeLabelDisplay } from '../../graph/labelDisplay';
 
+const normalizeClassList = (classes: string | string[]): string[] => {
+    if (Array.isArray(classes)) {
+        return classes;
+    }
+    return classes.split(/\s+/).filter(Boolean);
+};
+
+const syncVerifiedLabel = (labels: string[], isVerified: boolean): string[] => {
+    const nextLabels = [...labels];
+    const hasVerified = nextLabels.includes('Verified');
+    if (isVerified && !hasVerified) {
+        nextLabels.push('Verified');
+    }
+    if (!isVerified && hasVerified) {
+        return nextLabels.filter(label => label !== 'Verified');
+    }
+    return nextLabels;
+};
+
+const applyLabelClasses = (labels: string[], currentSelectedNode: ReturnType<typeof getCurrentSelectedNode>): void => {
+    if (!currentSelectedNode) return;
+    const newLabelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+    const currentClasses = currentSelectedNode.classes();
+    const classArray = normalizeClassList(currentClasses);
+    const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
+    currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
+};
+
 export const updateSaveButtonState = (): void => {
     const { saveBtn, panelContent } = getElements();
     if (!saveBtn || !panelContent) return;
@@ -77,29 +105,28 @@ export const handleSave = (): void => {
     const displayName = newData.name || currentSelectedNode.data('name') || currentSelectedNode.data('label') || currentSelectedNode.id();
     newData.labelDisplay = getNodeLabelDisplay(displayName);
 
+    let labelsList: string[] | undefined;
+
     // Handle 'labels' field - parse semicolon or comma separated values and update classes
-    if (newData.labels && Array.isArray(newData.labels)) {
-        const labels = newData.labels;
-        const newLabelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
-        // Get current classes as array, filter out old label classes, add new ones
-        const currentClasses = currentSelectedNode.classes();
-        const classArray = Array.isArray(currentClasses) ? currentClasses : [];
-        const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
-        currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
-    } else if (newData.labels && typeof newData.labels === 'string') {
-        const labels = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
-        newData.labelsDisplay = labels.join(', ');
-        newData.labels = labels;
-        const newLabelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
-        // Get current classes as array, filter out old label classes, add new ones
-        const currentClasses = currentSelectedNode.classes();
-        const classArray = Array.isArray(currentClasses) ? currentClasses : [];
-        const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
-        currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
+    if (Array.isArray(newData.labels)) {
+        labelsList = newData.labels;
+        newData.labelsDisplay = labelsList.join(', ');
+    } else if (typeof newData.labels === 'string') {
+        labelsList = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
+        newData.labelsDisplay = labelsList.join(', ');
+        newData.labels = labelsList;
     }
 
     if (typeof newData.verified === 'boolean') {
         currentSelectedNode.toggleClass('is-verified', newData.verified);
+        const baseLabels = labelsList ?? (currentSelectedNode.data('labels') || []);
+        labelsList = syncVerifiedLabel(baseLabels, newData.verified);
+        newData.labels = labelsList;
+        newData.labelsDisplay = labelsList.join(', ');
+    }
+
+    if (labelsList !== undefined) {
+        applyLabelClasses(labelsList, currentSelectedNode);
     }
 
     // Update node data
