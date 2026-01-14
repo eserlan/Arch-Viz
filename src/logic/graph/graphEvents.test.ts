@@ -5,6 +5,7 @@ import * as graphUtils from './graphUtils';
 import { CyInstance } from '../../types';
 import { saveGraphData } from '../core/storage';
 import { showToast } from '../ui/ui';
+import { populateLabelFilter } from './filters';
 
 vi.mock('../ui/panel/index', () => ({
     showPanel: vi.fn(),
@@ -21,6 +22,10 @@ vi.mock('../core/storage', () => ({
 
 vi.mock('../ui/ui', () => ({
     showToast: vi.fn()
+}));
+
+vi.mock('./filters', () => ({
+    populateLabelFilter: vi.fn()
 }));
 
 describe('Graph Events Logic', () => {
@@ -211,8 +216,10 @@ describe('Graph Events Logic', () => {
         expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', true);
         // CHECK 1: Expect 'Verified' label to be added
         expect(mockNode.data).toHaveBeenCalledWith('labels', expect.arrayContaining(['Verified']));
+        expect(mockNode.data).toHaveBeenCalledWith('labelsDisplay', 'Verified');
 
         expect(saveGraphData).toHaveBeenCalled();
+        expect(populateLabelFilter).toHaveBeenCalled();
         expect(showToast).toHaveBeenCalled();
 
         // Update mock state to reflect change (simulating cytoscape behavior)
@@ -236,5 +243,6 @@ describe('Graph Events Logic', () => {
         expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', false);
         // CHECK 2: Expect 'Verified' label to be removed
         expect(mockNode.data).toHaveBeenCalledWith('labels', expect.not.arrayContaining(['Verified']));
+        expect(mockNode.data).toHaveBeenCalledWith('labelsDisplay', '');
     });
 });

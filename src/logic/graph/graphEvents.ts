@@ -5,6 +5,7 @@ import { CyInstance } from '../../types';
 import { saveGraphData } from '../core/storage';
 import { showToast } from '../ui/ui';
 import { updateSelectionInfo } from '../ui/selectionInfo';
+import { populateLabelFilter } from './filters';
 
 interface CytoscapeEventWithOriginal extends EventObject {
     originalEvent?: MouseEvent;
@@ -67,8 +68,18 @@ export const initGraphEvents = (cy: CyInstance): void => {
                     labels = labels.filter((l: string) => l !== 'Verified');
                 }
                 contextMenuNode.data('labels', labels);
+                contextMenuNode.data('labelsDisplay', labels.join(', '));
+
+                const labelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+                const currentClasses = contextMenuNode.classes();
+                const classArray = Array.isArray(currentClasses)
+                    ? currentClasses
+                    : currentClasses.split(/\s+/).filter(Boolean);
+                const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
+                contextMenuNode.classes([...filteredClasses, ...labelClasses]);
 
                 saveGraphData(cy.elements().jsons() as any);
+                populateLabelFilter(cy.nodes().toArray());
                 showToast(`${contextMenuNode.data('name') || contextMenuNode.id()} ${newState ? 'marked' : 'unmarked'} as verified`, 'success');
                 closeContextMenu();
             });
