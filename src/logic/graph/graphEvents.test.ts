@@ -71,7 +71,8 @@ describe('Graph Events Logic', () => {
                 }
                 return {
                     length: 0,
-                    unselect: vi.fn()
+                    unselect: vi.fn(),
+                    toArray: vi.fn(() => [])
                 };
             }),
             container: vi.fn(() => document.getElementById('cy')),
@@ -177,6 +178,7 @@ describe('Graph Events Logic', () => {
 
     it('should toggle verified state from context menu', () => {
         const nodeData: Record<string, any> = { id: 'n1', name: 'Node A', verified: false, labels: [] };
+        let nodeClasses: string[] = ['node', 'some-class'];
         const mockNode = {
             data: vi.fn((key?: string, val?: any) => {
                 if (key && val !== undefined) {
@@ -189,6 +191,19 @@ describe('Graph Events Logic', () => {
                 return nodeData;
             }),
             toggleClass: vi.fn(),
+            classes: vi.fn((classesArg?: string | string[]) => {
+                if (classesArg === undefined) {
+                    // getter: return current classes as space-separated string
+                    return nodeClasses.join(' ');
+                }
+                // setter: update classes
+                if (Array.isArray(classesArg)) {
+                    nodeClasses = classesArg;
+                } else if (typeof classesArg === 'string') {
+                    nodeClasses = classesArg.split(/\s+/).filter(Boolean);
+                }
+                return mockNode;
+            }),
             id: () => nodeData.id,
             renderedPosition: vi.fn(() => ({ x: 100, y: 120 }))
         };
