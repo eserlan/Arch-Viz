@@ -6,12 +6,12 @@ import { test, expect, Page } from '@playwright/test';
  */
 const checkViewportExport = (page: Page, buttonId: string) => {
     return page.evaluate((id) => {
-        const cy = (window as any).cy;
+        const cy = (window as Record<string, any>).cy;
         const originalPng = cy.png;
         let capturedFull = true;
 
         try {
-            cy.png = (options: any) => {
+            cy.png = (options: { full: boolean }) => {
                 capturedFull = options.full;
                 // Return something valid to avoid downstream errors, though we don't need the result
                 return originalPng.call(cy, options);

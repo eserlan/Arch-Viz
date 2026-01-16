@@ -1,6 +1,7 @@
 import { CyInstance } from '../../types';
 import { downloadCSV } from '../core/storage';
 import { copyImageToClipboard, saveImageAsPng } from '../utils/exports';
+import { focusModeManager } from './focusMode';
 import { initFloatingPanel, initModal } from './ui';
 
 type StatusHandler = (message: string) => void;
@@ -113,6 +114,8 @@ export const initPanelsAndModals = (): void => {
     highlightTeamsBtn?.addEventListener('click', () => {
         highlightPanel('floatingTeamPanel');
     });
+
+    focusModeManager.init();
 };
 
 export const initSettings = (getCy: () => CyInstance | undefined): void => {
