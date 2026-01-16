@@ -52,5 +52,12 @@ const loadData = async (): Promise<void> => {
 
 // Bootstrap
 initAccordion();
-initUploader(renderGraph, updateStatus, () => cy, showToast);
+initUploader(
+    (elements, skipped) => {
+        cy = renderGraph(elements, skipped);
+    },
+    updateStatus,
+    () => cy,
+    showToast
+);
 loadData();
