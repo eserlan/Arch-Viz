@@ -13,8 +13,11 @@ describe('Panel Module', () => {
         vi.clearAllMocks();
         document.body.innerHTML = `
       <div id="servicePanel" class="">
+        <div class="header">
+          <button id="minimizeBtn"></button>
+          <button id="editBtn" class=""></button>
+        </div>
         <div id="panelContent"></div>
-        <button id="editBtn" class=""></button>
         <div id="editActions" class="hidden">
           <button id="saveBtn"></button>
           <button id="cancelBtn"></button>
@@ -122,8 +125,8 @@ describe('Panel Module', () => {
                     key === 'name'
                         ? 'Target Service'
                         : key === 'label'
-                          ? 'Target Service'
-                          : 'target-id',
+                            ? 'Target Service'
+                            : 'target-id',
                 id: () => 'target-id',
             }),
         };
@@ -148,8 +151,8 @@ describe('Panel Module', () => {
                     key === 'name'
                         ? 'Source Service'
                         : key === 'label'
-                          ? 'Source Service'
-                          : 'source-id',
+                            ? 'Source Service'
+                            : 'source-id',
                 id: () => 'source-id',
             }),
         };
@@ -300,5 +303,31 @@ describe('Panel Module', () => {
         const content = document.getElementById('panelContent')!;
         expect(content.innerHTML).toContain('No outbound connections');
         expect(content.innerHTML).toContain('No inbound connections');
+    });
+
+    it('should toggle minimized state and update UI', () => {
+        initPanel(mockCy, vi.fn());
+        const minimizeBtn = document.getElementById('minimizeBtn')!;
+        const panel = document.getElementById('servicePanel')!;
+
+        // Initial state
+        expect(panel.classList.contains('minimized')).toBe(false);
+
+        // Toggle minimize
+        minimizeBtn.click();
+        expect(panel.classList.contains('minimized')).toBe(true);
+        expect(localStorage.getItem('panel-minimized')).toBe('true');
+
+        // Toggle restore
+        minimizeBtn.click();
+        expect(panel.classList.contains('minimized')).toBe(false);
+        expect(localStorage.getItem('panel-minimized')).toBe('false');
+    });
+
+    it('should restore minimized state from localStorage on init', () => {
+        localStorage.setItem('panel-minimized', 'true');
+        initPanel(mockCy, vi.fn());
+        const panel = document.getElementById('servicePanel')!;
+        expect(panel.classList.contains('minimized')).toBe(true);
     });
 });

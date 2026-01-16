@@ -58,6 +58,17 @@ body {
     pointer-events: auto;
 }
 
+#servicePanel.minimized {
+    height: 60px;
+    /* Reduced height to show only the header */
+    padding-bottom: 0;
+}
+
+#servicePanel.minimized #panelContent,
+#servicePanel.minimized #editActions {
+    display: none;
+}
+
 #panelContent {
     max-height: 60vh;
     overflow-y: auto;

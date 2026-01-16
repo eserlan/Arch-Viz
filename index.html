@@ -290,10 +290,16 @@
                         <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-400">
                             Service Details
                         </h3>
-                        <button id="editBtn"
-                            class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-600 transition-colors uppercase font-bold tracking-tighter">
-                            Edit
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button id="minimizeBtn" class="text-slate-400 hover:text-white transition-colors p-1"
+                                title="Minimize/Restore panel">
+                                <!-- Icon injected by JS -->
+                            </button>
+                            <button id="editBtn"
+                                class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-600 transition-colors uppercase font-bold tracking-tighter">
+                                Edit
+                            </button>
+                        </div>
                     </div>
                     <div id="panelContent" class="space-y-3">
                         <!-- Items injected by JS -->
