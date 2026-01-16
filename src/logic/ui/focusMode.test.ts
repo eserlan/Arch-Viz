@@ -15,7 +15,7 @@ describe('FocusModeManager', () => {
             <div id="floatingFilterPanel"></div>
             <div id="floatingTeamPanel"></div>
             <div id="selectionInfoPanel"></div>
-            <div id="minimap"></div>
+            <div id="minimap" class="md:block"></div>
             <div id="servicePanel"></div>
         `;
 
@@ -50,9 +50,9 @@ describe('FocusModeManager', () => {
 
         expect(localStorage.getItem('settings-focus-mode')).toBe('false');
 
-        const sidebar = document.querySelector('aside');
-        expect(sidebar?.classList.contains('hidden')).toBe(false);
-        expect(sidebar?.classList.contains('md:flex')).toBe(true);
+        const minimap = document.getElementById('minimap');
+        expect(minimap?.classList.contains('hidden')).toBe(false);
+        expect(minimap?.classList.contains('md:block')).toBe(true);
     });
 
     it('loads state from localStorage', () => {

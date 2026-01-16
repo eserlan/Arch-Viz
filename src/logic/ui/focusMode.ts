@@ -48,7 +48,7 @@ export class FocusModeManager {
                 if (this.isFocusMode) {
                     element.classList.add('hidden');
                     // Remove common Tailwind display classes that might override 'hidden'
-                    element.classList.remove('flex', 'md:flex', 'block', 'grid');
+                    element.classList.remove('flex', 'md:flex', 'block', 'md:block', 'grid');
                 } else {
                     element.classList.remove('hidden');
                     // Restore original display intent
@@ -57,7 +57,7 @@ export class FocusModeManager {
                     } else if (selector.startsWith('#floating') || selector === '#servicePanel' || selector === '#selectionInfoPanel') {
                         element.classList.add('flex');
                     } else if (selector === '#minimap') {
-                        element.classList.add('block');
+                        element.classList.add('md:block');
                     }
                 }
             });
