@@ -8,7 +8,6 @@ import {
     getCyRef,
     getUpdateStatusRef,
     getOriginalData,
-    setIsEditMode,
     setIsMinimized,
     getIsMinimized,
     setCyRef,
