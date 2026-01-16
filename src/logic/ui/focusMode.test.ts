@@ -34,13 +34,13 @@ describe('FocusModeManager', () => {
         expect(localStorage.getItem('settings-focus-mode')).toBe('true');
 
         const sidebar = document.getElementById('appSidebar');
-        expect(sidebar?.classList.contains('hidden')).toBe(true);
-        expect(sidebar?.classList.contains('md:flex')).toBe(false);
-        // Verify original classes stored
-        expect(sidebar?.dataset.focusOriginalClasses).toBe('hidden md:flex w-64');
+        expect(sidebar?.classList.contains('focus-mode-hidden')).toBe(true);
+        // Other classes should be preserved
+        expect(sidebar?.classList.contains('md:flex')).toBe(true);
+        expect(sidebar?.classList.contains('w-64')).toBe(true);
     });
 
-    it('toggles focus mode off and restores exact classes', () => {
+    it('toggles focus mode off and preserves all state', () => {
         manager.init();
         manager.toggle(); // On
         manager.toggle(); // Off
@@ -48,10 +48,9 @@ describe('FocusModeManager', () => {
         expect(localStorage.getItem('settings-focus-mode')).toBe('false');
 
         const minimap = document.getElementById('minimap');
-        // Should restore EXACTLY what was there
+        expect(minimap?.classList.contains('focus-mode-hidden')).toBe(false);
+        // Original classes intact
         expect(minimap?.className).toBe('hidden md:flex flex-col');
-        expect(minimap?.classList.contains('hidden')).toBe(true);
-        expect(minimap?.classList.contains('md:flex')).toBe(true);
     });
 
     it('loads state from localStorage', () => {
@@ -60,6 +59,6 @@ describe('FocusModeManager', () => {
         newManager.init();
 
         const sidebar = document.getElementById('appSidebar');
-        expect(sidebar?.classList.contains('hidden')).toBe(true);
+        expect(sidebar?.classList.contains('focus-mode-hidden')).toBe(true);
     });
 });

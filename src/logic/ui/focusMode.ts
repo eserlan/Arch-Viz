@@ -49,21 +49,7 @@ export class FocusModeManager {
 
             if (!element) return;
 
-            // Store original classes once so we can restore them later
-            if (!element.dataset.focusOriginalClasses) {
-                element.dataset.focusOriginalClasses = element.className;
-            }
-
-            if (this.isFocusMode) {
-                element.classList.add('hidden');
-                // Remove common Tailwind display classes that might override 'hidden'
-                element.classList.remove('flex', 'md:flex', 'block', 'md:block');
-            } else {
-                const originalClasses = element.dataset.focusOriginalClasses;
-                if (originalClasses !== undefined) {
-                    element.className = originalClasses;
-                }
-            }
+            element.classList.toggle('focus-mode-hidden', this.isFocusMode);
         });
 
         // Trigger resize on window to let Cytoscape adjust

@@ -9,7 +9,7 @@ test.describe('Focus Mode', () => {
 
     test('should toggle visibility of UI panels', async ({ page }) => {
         const toggleBtn = page.locator('#focusModeToggle');
-        const sidebar = page.locator('aside');
+        const sidebar = page.locator('#appSidebar');
         const minimap = page.locator('#minimap');
 
         // Check initial state
@@ -31,9 +31,36 @@ test.describe('Focus Mode', () => {
         await expect(minimap).toBeVisible();
     });
 
+    test('should not re-apply "hidden" class if it was removed by user before toggling', async ({ page }) => {
+        const toggleBtn = page.locator('#focusModeToggle');
+        // Labels panel typically has 'hidden' class (it's md:block but hidden on small screens)
+        // In our test environment it might be visible, but we ensure it's "manual-on"
+        const labelsPanel = page.locator('#floatingFilterPanel');
+
+        // 1. Ensure it's visible and doesn't have 'hidden' (manual or default)
+        await page.evaluate(() => {
+            const el = document.getElementById('floatingFilterPanel');
+            if (el) el.classList.remove('hidden');
+        });
+        await expect(labelsPanel).not.toHaveClass(/\bhidden\b/);
+
+        // 2. Enable Focus Mode (should hide everything via focus-mode-hidden override)
+        await toggleBtn.click();
+        await expect(labelsPanel).toBeHidden();
+        await expect(labelsPanel).toHaveClass(/focus-mode-hidden/);
+
+        // 3. Disable Focus Mode
+        await toggleBtn.click();
+
+        // 4. Verify 'hidden' did NOT come back (bug fix check)
+        await expect(labelsPanel).toBeVisible();
+        await expect(labelsPanel).not.toHaveClass(/\bhidden\b/);
+        await expect(labelsPanel).not.toHaveClass(/focus-mode-hidden/);
+    });
+
     test('should persist focus mode state across refreshes', async ({ page }) => {
         const toggleBtn = page.locator('#focusModeToggle');
-        const sidebar = page.locator('aside');
+        const sidebar = page.locator('#appSidebar');
 
         // Enable Focus Mode
         await toggleBtn.click();
