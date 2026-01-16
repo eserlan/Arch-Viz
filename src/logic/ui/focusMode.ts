@@ -7,7 +7,7 @@ export class FocusModeManager {
         '#floatingTeamPanel',
         '#selectionInfoPanel',
         '#minimap',
-        '#servicePanel'
+        '#servicePanel',
     ];
 
     constructor() {
@@ -28,9 +28,11 @@ export class FocusModeManager {
         this.applyState();
 
         // Dispatch event for other components if needed
-        window.dispatchEvent(new CustomEvent('focus-mode-change', {
-            detail: { isFocusMode: this.isFocusMode }
-        } as CustomEventInit<{ isFocusMode: boolean }>));
+        window.dispatchEvent(
+            new CustomEvent('focus-mode-change', {
+                detail: { isFocusMode: this.isFocusMode },
+            } as CustomEventInit<{ isFocusMode: boolean }>)
+        );
     }
 
     private applyState(): void {
@@ -41,9 +43,9 @@ export class FocusModeManager {
             toggleBtn.setAttribute('aria-pressed', this.isFocusMode.toString());
         }
 
-        this.elementsToToggle.forEach(selector => {
+        this.elementsToToggle.forEach((selector) => {
             const elements = document.querySelectorAll(selector);
-            elements.forEach(el => {
+            elements.forEach((el) => {
                 const element = el as HTMLElement;
                 if (this.isFocusMode) {
                     element.classList.add('hidden');
@@ -54,7 +56,11 @@ export class FocusModeManager {
                     // Restore original display intent
                     if (selector === '#appSidebar') {
                         element.classList.add('md:flex');
-                    } else if (selector.startsWith('#floating') || selector === '#servicePanel' || selector === '#selectionInfoPanel') {
+                    } else if (
+                        selector.startsWith('#floating') ||
+                        selector === '#servicePanel' ||
+                        selector === '#selectionInfoPanel'
+                    ) {
                         element.classList.add('flex');
                     } else if (selector === '#minimap') {
                         element.classList.add('md:block');
