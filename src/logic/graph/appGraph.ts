@@ -57,9 +57,12 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
 
         const processVerifiedBatch = () => {
             const end = Math.min(verifiedIndex + BATCH_SIZE, verifiedNodes.length);
+            const showVerifiedSettings = localStorage.getItem('settings-show-verified') !== 'false';
+
             for (let i = verifiedIndex; i < end; i++) {
                 const node = verifiedNodes[i];
-                node.toggleClass('is-verified', Boolean(node.data('verified')));
+                const isVerified = Boolean(node.data('verified'));
+                node.toggleClass('is-verified', isVerified && showVerifiedSettings);
             }
             verifiedIndex = end;
 

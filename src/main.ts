@@ -30,6 +30,8 @@ initSidebarActions(
 );
 
 initPanelsAndModals();
+import { initSettings } from './logic/ui/appUi';
+initSettings(() => cy);
 
 const loadData = async (): Promise<void> => {
     try {

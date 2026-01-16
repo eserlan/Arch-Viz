@@ -58,10 +58,10 @@ const highlightPanel = (panelId: string): void => {
 
     // Add highlight effect
     panel.classList.add(...HIGHLIGHT_CLASSES);
-    
+
     // Briefly pulse the panel
     panel.style.animation = PULSE_ANIMATION;
-    
+
     // Remove highlight after animation
     setTimeout(() => {
         panel.classList.remove(...HIGHLIGHT_CLASSES);
@@ -106,5 +106,34 @@ export const initPanelsAndModals = (): void => {
 
     highlightTeamsBtn?.addEventListener('click', () => {
         highlightPanel('floatingTeamPanel');
+    });
+};
+
+export const initSettings = (getCy: () => CyInstance | undefined): void => {
+    const showVerifiedToggle = document.getElementById('showVerifiedToggle') as HTMLInputElement | null;
+    if (!showVerifiedToggle) return;
+
+    // Load saved state
+    const savedState = localStorage.getItem('settings-show-verified');
+    const showVerified = savedState === null ? true : savedState === 'true';
+    showVerifiedToggle.checked = showVerified;
+
+    const updateVerifiedVisibility = (visible: boolean) => {
+        const cy = getCy();
+        if (!cy) return;
+
+        cy.batch(() => {
+            cy.nodes().forEach(node => {
+                if (node.data('verified')) {
+                    node.toggleClass('is-verified', visible);
+                }
+            });
+        });
+    };
+
+    showVerifiedToggle.addEventListener('change', () => {
+        const isChecked = showVerifiedToggle.checked;
+        localStorage.setItem('settings-show-verified', isChecked.toString());
+        updateVerifiedVisibility(isChecked);
     });
 };
