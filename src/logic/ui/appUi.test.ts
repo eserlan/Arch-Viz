@@ -175,5 +175,18 @@ describe('appUi helpers', () => {
             expect(mockNodes[0].toggleClass).toHaveBeenCalledWith('is-verified', false);
             expect(mockNodes[1].toggleClass).not.toHaveBeenCalled(); // Only verified nodes should be toggled
         });
+
+        it('handles missing toggle gracefully', () => {
+            document.body.innerHTML = '';
+            expect(() => initSettings(() => cy)).not.toThrow();
+        });
+
+        it('handles undefined cy instance gracefully on change', () => {
+            initSettings(() => undefined);
+            toggle.checked = true;
+            toggle.dispatchEvent(new Event('change'));
+            // Should not throw
+            expect(localStorage.setItem).toHaveBeenCalledWith('settings-show-verified', 'true');
+        });
     });
 });

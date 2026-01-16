@@ -6,7 +6,7 @@ import { showToast, updateStatus } from './logic/ui/ui';
 import { CyInstance } from './types';
 import { createGraphRenderer } from './logic/graph/appGraph';
 import { loadGraphElements } from './logic/core/appData';
-import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions } from './logic/ui/appUi';
+import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions, initSettings } from './logic/ui/appUi';
 
 const cyContainer = document.getElementById('cy') as HTMLElement | null;
 const csvUrl = `${(import.meta as any).env.BASE_URL}data/services.csv`;
@@ -30,7 +30,6 @@ initSidebarActions(
 );
 
 initPanelsAndModals();
-import { initSettings } from './logic/ui/appUi';
 initSettings(() => cy);
 
 const loadData = async (): Promise<void> => {
