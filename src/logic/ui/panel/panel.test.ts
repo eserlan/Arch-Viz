@@ -125,8 +125,8 @@ describe('Panel Module', () => {
                     key === 'name'
                         ? 'Target Service'
                         : key === 'label'
-                            ? 'Target Service'
-                            : 'target-id',
+                          ? 'Target Service'
+                          : 'target-id',
                 id: () => 'target-id',
             }),
         };
@@ -151,8 +151,8 @@ describe('Panel Module', () => {
                     key === 'name'
                         ? 'Source Service'
                         : key === 'label'
-                            ? 'Source Service'
-                            : 'source-id',
+                          ? 'Source Service'
+                          : 'source-id',
                 id: () => 'source-id',
             }),
         };

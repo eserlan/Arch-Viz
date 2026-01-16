@@ -31,7 +31,9 @@ test.describe('Focus Mode', () => {
         await expect(minimap).toBeVisible();
     });
 
-    test('should not re-apply "hidden" class if it was removed by user before toggling', async ({ page }) => {
+    test('should not re-apply "hidden" class if it was removed by user before toggling', async ({
+        page,
+    }) => {
         const toggleBtn = page.locator('#focusModeToggle');
         // Labels panel typically has 'hidden' class (it's md:block but hidden on small screens)
         // In our test environment it might be visible, but we ensure it's "manual-on"
