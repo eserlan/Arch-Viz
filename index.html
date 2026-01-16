@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
     <title>Arch Viz - Mapping the Chaos</title>
-  <script type="module" crossorigin src="/Arch-Viz/assets/index-X5VnfcuB.js"></script>
-  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-svbswjnZ.css">
+  <script type="module" crossorigin src="/Arch-Viz/assets/index-CHWCK5Eo.js"></script>
+  <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-UVuYzVfY.css">
 </head>
 
 <body class="bg-slate-950 text-slate-100">
@@ -292,10 +292,16 @@
                         <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-400">
                             Service Details
                         </h3>
-                        <button id="editBtn"
-                            class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-600 transition-colors uppercase font-bold tracking-tighter">
-                            Edit
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button id="minimizeBtn" class="text-slate-400 hover:text-white transition-colors p-1"
+                                title="Minimize/Restore panel">
+                                <!-- Icon injected by JS -->
+                            </button>
+                            <button id="editBtn"
+                                class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-600 transition-colors uppercase font-bold tracking-tighter">
+                                Edit
+                            </button>
+                        </div>
                     </div>
                     <div id="panelContent" class="space-y-3">
                         <!-- Items injected by JS -->
