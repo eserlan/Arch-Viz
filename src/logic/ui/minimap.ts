@@ -12,7 +12,8 @@ const getMiniMapElements = () => {
     return { container, image, viewport };
 };
 
-const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
+const clamp = (value: number, min: number, max: number): number =>
+    Math.min(Math.max(value, min), max);
 
 export const initMiniMap = (cy: CyInstance): void => {
     const { container, image, viewport } = getMiniMapElements();

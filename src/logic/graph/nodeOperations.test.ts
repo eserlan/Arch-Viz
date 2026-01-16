@@ -5,7 +5,7 @@ import { CyInstance } from '../../types';
 
 // Mock storage
 vi.mock('../core/storage', () => ({
-    saveGraphData: vi.fn()
+    saveGraphData: vi.fn(),
 }));
 
 describe('Node Operations', () => {
@@ -18,7 +18,7 @@ describe('Node Operations', () => {
         zoom: () => 1,
         width: () => 100,
         height: () => 100,
-        elements: () => ({ jsons: () => [] })
+        elements: () => ({ jsons: () => [] }),
     } as unknown as CyInstance;
 
     beforeEach(() => {

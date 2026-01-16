@@ -109,7 +109,7 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
     test('should focus search input when F key is pressed', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Verify search input is not focused initially
         await expect(searchInput).not.toBeFocused();
 
@@ -123,13 +123,15 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
         await expect(searchInput).toBeFocused();
     });
 
-    test('should clear text and blur when F is pressed twice quickly while focused', async ({ page }) => {
+    test('should clear text and blur when F is pressed twice quickly while focused', async ({
+        page,
+    }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Type some text in search
         await searchInput.fill('test search');
         await searchInput.focus();
-        
+
         // Verify it's focused and has text
         await expect(searchInput).toBeFocused();
         await expect(searchInput).toHaveValue('test search');
@@ -148,14 +150,14 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
     test('should not clear text if F is pressed only once while focused', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Type some text in search
         await searchInput.fill('test search');
         await searchInput.focus();
-        
+
         // Press 'f' key once
         await page.keyboard.press('f');
-        
+
         // Wait a bit
         await page.waitForTimeout(100);
 
@@ -166,7 +168,7 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
     test('should handle uppercase F key', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Verify not focused initially
         await expect(searchInput).not.toBeFocused();
 
@@ -182,7 +184,7 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
     test('should not trigger when F is typed in another input', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Select a node to open the panel
         await page.evaluate(() => {
             const cyInstance = (window as any).cy;
@@ -199,13 +201,13 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
         // Find an input field in the edit panel
         const panelInput = page.locator('#panelContent input').first();
-        
+
         // Focus on the panel input
         await panelInput.focus();
-        
+
         // Type 'f' in the panel input
         await page.keyboard.press('f');
-        
+
         // Wait a bit
         await page.waitForTimeout(100);
 
@@ -215,20 +217,20 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
     test('should not clear text if second F press is too slow', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Type some text in search
         await searchInput.fill('test search');
         await searchInput.focus();
 
         // Press 'f' key
         await page.keyboard.press('f');
-        
+
         // Wait longer than the double-tap threshold (>300ms)
         await page.waitForTimeout(400);
-        
+
         // Press 'f' key again
         await page.keyboard.press('f');
-        
+
         // Wait a bit
         await page.waitForTimeout(100);
 
@@ -239,7 +241,7 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
     test('should not trigger when Ctrl+F is pressed', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Verify not focused initially
         await expect(searchInput).not.toBeFocused();
 
@@ -255,19 +257,19 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
 
     test('should update filters when clearing text on double-tap', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Search by name...');
-        
+
         // Get total node count first (unfiltered)
         const totalCount = await page.evaluate(() => {
             const cyInstance = (window as any).cy;
             return cyInstance ? cyInstance.nodes().not('.filtered').length : 0;
         });
-        
-        // Type a search term that filters some nodes  
+
+        // Type a search term that filters some nodes
         await searchInput.fill('xyz123nonexistent');
-        
+
         // Wait for filter to apply
         await page.waitForTimeout(300);
-        
+
         // Get filtered count (should be 0 or very few)
         const filteredCount = await page.evaluate(() => {
             const cyInstance = (window as any).cy;
@@ -278,10 +280,10 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
         await searchInput.focus();
         await page.keyboard.press('f');
         await page.keyboard.press('f');
-        
+
         // Wait for filter to update
         await page.waitForTimeout(300);
-        
+
         // Get node count after clearing (should show all nodes)
         const allCount = await page.evaluate(() => {
             const cyInstance = (window as any).cy;
@@ -293,4 +295,3 @@ test.describe('Search Input Focus Keyboard Shortcut', () => {
         expect(allCount).toBeGreaterThan(filteredCount);
     });
 });
-

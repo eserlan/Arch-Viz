@@ -9,7 +9,7 @@ import {
     getUpdateStatusRef,
     getOriginalData,
     setCyRef,
-    setUpdateStatusRef
+    setUpdateStatusRef,
 } from './state';
 import { showPanel, hidePanel } from './display';
 import { toggleEdit } from './edit';
@@ -30,17 +30,22 @@ const syncVerifiedLabel = (labels: string[], isVerified: boolean): string[] => {
         nextLabels.push('Verified');
     }
     if (!isVerified && hasVerified) {
-        return nextLabels.filter(label => label !== 'Verified');
+        return nextLabels.filter((label) => label !== 'Verified');
     }
     return nextLabels;
 };
 
-const applyLabelClasses = (labels: string[], currentSelectedNode: ReturnType<typeof getCurrentSelectedNode>): void => {
+const applyLabelClasses = (
+    labels: string[],
+    currentSelectedNode: ReturnType<typeof getCurrentSelectedNode>
+): void => {
     if (!currentSelectedNode) return;
-    const newLabelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+    const newLabelClasses = labels.map(
+        (d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+    );
     const currentClasses = currentSelectedNode.classes();
     const classArray = normalizeClassList(currentClasses);
-    const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
+    const filteredClasses = classArray.filter((c) => !c.startsWith('label-'));
     currentSelectedNode.classes([...filteredClasses, ...newLabelClasses]);
 };
 
@@ -51,10 +56,11 @@ export const updateSaveButtonState = (): void => {
     const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
     let isDirty = false;
 
-    inputs.forEach(input => {
+    inputs.forEach((input) => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
-        const currentValue = el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value;
+        const currentValue =
+            el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value;
         if (key && getOriginalData()[key] !== currentValue) {
             isDirty = true;
         }
@@ -81,11 +87,12 @@ export const handleSave = (): void => {
 
     const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
     const newData: any = {};
-    inputs.forEach(input => {
+    inputs.forEach((input) => {
         const el = input as HTMLInputElement | HTMLSelectElement;
         const key = el.dataset.key;
         if (key) {
-            newData[key] = el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value;
+            newData[key] =
+                el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value;
         }
     });
 
@@ -93,7 +100,7 @@ export const handleSave = (): void => {
         newData.tier = parseInt(newData.tier, 10);
 
         // Update classes to reflect new tier color
-        [1, 2, 3, 4].forEach(t => currentSelectedNode!.removeClass(`tier-${t}`));
+        [1, 2, 3, 4].forEach((t) => currentSelectedNode!.removeClass(`tier-${t}`));
         currentSelectedNode.addClass(`tier-${newData.tier}`);
     }
 
@@ -102,7 +109,11 @@ export const handleSave = (): void => {
         newData.label = newData.name;
     }
 
-    const displayName = newData.name || currentSelectedNode.data('name') || currentSelectedNode.data('label') || currentSelectedNode.id();
+    const displayName =
+        newData.name ||
+        currentSelectedNode.data('name') ||
+        currentSelectedNode.data('label') ||
+        currentSelectedNode.id();
     newData.labelDisplay = getNodeLabelDisplay(displayName);
 
     let labelsList: string[] | undefined;
@@ -112,7 +123,10 @@ export const handleSave = (): void => {
         labelsList = newData.labels;
         newData.labelsDisplay = labelsList.join(', ');
     } else if (typeof newData.labels === 'string') {
-        labelsList = newData.labels.split(/[;,]/).map((d: string) => d.trim()).filter(Boolean);
+        labelsList = newData.labels
+            .split(/[;,]/)
+            .map((d: string) => d.trim())
+            .filter(Boolean);
         newData.labelsDisplay = labelsList.join(', ');
         newData.labels = labelsList;
     }
@@ -141,7 +155,9 @@ export const handleSave = (): void => {
     populateTeamFilter(cyRef.nodes().toArray());
 
     if (updateStatusRef) {
-        updateStatusRef(`Saved changes to ${newData.name || newData.label || currentSelectedNode.id()}`);
+        updateStatusRef(
+            `Saved changes to ${newData.name || newData.label || currentSelectedNode.id()}`
+        );
     }
 
     // Refresh panel to show saved state
@@ -191,7 +207,11 @@ export const initPanel = (cy: CyInstance, updateStatus: (msg: string) => void): 
             const updateStatusRef = getUpdateStatusRef();
             if (currentSelectedNode) {
                 const label = currentSelectedNode.data('name') || currentSelectedNode.id();
-                if (confirm(`Are you sure you want to delete "${label}"?\nThis action cannot be undone.`)) {
+                if (
+                    confirm(
+                        `Are you sure you want to delete "${label}"?\nThis action cannot be undone.`
+                    )
+                ) {
                     const id = currentSelectedNode.id();
                     if (deleteNode(cy, id)) {
                         if (updateStatusRef) updateStatusRef(`Deleted service: ${label}`);

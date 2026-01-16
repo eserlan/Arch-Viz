@@ -3,7 +3,7 @@ import { stylesheet } from './graphConfig';
 
 describe('Graph Configuration', () => {
     it('should have transition properties defined for nodes', () => {
-        const nodeStyleResult = stylesheet.find(s => s.selector === 'node');
+        const nodeStyleResult = stylesheet.find((s) => s.selector === 'node');
         expect(nodeStyleResult).toBeDefined();
 
         const style = nodeStyleResult!.style as any;
@@ -13,7 +13,7 @@ describe('Graph Configuration', () => {
     });
 
     it('should have transition properties defined for edges', () => {
-        const edgeStyleResult = stylesheet.find(s => s.selector === 'edge');
+        const edgeStyleResult = stylesheet.find((s) => s.selector === 'edge');
         expect(edgeStyleResult).toBeDefined();
 
         const style = edgeStyleResult!.style as any;
@@ -24,7 +24,7 @@ describe('Graph Configuration', () => {
     });
 
     it('should define dimmed class style', () => {
-        const dims = stylesheet.find(s => s.selector.includes('.dimmed'));
+        const dims = stylesheet.find((s) => s.selector.includes('.dimmed'));
         expect(dims).toBeDefined();
         expect((dims!.style as any).opacity).toBeLessThan(1);
     });

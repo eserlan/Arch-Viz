@@ -34,7 +34,9 @@ test.describe('Node Operations', () => {
         await expect(modal).toBeHidden();
 
         // Check for success toast
-        await expect(page.locator('#toastContainer')).toContainText('Service "E2E Test Node" created');
+        await expect(page.locator('#toastContainer')).toContainText(
+            'Service "E2E Test Node" created'
+        );
 
         // Verify it was added to the graph by searching for it
         const searchInput = page.locator('#searchInput');
@@ -49,27 +51,15 @@ test.describe('Node Operations', () => {
         const searchInput = page.locator('#searchInput');
         await searchInput.fill('gateway');
 
-        // We need to click the node in the graph. 
-        // Since we don't know the exact coordinates of a node easily, 
-        // we'll rely on the fact that 'gateway' is a unique node and we can try to click the center of the graph or use evaluate.
-
-        // Actually, we can use page.evaluate to get the position of a specific node from Cytoscape!
-        const nodePos = await page.evaluate(() => {
-            // @ts-ignore - access global cy if exposed, or we might need to expose it
-            // Let's assume we can't easily access global cy. 
-            // Instead, we'll use a safer check.
-            return null;
-        });
-
-        // If we can't click the graph easily, we'll skip the "click node" part 
-        // but we can definitely test the "Reset Data" button which is a form of mass delete/revert.
+        // Since it's hard to click specific graph nodes in Playwright without deep integration,
+        // we'll rely on the reset test below to verify mass operations.
     });
 
     test('should reset data', async ({ page }) => {
         const resetBtn = page.locator('#resetDataBtn');
 
         // Mock the confirm dialog
-        page.on('dialog', async dialog => {
+        page.on('dialog', async (dialog) => {
             expect(dialog.message()).toContain('Clear all local edits');
             await dialog.accept();
         });

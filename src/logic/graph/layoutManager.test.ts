@@ -14,12 +14,12 @@ describe('layoutManager logic', () => {
         `;
         mockLayout = {
             one: vi.fn(),
-            run: vi.fn()
+            run: vi.fn(),
         };
         mockCy = {
             layout: vi.fn().mockReturnValue(mockLayout),
             animate: vi.fn(),
-            nodes: vi.fn().mockReturnValue({ length: 0 })
+            nodes: vi.fn().mockReturnValue({ length: 0 }),
         };
     });
 
@@ -29,10 +29,12 @@ describe('layoutManager logic', () => {
         select.value = 'dagre-horizontal';
         select.dispatchEvent(new Event('change'));
 
-        expect(mockCy.layout).toHaveBeenCalledWith(expect.objectContaining({
-            name: 'dagre',
-            rankDir: 'LR'
-        }));
+        expect(mockCy.layout).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: 'dagre',
+                rankDir: 'LR',
+            })
+        );
         expect(mockLayout.run).toHaveBeenCalled();
     });
 
@@ -42,8 +44,10 @@ describe('layoutManager logic', () => {
         select.value = 'fcose';
         select.dispatchEvent(new Event('change'));
 
-        expect(mockCy.layout).toHaveBeenCalledWith(expect.objectContaining({
-            name: 'fcose'
-        }));
+        expect(mockCy.layout).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: 'fcose',
+            })
+        );
     });
 });

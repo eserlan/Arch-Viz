@@ -31,8 +31,15 @@ type GraphRendererOptions = {
     onDirtyStateChange: DirtyStateHandler;
 };
 
-export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }: GraphRendererOptions) => {
-    return (elements: ElementsDefinition | ElementDefinition[], skipped: number): CyInstance | undefined => {
+export const createGraphRenderer = ({
+    container,
+    onStatus,
+    onDirtyStateChange,
+}: GraphRendererOptions) => {
+    return (
+        elements: ElementsDefinition | ElementDefinition[],
+        skipped: number
+    ): CyInstance | undefined => {
         if (!container) return undefined;
 
         onStatus('Rendering graph…');
@@ -69,7 +76,7 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
             if (verifiedIndex < verifiedNodes.length) {
                 const schedule =
                     typeof (window as any).requestIdleCallback === 'function'
-                        ? (window as any).requestIdleCallback
+                        ? ((window as any).requestIdleCallback as (cb: () => void) => void)
                         : (cb: () => void) => setTimeout(cb, 0);
                 schedule(processVerifiedBatch);
             }
@@ -77,25 +84,40 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
 
         processVerifiedBatch();
 
-        container.addEventListener('wheel', (e: WheelEvent) => {
-            e.preventDefault();
-            const currentZoom = cy.zoom();
-            const newZoom = calculateDynamicZoom(currentZoom, e.deltaY, cy.minZoom(), cy.maxZoom());
-            const rect = container.getBoundingClientRect();
-            cy.zoom({ level: newZoom, renderedPosition: { x: e.clientX - rect.left, y: e.clientY - rect.top } });
-        }, { passive: false });
+        container.addEventListener(
+            'wheel',
+            (e: WheelEvent) => {
+                e.preventDefault();
+                const currentZoom = cy.zoom();
+                const newZoom = calculateDynamicZoom(
+                    currentZoom,
+                    e.deltaY,
+                    cy.minZoom(),
+                    cy.maxZoom()
+                );
+                const rect = container.getBoundingClientRect();
+                cy.zoom({
+                    level: newZoom,
+                    renderedPosition: { x: e.clientX - rect.left, y: e.clientY - rect.top },
+                });
+            },
+            { passive: false }
+        );
 
         (window as any).cy = cy;
 
         initHistory(cy, cy.elements().jsons() as ElementDefinition[], {
             onStatus,
-            onPersist: (graphElements) => saveGraphData(graphElements, { skipHistory: true })
+            onPersist: (graphElements) => saveGraphData(graphElements, { skipHistory: true }),
         });
 
         cy.ready(() => {
             cy.fit(undefined, 100);
             cy.nodes().unselect();
-            onStatus(`Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` + (skipped ? ` (skipped ${skipped} invalid rows)` : ''));
+            onStatus(
+                `Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` +
+                    (skipped ? ` (skipped ${skipped} invalid rows)` : '')
+            );
             onDirtyStateChange(getDirtyState());
         });
 

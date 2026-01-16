@@ -30,8 +30,9 @@ export const addNode = (cy: CyInstance, data: ServiceData): void => {
             label: data.name, // Fallback for display
             labelDisplay: getNodeLabelDisplay(data.name),
         },
-        classes: `${tier ? `tier-${tier}` : ''} ${getShapeClass(data.id, data.name)} ${isVerified ? 'is-verified' : ''}`.trim(),
-        position: pos
+        classes:
+            `${tier ? `tier-${tier}` : ''} ${getShapeClass(data.id, data.name)} ${isVerified ? 'is-verified' : ''}`.trim(),
+        position: pos,
     });
 
     saveGraphData(cy.elements().jsons() as any);

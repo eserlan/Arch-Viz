@@ -5,7 +5,7 @@ import { CyInstance } from '../../../types';
 // Mock storage module
 vi.mock('../../core/storage', () => ({
     saveGraphData: vi.fn(),
-    getDirtyState: vi.fn().mockReturnValue(false)
+    getDirtyState: vi.fn().mockReturnValue(false),
 }));
 
 describe('Panel Module', () => {
@@ -33,13 +33,13 @@ describe('Panel Module', () => {
             owner: 'Test Owner',
             repoUrl: 'http://test.com',
             verified: false,
-            ...data
+            ...data,
         };
         let nodeClasses = data.classes || ['tier-1'];
 
         const mockEdgeCollection = {
             map: (fn: any) => [].map(fn),
-            targets: () => ({ map: () => [] })
+            targets: () => ({ map: () => [] }),
         };
 
         const mockNode: any = {
@@ -82,19 +82,19 @@ describe('Panel Module', () => {
             incomers: () => mockEdgeCollection,
             id: () => nodeData.id,
             cy: () => mockCy,
-            hasClass: (cls: string) => nodeClasses.includes(cls)
+            hasClass: (cls: string) => nodeClasses.includes(cls),
         };
         return mockNode;
     };
 
     const mockCy = {
         elements: () => ({
-            jsons: () => [{ data: { id: 'test' } }]
+            jsons: () => [{ data: { id: 'test' } }],
         }),
         nodes: () => ({
             filter: () => ({ map: () => [] }),
-            toArray: () => []
-        })
+            toArray: () => [],
+        }),
     } as unknown as CyInstance;
 
     it('should update panel content with node data', () => {
@@ -118,15 +118,20 @@ describe('Panel Module', () => {
         const mockEdge = {
             id: () => 'edge-1',
             target: () => ({
-                data: (key: string) => key === 'name' ? 'Target Service' : (key === 'label' ? 'Target Service' : 'target-id'),
-                id: () => 'target-id'
-            })
+                data: (key: string) =>
+                    key === 'name'
+                        ? 'Target Service'
+                        : key === 'label'
+                          ? 'Target Service'
+                          : 'target-id',
+                id: () => 'target-id',
+            }),
         };
         const mockNode = {
             data: () => ({ id: 'source-id', name: 'Source', label: 'Source' }),
             outgoers: () => ({ map: (fn: any) => [mockEdge].map(fn) }),
             incomers: () => ({ map: (fn: any) => [].map(fn) }),
-            cy: () => mockCy
+            cy: () => mockCy,
         } as any;
 
         showPanel(mockNode);
@@ -139,15 +144,20 @@ describe('Panel Module', () => {
         const mockEdge = {
             id: () => 'edge-2',
             source: () => ({
-                data: (key: string) => key === 'name' ? 'Source Service' : (key === 'label' ? 'Source Service' : 'source-id'),
-                id: () => 'source-id'
-            })
+                data: (key: string) =>
+                    key === 'name'
+                        ? 'Source Service'
+                        : key === 'label'
+                          ? 'Source Service'
+                          : 'source-id',
+                id: () => 'source-id',
+            }),
         };
         const mockNode = {
             data: () => ({ id: 'target-id', name: 'Target', label: 'Target' }),
             outgoers: () => ({ map: (fn: any) => [].map(fn) }),
             incomers: () => ({ map: (fn: any) => [mockEdge].map(fn) }),
-            cy: () => mockCy
+            cy: () => mockCy,
         } as any;
 
         showPanel(mockNode);
@@ -189,7 +199,9 @@ describe('Panel Module', () => {
         showPanel(mockNode);
         expect(document.querySelector('input[data-key="verified"]')).toBeNull();
         document.getElementById('editBtn')!.click();
-        const verifiedToggle = document.querySelector('input[data-key="verified"]') as HTMLInputElement;
+        const verifiedToggle = document.querySelector(
+            'input[data-key="verified"]'
+        ) as HTMLInputElement;
         expect(verifiedToggle).toBeTruthy();
         expect(verifiedToggle.checked).toBe(true);
     });
@@ -199,7 +211,9 @@ describe('Panel Module', () => {
         initPanel(mockCy, vi.fn());
         showPanel(mockNode);
         document.getElementById('editBtn')!.click();
-        const verifiedToggle = document.querySelector('input[data-key="verified"]') as HTMLInputElement;
+        const verifiedToggle = document.querySelector(
+            'input[data-key="verified"]'
+        ) as HTMLInputElement;
         verifiedToggle.checked = true;
         verifiedToggle.dispatchEvent(new Event('change', { bubbles: true }));
         const saveBtn = document.getElementById('saveBtn') as HTMLButtonElement;
@@ -225,16 +239,20 @@ describe('Panel Module', () => {
         initPanel(mockCy, vi.fn());
         showPanel(mockNode);
         document.getElementById('editBtn')!.click();
-        const verifiedToggle = document.querySelector('input[data-key="verified"]') as HTMLInputElement;
+        const verifiedToggle = document.querySelector(
+            'input[data-key="verified"]'
+        ) as HTMLInputElement;
         verifiedToggle.checked = true;
         verifiedToggle.dispatchEvent(new Event('change', { bubbles: true }));
         document.getElementById('saveBtn')!.click();
         expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', true);
-        expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({
-            verified: true,
-            labels: expect.arrayContaining(['Verified']),
-            labelsDisplay: expect.stringContaining('Verified')
-        }));
+        expect(mockNode.data).toHaveBeenCalledWith(
+            expect.objectContaining({
+                verified: true,
+                labels: expect.arrayContaining(['Verified']),
+                labelsDisplay: expect.stringContaining('Verified'),
+            })
+        );
     });
 
     it('should parse multi-label input correctly', () => {
@@ -246,9 +264,11 @@ describe('Panel Module', () => {
         labelsInput.value = 'A; B, C';
         labelsInput.dispatchEvent(new Event('input', { bubbles: true }));
         document.getElementById('saveBtn')!.click();
-        expect(mockNode.data).toHaveBeenCalledWith(expect.objectContaining({
-            labels: ['A', 'B', 'C']
-        }));
+        expect(mockNode.data).toHaveBeenCalledWith(
+            expect.objectContaining({
+                labels: ['A', 'B', 'C'],
+            })
+        );
     });
 
     it('should store original data for dirty comparison', () => {

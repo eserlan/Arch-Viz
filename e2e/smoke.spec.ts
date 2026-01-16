@@ -33,16 +33,26 @@ test.describe('Arch Viz SMOKE TEST', () => {
         await expect(panel).toHaveCSS('cursor', 'move');
 
         // Move the mouse
-        await page.mouse.move(initialBox!.x + initialBox!.width / 2, initialBox!.y + initialBox!.height / 2);
+        await page.mouse.move(
+            initialBox!.x + initialBox!.width / 2,
+            initialBox!.y + initialBox!.height / 2
+        );
         await page.mouse.down();
         await page.mouse.move(initialBox!.x + 400, initialBox!.y + 200, { steps: 20 });
         await page.mouse.up();
 
         // Drop via global click placement
-        await page.evaluate((pos) => {
-            const event = new MouseEvent('click', { bubbles: true, clientX: pos.x, clientY: pos.y });
-            document.body.dispatchEvent(event);
-        }, { x: initialBox!.x + 400, y: initialBox!.y + 200 });
+        await page.evaluate(
+            (pos) => {
+                const event = new MouseEvent('click', {
+                    bubbles: true,
+                    clientX: pos.x,
+                    clientY: pos.y,
+                });
+                document.body.dispatchEvent(event);
+            },
+            { x: initialBox!.x + 400, y: initialBox!.y + 200 }
+        );
 
         // Wait for cursor to reset (auto or default)
         await expect(panel).toHaveCSS('cursor', /auto|default/, { timeout: 10000 });
@@ -60,7 +70,9 @@ test.describe('Arch Viz SMOKE TEST', () => {
 
         // Dispatch events on document via body to ensure capture
         await page.evaluate(() => {
-            document.body.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+            document.body.dispatchEvent(
+                new DragEvent('dragenter', { bubbles: true, cancelable: true })
+            );
         });
 
         // If it's still not visible, we can try to force the style to verify it's there

@@ -5,13 +5,14 @@ import {
     getCyRef,
     getOriginalData,
     setIsEditMode,
-    TIER_LABELS
+    TIER_LABELS,
 } from './state';
 import { updateSaveButtonState } from './actions';
 
 // Constants for verified checkbox styling and text
 const VERIFIED_CHECKBOX_LABEL_CLASSES = 'flex items-center gap-2 text-xs text-slate-300';
-const VERIFIED_CHECKBOX_INPUT_CLASSES = 'h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500';
+const VERIFIED_CHECKBOX_INPUT_CLASSES =
+    'h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500';
 const VERIFIED_CHECKBOX_LABEL_TEXT = 'Toggle verification';
 
 export const toggleEdit = (editing: boolean): void => {
@@ -21,7 +22,7 @@ export const toggleEdit = (editing: boolean): void => {
     if (!panelContent || !currentSelectedNode) return;
 
     if (!editing) {
-        panelContent.querySelectorAll('[data-edit-only="verified"]').forEach(el => el.remove());
+        panelContent.querySelectorAll('[data-edit-only="verified"]').forEach((el) => el.remove());
     }
 
     if (editing) {
@@ -35,7 +36,9 @@ export const toggleEdit = (editing: boolean): void => {
                 <div class="info-value" data-key="verified"></div>
             `;
 
-            const outboundItem = panelContent.querySelector('.connections-list')?.closest('.info-item');
+            const outboundItem = panelContent
+                .querySelector('.connections-list')
+                ?.closest('.info-item');
             if (outboundItem && outboundItem.parentNode) {
                 outboundItem.parentNode.insertBefore(verifiedItem, outboundItem);
             } else {
@@ -45,7 +48,7 @@ export const toggleEdit = (editing: boolean): void => {
     }
 
     const values = panelContent.querySelectorAll('.info-value[data-key]');
-    values.forEach(el => {
+    values.forEach((el) => {
         const htmlEl = el as HTMLElement;
         const key = htmlEl.dataset.key;
         if (!key) return;
@@ -53,9 +56,12 @@ export const toggleEdit = (editing: boolean): void => {
         if (editing) {
             if (key === 'tier') {
                 const currentTier = parseInt(originalData.tier || '4', 10);
-                const options = Object.entries(TIER_LABELS).map(([val, label]) =>
-                    `<option value="${val}" ${parseInt(val) === currentTier ? 'selected' : ''}>${label}</option>`
-                ).join('');
+                const options = Object.entries(TIER_LABELS)
+                    .map(
+                        ([val, label]) =>
+                            `<option value="${val}" ${parseInt(val) === currentTier ? 'selected' : ''}>${label}</option>`
+                    )
+                    .join('');
                 htmlEl.innerHTML = `<select data-key="tier" class="w-full bg-slate-800 border-slate-700 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-emerald-500">${options}</select>`;
             } else if (key === 'verified') {
                 const isVerified = Boolean(originalData.verified);
@@ -83,7 +89,11 @@ export const toggleEdit = (editing: boolean): void => {
                 const val = parseInt(select.value, 10);
                 htmlEl.textContent = TIER_LABELS[val] || val.toString();
             } else {
-                const val = input ? input.value : (textarea ? textarea.value : htmlEl.textContent || '');
+                const val = input
+                    ? input.value
+                    : textarea
+                      ? textarea.value
+                      : htmlEl.textContent || '';
                 // For comments, we want to show placeholder if empty
                 if (key === 'comment' && !val) {
                     htmlEl.innerHTML = '<span class="text-slate-500 italic">Not set</span>';
@@ -96,8 +106,10 @@ export const toggleEdit = (editing: boolean): void => {
 
     // Add input listeners for dirty checking
     if (editing) {
-        const inputs = panelContent.querySelectorAll('input[data-key], select[data-key], textarea[data-key]');
-        inputs.forEach(input => {
+        const inputs = panelContent.querySelectorAll(
+            'input[data-key], select[data-key], textarea[data-key]'
+        );
+        inputs.forEach((input) => {
             input.addEventListener('input', updateSaveButtonState);
             input.addEventListener('change', updateSaveButtonState);
         });
@@ -113,21 +125,30 @@ export const toggleEdit = (editing: boolean): void => {
     if (editing && cyRef && connectionsList) {
         const cy = cyRef;
         const outgoingEdges = currentSelectedNode.outgoers('edge');
-        const existingTargets = new Set(outgoingEdges.targets().map(n => n.id()));
+        const existingTargets = new Set(outgoingEdges.targets().map((n) => n.id()));
 
         // Build "Remove" view for connections
-        const connectionsHtml = outgoingEdges.map((edge: EdgeSingular) => `
+        const connectionsHtml = outgoingEdges
+            .map(
+                (edge: EdgeSingular) => `
             <div class="flex items-center justify-between mb-1 bg-slate-800/50 p-1 rounded group">
                 <span class="text-xs truncate mr-2">${edge.target().data('label') || edge.target().id()}</span>
                 <button class="remove-connection btn-icon text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" data-id="${edge.id()}">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
 
         // Build "Add" dropdown
-        const allNodes = cy.nodes().filter(n => n.id() !== currentSelectedNode!.id() && !existingTargets.has(n.id()));
-        const optionsHtml = allNodes.map(n => `<option value="${n.id()}">${n.data('label') || n.id()}</option>`).sort().join('');
+        const allNodes = cy
+            .nodes()
+            .filter((n) => n.id() !== currentSelectedNode!.id() && !existingTargets.has(n.id()));
+        const optionsHtml = allNodes
+            .map((n) => `<option value="${n.id()}">${n.data('label') || n.id()}</option>`)
+            .sort()
+            .join('');
 
         connectionsList.innerHTML = `
             <div id="editConnectionsList">${connectionsHtml}</div>
@@ -146,7 +167,9 @@ export const toggleEdit = (editing: boolean): void => {
         const select = document.getElementById('newConnectionId') as HTMLSelectElement | null;
         const addBtn = document.getElementById('addConnectionBtn') as HTMLButtonElement | null;
         if (select && addBtn) {
-            select.addEventListener('change', () => { addBtn.disabled = !select.value; });
+            select.addEventListener('change', () => {
+                addBtn.disabled = !select.value;
+            });
 
             addBtn.addEventListener('click', () => {
                 const targetId = select.value;
@@ -156,7 +179,7 @@ export const toggleEdit = (editing: boolean): void => {
                 // Add edge in Cytoscape
                 cy.add({
                     group: 'edges',
-                    data: { id: edgeId, source: currentSelectedNode.id(), target: targetId }
+                    data: { id: edgeId, source: currentSelectedNode.id(), target: targetId },
                 });
 
                 // Re-toggle edit to refresh list
@@ -164,7 +187,7 @@ export const toggleEdit = (editing: boolean): void => {
             });
         }
 
-        panelContent.querySelectorAll('.remove-connection').forEach(btn => {
+        panelContent.querySelectorAll('.remove-connection').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const id = (btn as HTMLElement).dataset.id;
                 if (id) {

@@ -1,21 +1,26 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions, initSettings } from './appUi';
+import {
+    initDirtyStateIndicator,
+    initPanelsAndModals,
+    initSidebarActions,
+    initSettings,
+} from './appUi';
 import { downloadCSV } from '../core/storage';
 import { copyImageToClipboard, saveImageAsPng } from '../utils/exports';
 import { initFloatingPanel, initModal } from './ui';
 
 vi.mock('../core/storage', () => ({
-    downloadCSV: vi.fn()
+    downloadCSV: vi.fn(),
 }));
 
 vi.mock('../utils/exports', () => ({
     copyImageToClipboard: vi.fn(),
-    saveImageAsPng: vi.fn()
+    saveImageAsPng: vi.fn(),
 }));
 
 vi.mock('./ui', () => ({
     initFloatingPanel: vi.fn(),
-    initModal: vi.fn()
+    initModal: vi.fn(),
 }));
 
 describe('appUi helpers', () => {
@@ -52,7 +57,10 @@ describe('appUi helpers', () => {
         const cy = {} as any;
         const onStatus = vi.fn();
         const onReset = vi.fn();
-        vi.stubGlobal('confirm', vi.fn(() => true));
+        vi.stubGlobal(
+            'confirm',
+            vi.fn(() => true)
+        );
 
         initSidebarActions(() => cy, onStatus, onReset);
 
@@ -73,7 +81,12 @@ describe('appUi helpers', () => {
     it('initializes panels and modals', () => {
         initPanelsAndModals();
 
-        expect(initModal).toHaveBeenCalledWith('helpModal', 'openHelpBtn', 'closeHelpBtn', 'helpContent');
+        expect(initModal).toHaveBeenCalledWith(
+            'helpModal',
+            'openHelpBtn',
+            'closeHelpBtn',
+            'helpContent'
+        );
         expect(initFloatingPanel).toHaveBeenCalledTimes(2);
     });
 
@@ -129,8 +142,8 @@ describe('appUi helpers', () => {
             toggle = document.getElementById('showVerifiedToggle') as HTMLInputElement;
 
             mockNodes = [
-                { data: vi.fn((key) => key === 'verified' ? true : null), toggleClass: vi.fn() },
-                { data: vi.fn((key) => key === 'verified' ? false : null), toggleClass: vi.fn() }
+                { data: vi.fn((key) => (key === 'verified' ? true : null)), toggleClass: vi.fn() },
+                { data: vi.fn((key) => (key === 'verified' ? false : null)), toggleClass: vi.fn() },
             ];
 
             cy = {
@@ -138,13 +151,13 @@ describe('appUi helpers', () => {
                 nodes: vi.fn(() => ({
                     forEach: vi.fn((cb) => {
                         if (cb) mockNodes.forEach(cb);
-                    })
-                }))
+                    }),
+                })),
             };
 
             vi.stubGlobal('localStorage', {
                 getItem: vi.fn(),
-                setItem: vi.fn()
+                setItem: vi.fn(),
             });
         });
 

@@ -6,11 +6,11 @@ import { setSelectedNode, setIsEditMode } from './state';
 
 // Mock the dependencies
 vi.mock('./edit', () => ({
-    toggleEdit: vi.fn()
+    toggleEdit: vi.fn(),
 }));
 
 vi.mock('./display', () => ({
-    showPanel: vi.fn()
+    showPanel: vi.fn(),
 }));
 
 describe('Panel Keyboard Shortcuts', () => {
@@ -18,7 +18,7 @@ describe('Panel Keyboard Shortcuts', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        
+
         // Setup DOM
         document.body.innerHTML = `
             <div id="servicePanel" class="">
@@ -31,7 +31,7 @@ describe('Panel Keyboard Shortcuts', () => {
         // Create a mock node
         mockNode = {
             data: () => ({ id: 'test-id', name: 'Test Service' }),
-            id: () => 'test-id'
+            id: () => 'test-id',
         };
 
         // Register the keyboard listener
@@ -79,12 +79,12 @@ describe('Panel Keyboard Shortcuts', () => {
         const input = document.createElement('input');
         document.body.appendChild(input);
 
-        const event = new KeyboardEvent('keydown', { 
+        const event = new KeyboardEvent('keydown', {
             key: 'e',
-            bubbles: true 
+            bubbles: true,
         });
         Object.defineProperty(event, 'target', { value: input, enumerable: true });
-        
+
         window.dispatchEvent(event);
 
         expect(toggleEdit).not.toHaveBeenCalled();
@@ -97,12 +97,12 @@ describe('Panel Keyboard Shortcuts', () => {
         const textarea = document.createElement('textarea');
         document.body.appendChild(textarea);
 
-        const event = new KeyboardEvent('keydown', { 
+        const event = new KeyboardEvent('keydown', {
             key: 'e',
-            bubbles: true 
+            bubbles: true,
         });
         Object.defineProperty(event, 'target', { value: textarea, enumerable: true });
-        
+
         window.dispatchEvent(event);
 
         expect(toggleEdit).not.toHaveBeenCalled();
@@ -112,9 +112,9 @@ describe('Panel Keyboard Shortcuts', () => {
         setSelectedNode(mockNode);
         setIsEditMode(false);
 
-        const event = new KeyboardEvent('keydown', { 
-            key: 'e', 
-            ctrlKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'e',
+            ctrlKey: true,
         });
         window.dispatchEvent(event);
 
@@ -125,9 +125,9 @@ describe('Panel Keyboard Shortcuts', () => {
         setSelectedNode(mockNode);
         setIsEditMode(false);
 
-        const event = new KeyboardEvent('keydown', { 
-            key: 'e', 
-            altKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'e',
+            altKey: true,
         });
         window.dispatchEvent(event);
 

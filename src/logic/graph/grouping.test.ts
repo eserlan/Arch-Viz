@@ -3,7 +3,7 @@ import { enableTeamGrouping, enableLabelGrouping, disableGrouping, initGrouping 
 
 // Mock the ui module
 vi.mock('../ui/ui', () => ({
-    showToast: vi.fn()
+    showToast: vi.fn(),
 }));
 
 describe('Grouping Module', () => {
@@ -106,7 +106,7 @@ describe('Grouping Module', () => {
             enableTeamGrouping(mockCy);
 
             // At least some nodes should have move called
-            const movedNodes = mockNodes.filter(n => n.move.mock.calls.length > 0);
+            const movedNodes = mockNodes.filter((n) => n.move.mock.calls.length > 0);
             expect(movedNodes.length).toBeGreaterThan(0);
         });
     });

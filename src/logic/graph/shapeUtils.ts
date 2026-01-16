@@ -2,8 +2,36 @@
  * Detects if a node should have a specific shape based on its ID or name.
  */
 
-const DB_TOKENS = ['db', 'database', 'postgres', 'mysql', 'mongo', 'redis', 'sql', 'store', 'storage', 'warehouse', 'repository', 'persistence'];
-const QUEUE_TOKENS = ['topic', 'queue', 'kafka', 'rabbit', 'rabbitmq', 'mq', 'sqs', 'sns', 'pubsub', 'stream', 'event', 'bus', 'broker', 'messaging'];
+const DB_TOKENS = [
+    'db',
+    'database',
+    'postgres',
+    'mysql',
+    'mongo',
+    'redis',
+    'sql',
+    'store',
+    'storage',
+    'warehouse',
+    'repository',
+    'persistence',
+];
+const QUEUE_TOKENS = [
+    'topic',
+    'queue',
+    'kafka',
+    'rabbit',
+    'rabbitmq',
+    'mq',
+    'sqs',
+    'sns',
+    'pubsub',
+    'stream',
+    'event',
+    'bus',
+    'broker',
+    'messaging',
+];
 
 /**
  * Checks if a string contains any of the tokens as a "whole part".
@@ -24,7 +52,7 @@ const matchesToken = (text: string, tokens: string[]): boolean => {
     // Split by common separators: -, _, ., / and spaces
     const parts = expanded.toLowerCase().split(/[-_./\s]+/);
 
-    return tokens.some(token => parts.some(part => isPartMatch(part, token)));
+    return tokens.some((token) => parts.some((part) => isPartMatch(part, token)));
 };
 
 export const getShapeClass = (id: string, name: string): string => {

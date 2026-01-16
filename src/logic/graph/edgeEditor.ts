@@ -20,8 +20,8 @@ const edgehandlesDefaults = {
             data: {
                 id: `${sourceNode.id()}-${targetNode.id()}`,
                 source: sourceNode.id(),
-                target: targetNode.id()
-            }
+                target: targetNode.id(),
+            },
         };
     },
     hoverDelay: 150,
@@ -36,10 +36,20 @@ export const initEdgeEditor = (cy: CyInstance, updateStatus: (msg: string) => vo
     eh = (cy as any).edgehandles(edgehandlesDefaults);
 
     // Listen for new edge creation
-    cy.on('ehcomplete', (_event: EventObject, sourceNode: NodeSingular, targetNode: NodeSingular, _: EdgeSingular) => {
-        saveGraphData(cy.elements().jsons() as any);
-        updateStatus(`Connected ${sourceNode.data('label') || sourceNode.id()} → ${targetNode.data('label') || targetNode.id()}`);
-    });
+    cy.on(
+        'ehcomplete',
+        (
+            _event: EventObject,
+            sourceNode: NodeSingular,
+            targetNode: NodeSingular,
+            _: EdgeSingular
+        ) => {
+            saveGraphData(cy.elements().jsons() as any);
+            updateStatus(
+                `Connected ${sourceNode.data('label') || sourceNode.id()} → ${targetNode.data('label') || targetNode.id()}`
+            );
+        }
+    );
 
     // Listen for edge clicks to delete in edit mode
     cy.on('tap', 'edge', (evt: EventObject) => {

@@ -15,9 +15,7 @@ export const copyImageToClipboard = async (cy: CyInstance | null): Promise<void>
         const response = await fetch(png64);
         const blob = await response.blob();
 
-        await navigator.clipboard.write([
-            new ClipboardItem({ 'image/png': blob })
-        ]);
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
 
         showToast('Graph copied to clipboard!', 'success');
     } catch (err) {

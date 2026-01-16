@@ -24,11 +24,13 @@ const getSelectedValues = (element: HTMLElement | null): string[] => {
     if (!element) return [];
     if (element.tagName === 'SELECT') {
         const select = element as HTMLSelectElement;
-        return Array.from(select.selectedOptions).map(opt => opt.value);
+        return Array.from(select.selectedOptions).map((opt) => opt.value);
     }
     // For cloud containers (labels and teams)
     if (element.id === 'labelFilterContainer' || element.id === 'teamFilterContainer') {
-        return Array.from(element.querySelectorAll('button[data-selected="true"]')).map(btn => (btn as HTMLElement).dataset.value || '');
+        return Array.from(element.querySelectorAll('button[data-selected="true"]')).map(
+            (btn) => (btn as HTMLElement).dataset.value || ''
+        );
     }
     return [];
 };
@@ -36,9 +38,11 @@ const getSelectedValues = (element: HTMLElement | null): string[] => {
 const updateButtonStyle = (btn: HTMLButtonElement, selected: boolean): void => {
     btn.dataset.selected = selected.toString();
     if (selected) {
-        btn.className = 'text-[10px] px-2.5 py-1 rounded-full border border-emerald-500 bg-emerald-500 text-white font-medium shadow-sm transition-all duration-200';
+        btn.className =
+            'text-[10px] px-2.5 py-1 rounded-full border border-emerald-500 bg-emerald-500 text-white font-medium shadow-sm transition-all duration-200';
     } else {
-        btn.className = 'text-[10px] px-2.5 py-1 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-300 transition-all duration-200';
+        btn.className =
+            'text-[10px] px-2.5 py-1 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-300 transition-all duration-200';
     }
 };
 
@@ -64,7 +68,8 @@ export const applyFilters = (cy?: CyInstance): void => {
 
             const matchesSearch = name.includes(searchTerm) || id.includes(searchTerm);
             // Service matches if it has ANY of the selected labels
-            const matchesLabel = !filterByLabels || selectedLabels.some(selected => nodeLabels.includes(selected));
+            const matchesLabel =
+                !filterByLabels || selectedLabels.some((selected) => nodeLabels.includes(selected));
             // Service matches if its owner is in the selected teams
             const matchesTeam = !filterByTeams || selectedTeams.includes(nodeOwner);
 
@@ -88,13 +93,18 @@ export const applyFilters = (cy?: CyInstance): void => {
     });
 };
 
-const populateContainer = (container: HTMLElement | null, items: Set<string>, currentSelections: Set<string>): void => {
+const populateContainer = (
+    container: HTMLElement | null,
+    items: Set<string>,
+    currentSelections: Set<string>
+): void => {
     if (!container) return;
 
     container.innerHTML = '';
 
     if (items.size === 0) {
-        container.innerHTML = '<span class="text-[10px] text-slate-500 italic px-1">No items found</span>';
+        container.innerHTML =
+            '<span class="text-[10px] text-slate-500 italic px-1">No items found</span>';
         return;
     }
 
@@ -124,11 +134,11 @@ const populateContainer = (container: HTMLElement | null, items: Set<string>, cu
     // Create two row containers
     const row1 = document.createElement('div');
     row1.className = 'flex gap-2 justify-center';
-    row1Items.forEach(item => row1.appendChild(createButton(item)));
+    row1Items.forEach((item) => row1.appendChild(createButton(item)));
 
     const row2 = document.createElement('div');
     row2.className = 'flex gap-2 justify-center';
-    row2Items.forEach(item => row2.appendChild(createButton(item)));
+    row2Items.forEach((item) => row2.appendChild(createButton(item)));
 
     container.appendChild(row1);
     if (row2Items.length > 0) {
@@ -141,11 +151,11 @@ export const populateLabelFilter = (elements: any[]): void => {
     if (!labelFilterContainer) return;
 
     const labels = new Set<string>();
-    elements.forEach(el => {
-        const data = (el && typeof el.data === 'function') ? el.data() : (el.data || el);
+    elements.forEach((el) => {
+        const data = el && typeof el.data === 'function' ? el.data() : el.data || el;
         const nodeLabels: string[] | undefined = data?.labels;
         if (nodeLabels) {
-            nodeLabels.forEach(d => labels.add(d));
+            nodeLabels.forEach((d) => labels.add(d));
         }
     });
 
@@ -158,8 +168,8 @@ export const populateTeamFilter = (elements: any[]): void => {
     if (!teamFilterContainer) return;
 
     const teams = new Set<string>();
-    elements.forEach(el => {
-        const data = (el && typeof el.data === 'function') ? el.data() : (el.data || el);
+    elements.forEach((el) => {
+        const data = el && typeof el.data === 'function' ? el.data() : el.data || el;
         const owner: string | undefined = data?.owner;
         if (owner) {
             teams.add(owner);

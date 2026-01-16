@@ -9,7 +9,9 @@ const HIGHLIGHT_DURATION_MS = 1500;
 const HIGHLIGHT_CLASSES = ['ring-4', 'ring-emerald-400', 'ring-opacity-50'];
 const PULSE_ANIMATION = 'pulse 0.5s ease-in-out 3';
 
-export const initDirtyStateIndicator = (containerId = 'dirtyStateContainer'): ((isDirty: boolean) => void) => {
+export const initDirtyStateIndicator = (
+    containerId = 'dirtyStateContainer'
+): ((isDirty: boolean) => void) => {
     const dirtyStateContainer = document.getElementById(containerId);
     const updateDirtyUI = (isDirty: boolean): void => {
         if (dirtyStateContainer) {
@@ -39,8 +41,12 @@ export const initSidebarActions = (
         }
     });
 
-    document.getElementById('copyImageBtn')?.addEventListener('click', () => copyImageToClipboard(getCy() || null));
-    document.getElementById('saveImageBtn')?.addEventListener('click', () => saveImageAsPng(getCy() || null));
+    document
+        .getElementById('copyImageBtn')
+        ?.addEventListener('click', () => copyImageToClipboard(getCy() || null));
+    document
+        .getElementById('saveImageBtn')
+        ?.addEventListener('click', () => saveImageAsPng(getCy() || null));
 
     document.getElementById('resetDataBtn')?.addEventListener('click', () => {
         if (confirm('Clear all local edits and reset to the default services.csv?')) {
@@ -81,7 +87,7 @@ export const initPanelsAndModals = (): void => {
         moveBtnId: 'movePanelBtn',
         containerId: 'labelFilterContainer',
         storageKey: 'panel-pos',
-        defaultClasses: ['-translate-x-1/2', 'left-1/2', 'top-6']
+        defaultClasses: ['-translate-x-1/2', 'left-1/2', 'top-6'],
     });
 
     initFloatingPanel({
@@ -93,7 +99,7 @@ export const initPanelsAndModals = (): void => {
         moveBtnId: 'moveTeamPanelBtn',
         containerId: 'teamFilterContainer',
         storageKey: 'team-panel-pos',
-        defaultClasses: ['right-72', 'top-6']
+        defaultClasses: ['right-72', 'top-6'],
     });
 
     // Initialize panel highlight buttons
@@ -110,7 +116,9 @@ export const initPanelsAndModals = (): void => {
 };
 
 export const initSettings = (getCy: () => CyInstance | undefined): void => {
-    const showVerifiedToggle = document.getElementById('showVerifiedToggle') as HTMLInputElement | null;
+    const showVerifiedToggle = document.getElementById(
+        'showVerifiedToggle'
+    ) as HTMLInputElement | null;
     if (!showVerifiedToggle) return;
 
     // Load saved state
@@ -123,7 +131,7 @@ export const initSettings = (getCy: () => CyInstance | undefined): void => {
         if (!cy) return;
 
         cy.batch(() => {
-            cy.nodes().forEach(node => {
+            cy.nodes().forEach((node) => {
                 if (node.data('verified')) {
                     node.toggleClass('is-verified', visible);
                 }

@@ -19,77 +19,89 @@ export const initUploader = (
 
     if (!mainContainer || !dropZone) return;
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-        mainContainer.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropZone.classList.add('active');
-        }, false);
+    ['dragenter', 'dragover'].forEach((eventName) => {
+        mainContainer.addEventListener(
+            eventName,
+            (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('active');
+            },
+            false
+        );
     });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        mainContainer.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropZone.classList.remove('active');
-        }, false);
+    ['dragleave', 'drop'].forEach((eventName) => {
+        mainContainer.addEventListener(
+            eventName,
+            (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('active');
+            },
+            false
+        );
     });
 
-    mainContainer.addEventListener('drop', (e: DragEvent) => {
-        const dt = e.dataTransfer;
-        const files = dt?.files;
+    mainContainer.addEventListener(
+        'drop',
+        (e: DragEvent) => {
+            const dt = e.dataTransfer;
+            const files = dt?.files;
 
-        if (files && files.length > 0) {
-            const file = files[0];
-            if (file.name.endsWith('.csv')) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const csvText = event.target?.result as string;
-                    updateStatus(`Parsing ${file.name}…`);
+            if (files && files.length > 0) {
+                const file = files[0];
+                if (file.name.endsWith('.csv')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const csvText = event.target?.result as string;
+                        updateStatus(`Parsing ${file.name}…`);
 
-                    const result: ParseResult = parseCSV(csvText);
+                        const result: ParseResult = parseCSV(csvText);
 
-                    // Check for errors
-                    if (result.error) {
-                        // Show error toast
-                        if (showToast) {
-                            showToast(`Error: ${result.error}`, 'error');
-                            // Show hints as separate toasts
-                            if (result.hints) {
-                                result.hints.forEach((hint, i) => {
-                                    setTimeout(() => showToast(hint, 'warning'), (i + 1) * 500);
-                                });
+                        // Check for errors
+                        if (result.error) {
+                            // Show error toast
+                            if (showToast) {
+                                showToast(`Error: ${result.error}`, 'error');
+                                // Show hints as separate toasts
+                                if (result.hints) {
+                                    result.hints.forEach((hint, i) => {
+                                        setTimeout(() => showToast(hint, 'warning'), (i + 1) * 500);
+                                    });
+                                }
+                            } else {
+                                updateStatus(`Error: ${result.error}`);
                             }
-                        } else {
-                            updateStatus(`Error: ${result.error}`);
+                            return;
                         }
-                        return;
-                    }
 
-                    const { elements, skipped, hints } = result;
+                        const { elements, skipped, hints } = result;
 
-                    const cy = getCyInstance();
-                    if (cy) cy.destroy();
+                        const cy = getCyInstance();
+                        if (cy) cy.destroy();
 
-                    renderCallback(elements, skipped);
-                    saveGraphData(elements as ElementDefinition[]);
+                        renderCallback(elements, skipped);
+                        saveGraphData(elements as ElementDefinition[]);
 
-                    // Show any warnings/hints
-                    if (hints && hints.length > 0 && showToast) {
-                        hints.forEach((hint, i) => {
-                            setTimeout(() => showToast(hint, 'warning'), (i + 1) * 300);
-                        });
-                    }
-                };
-                reader.readAsText(file);
-            } else {
-                if (showToast) {
-                    showToast('Error: Only .csv files are supported', 'error');
-                    showToast('Drag and drop a CSV file to load services', 'info');
+                        // Show any warnings/hints
+                        if (hints && hints.length > 0 && showToast) {
+                            hints.forEach((hint, i) => {
+                                setTimeout(() => showToast(hint, 'warning'), (i + 1) * 300);
+                            });
+                        }
+                    };
+                    reader.readAsText(file);
                 } else {
-                    updateStatus('Error: Only .csv files are supported for drop upload.');
+                    if (showToast) {
+                        showToast('Error: Only .csv files are supported', 'error');
+                        showToast('Drag and drop a CSV file to load services', 'info');
+                    } else {
+                        updateStatus('Error: Only .csv files are supported for drop upload.');
+                    }
                 }
             }
-        }
-    }, false);
+        },
+        false
+    );
 };
