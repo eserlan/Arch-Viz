@@ -26,7 +26,7 @@ describe('exports logic', () => {
 
     it('copies image to clipboard', async () => {
         await copyImageToClipboard(mockCy);
-        expect(mockCy.png).toHaveBeenCalled();
+        expect(mockCy.png).toHaveBeenCalledWith({ scale: 2, bg: '#0f172a', full: false });
         expect(navigator.clipboard.write).toHaveBeenCalled();
         expect(showToast).toHaveBeenCalledWith(expect.stringContaining('copied'), 'success');
     });
@@ -40,7 +40,7 @@ describe('exports logic', () => {
         vi.spyOn(document, 'createElement').mockReturnValue(linkSpy as any);
 
         saveImageAsPng(mockCy);
-        expect(mockCy.png).toHaveBeenCalled();
+        expect(mockCy.png).toHaveBeenCalledWith({ scale: 2, bg: '#0f172a', full: false });
         expect(linkSpy.click).toHaveBeenCalled();
         expect(showToast).toHaveBeenCalledWith(expect.stringContaining('Saved'), 'success');
     });
