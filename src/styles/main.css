@@ -174,3 +174,8 @@ body {
 .btn-icon:hover {
     background: rgba(255, 255, 255, 0.1);
 }
+
+/* Focus Mode Overrides */
+.focus-mode-hidden {
+    display: none !important;
+}
