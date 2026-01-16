@@ -11,7 +11,7 @@ export const copyImageToClipboard = async (cy: CyInstance | null): Promise<void>
         return;
     }
     try {
-        const png64 = cy.png({ scale: 2, bg: '#0f172a', full: true });
+        const png64 = cy.png({ scale: 2, bg: '#0f172a', full: false });
         const response = await fetch(png64);
         const blob = await response.blob();
 
@@ -30,7 +30,7 @@ export const saveImageAsPng = (cy: CyInstance | null): void => {
         return;
     }
     try {
-        const png64 = cy.png({ scale: 2, bg: '#0f172a', full: true });
+        const png64 = cy.png({ scale: 2, bg: '#0f172a', full: false });
         const now = new Date();
         const pad = (n: number) => n.toString().padStart(2, '0');
         const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
