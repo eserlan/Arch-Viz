@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions } from './appUi';
+import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions, initSettings } from './appUi';
 import { downloadCSV } from '../core/storage';
 import { copyImageToClipboard, saveImageAsPng } from '../utils/exports';
 import { initFloatingPanel, initModal } from './ui';
@@ -79,6 +79,11 @@ describe('appUi helpers', () => {
 
     it('initializes panel highlight buttons', () => {
         document.body.innerHTML = `
+            <button id="openHelpBtn"></button>
+            <button id="closeHelpBtn"></button>
+            <div id="helpModal"></div>
+            <div id="helpContent"></div>
+            
             <button id="highlightLabelsPanel"></button>
             <button id="highlightTeamsPanel"></button>
             <div id="floatingFilterPanel"></div>
@@ -92,14 +97,83 @@ describe('appUi helpers', () => {
         const labelsPanel = document.getElementById('floatingFilterPanel');
         const teamsPanel = document.getElementById('floatingTeamPanel');
 
+        vi.useFakeTimers();
+
         // Click labels button
         labelsBtn?.click();
         expect(labelsPanel?.classList.contains('ring-4')).toBe(true);
         expect(labelsPanel?.classList.contains('ring-emerald-400')).toBe(true);
 
+        // Fast-forward time
+        vi.advanceTimersByTime(1500);
+        expect(labelsPanel?.classList.contains('ring-4')).toBe(false);
+
         // Click teams button
         teamsBtn?.click();
         expect(teamsPanel?.classList.contains('ring-4')).toBe(true);
         expect(teamsPanel?.classList.contains('ring-emerald-400')).toBe(true);
+
+        vi.advanceTimersByTime(1500);
+        expect(teamsPanel?.classList.contains('ring-4')).toBe(false);
+
+        vi.useRealTimers();
+    });
+
+    describe('initSettings', () => {
+        let toggle: HTMLInputElement;
+        let mockNodes: any[];
+        let cy: any;
+
+        beforeEach(() => {
+            document.body.innerHTML = '<input type="checkbox" id="showVerifiedToggle">';
+            toggle = document.getElementById('showVerifiedToggle') as HTMLInputElement;
+
+            mockNodes = [
+                { data: vi.fn((key) => key === 'verified' ? true : null), toggleClass: vi.fn() },
+                { data: vi.fn((key) => key === 'verified' ? false : null), toggleClass: vi.fn() }
+            ];
+
+            cy = {
+                batch: vi.fn((cb) => cb()),
+                nodes: vi.fn(() => ({
+                    forEach: vi.fn((cb) => {
+                        if (cb) mockNodes.forEach(cb);
+                    })
+                }))
+            };
+
+            vi.stubGlobal('localStorage', {
+                getItem: vi.fn(),
+                setItem: vi.fn()
+            });
+        });
+
+        it('loads default state when no saved state exists', () => {
+            (localStorage.getItem as any).mockReturnValue(null);
+            initSettings(() => cy);
+            expect(toggle.checked).toBe(true);
+        });
+
+        it('loads saved state from localStorage', () => {
+            (localStorage.getItem as any).mockReturnValue('false');
+            initSettings(() => cy);
+            expect(toggle.checked).toBe(false);
+
+            (localStorage.getItem as any).mockReturnValue('true');
+            initSettings(() => cy);
+            expect(toggle.checked).toBe(true);
+        });
+
+        it('updates localStorage and graph on change', () => {
+            initSettings(() => cy);
+
+            toggle.checked = false;
+            toggle.dispatchEvent(new Event('change'));
+
+            expect(localStorage.setItem).toHaveBeenCalledWith('settings-show-verified', 'false');
+            expect(cy.batch).toHaveBeenCalled();
+            expect(mockNodes[0].toggleClass).toHaveBeenCalledWith('is-verified', false);
+            expect(mockNodes[1].toggleClass).not.toHaveBeenCalled(); // Only verified nodes should be toggled
+        });
     });
 });

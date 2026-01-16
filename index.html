@@ -162,6 +162,18 @@
         </div>
       </div>
 
+      <!-- Settings -->
+      <div class="border-t border-slate-800 pt-4 space-y-3">
+        <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Display Settings</label>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-slate-300">Show Verified</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="showVerifiedToggle" class="sr-only peer" checked>
+            <div class="w-8 h-4 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600"></div>
+          </label>
+        </div>
+      </div>
+
       <!-- Info Toggle at bottom -->
       <div class="border-t border-slate-800 pt-4 mt-auto">
         <button id="openHelpBtn"
