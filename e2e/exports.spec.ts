@@ -1,4 +1,33 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+
+/**
+ * Helper to intercept cy.png and verify that it's called with the correct options.
+ * Ensures the original method is restored even if the assertion or click fails.
+ */
+const checkViewportExport = (page: Page, buttonId: string) => {
+    return page.evaluate((id) => {
+        const cy = (window as any).cy;
+        const originalPng = cy.png;
+        let capturedFull = true;
+
+        try {
+            cy.png = (options: any) => {
+                capturedFull = options.full;
+                // Return something valid to avoid downstream errors, though we don't need the result
+                return originalPng.call(cy, options);
+            };
+
+            const btn = document.getElementById(id);
+            if (!btn) throw new Error(`Button with id ${id} not found`);
+            btn.click();
+
+            return capturedFull === false;
+        } finally {
+            // Restore original method
+            cy.png = originalPng;
+        }
+    }, buttonId);
+};
 
 test.describe('Image Export', () => {
     test.use({ viewport: { width: 1600, height: 1000 } });
@@ -10,44 +39,12 @@ test.describe('Image Export', () => {
     });
 
     test('should capture only viewport when saving PNG', async ({ page }) => {
-        // Intercept cy.png and verify options
-        const isViewportOnly = await page.evaluate(async () => {
-            const cy = (window as any).cy;
-            let capturedFull = true;
-
-            const originalPng = cy.png.bind(cy);
-            cy.png = (options: any) => {
-                capturedFull = options.full;
-                return originalPng(options);
-            };
-
-            const saveBtn = document.getElementById('saveImageBtn');
-            saveBtn?.click();
-
-            return capturedFull === false;
-        });
-
+        const isViewportOnly = await checkViewportExport(page, 'saveImageBtn');
         expect(isViewportOnly).toBe(true);
     });
 
     test('should capture only viewport when copying to clipboard', async ({ page }) => {
-        // Intercept cy.png and verify options
-        const isViewportOnly = await page.evaluate(async () => {
-            const cy = (window as any).cy;
-            let capturedFull = true;
-
-            const originalPng = cy.png.bind(cy);
-            cy.png = (options: any) => {
-                capturedFull = options.full;
-                return originalPng(options);
-            };
-
-            const copyBtn = document.getElementById('copyImageBtn');
-            copyBtn?.click();
-
-            return capturedFull === false;
-        });
-
+        const isViewportOnly = await checkViewportExport(page, 'copyImageBtn');
         expect(isViewportOnly).toBe(true);
     });
 });
