@@ -8,12 +8,16 @@ import {
     getCyRef,
     getUpdateStatusRef,
     getOriginalData,
+    setIsEditMode,
+    setIsMinimized,
+    getIsMinimized,
     setCyRef,
     setUpdateStatusRef,
 } from './state';
 import { showPanel, hidePanel } from './display';
 import { toggleEdit } from './edit';
 import { registerPanelKeyListener } from './keyboard';
+import { ICONS } from '../../graph/icons';
 import { getNodeLabelDisplay } from '../../graph/labelDisplay';
 
 const normalizeClassList = (classes: string | string[]): string[] => {
@@ -164,6 +168,22 @@ export const handleSave = (): void => {
     showPanel(currentSelectedNode);
 };
 
+export const updateMinimizeUI = (): void => {
+    const { servicePanel, minimizeBtn } = getElements();
+    if (!servicePanel || !minimizeBtn) return;
+
+    const isMinimized = getIsMinimized();
+    servicePanel.classList.toggle('minimized', isMinimized);
+    minimizeBtn.innerHTML = isMinimized ? ICONS.RESTORE : ICONS.MINIMIZE;
+};
+
+export const toggleMinimize = (): void => {
+    const nextState = !getIsMinimized();
+    setIsMinimized(nextState);
+    localStorage.setItem('panel-minimized', nextState.toString());
+    updateMinimizeUI();
+};
+
 export const initPanel = (cy: CyInstance, updateStatus: (msg: string) => void): void => {
     // Update module-level references every time
     setCyRef(cy);
@@ -172,13 +192,24 @@ export const initPanel = (cy: CyInstance, updateStatus: (msg: string) => void): 
     // Register keyboard listener once
     registerPanelKeyListener();
 
-    const { editBtn, cancelBtn, saveBtn } = getElements();
+    // Restore minimized state
+    const savedMinimized = localStorage.getItem('panel-minimized') === 'true';
+    setIsMinimized(savedMinimized);
+    updateMinimizeUI();
+
+    const { editBtn, cancelBtn, saveBtn, minimizeBtn } = getElements();
 
     // Remove old listeners by cloning and replacing elements
     if (editBtn && editBtn.parentNode) {
         const newEditBtn = editBtn.cloneNode(true) as HTMLElement;
         editBtn.parentNode.replaceChild(newEditBtn, editBtn);
         newEditBtn.addEventListener('click', () => toggleEdit(true));
+    }
+
+    if (minimizeBtn && minimizeBtn.parentNode) {
+        const newMinimizeBtn = minimizeBtn.cloneNode(true) as HTMLElement;
+        minimizeBtn.parentNode.replaceChild(newMinimizeBtn, minimizeBtn);
+        newMinimizeBtn.addEventListener('click', () => toggleMinimize());
     }
 
     if (cancelBtn && cancelBtn.parentNode) {
