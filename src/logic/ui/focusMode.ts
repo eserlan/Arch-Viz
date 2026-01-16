@@ -44,29 +44,26 @@ export class FocusModeManager {
         }
 
         this.elementsToToggle.forEach((selector) => {
-            const elements = document.querySelectorAll(selector);
-            elements.forEach((el) => {
-                const element = el as HTMLElement;
-                if (this.isFocusMode) {
-                    element.classList.add('hidden');
-                    // Remove common Tailwind display classes that might override 'hidden'
-                    element.classList.remove('flex', 'md:flex', 'block', 'md:block', 'grid');
-                } else {
-                    element.classList.remove('hidden');
-                    // Restore original display intent
-                    if (selector === '#appSidebar') {
-                        element.classList.add('md:flex');
-                    } else if (
-                        selector.startsWith('#floating') ||
-                        selector === '#servicePanel' ||
-                        selector === '#selectionInfoPanel'
-                    ) {
-                        element.classList.add('flex');
-                    } else if (selector === '#minimap') {
-                        element.classList.add('md:block');
-                    }
+            const elementId = selector.startsWith('#') ? selector.slice(1) : selector;
+            const element = document.getElementById(elementId) as HTMLElement | null;
+
+            if (!element) return;
+
+            // Store original classes once so we can restore them later
+            if (!element.dataset.focusOriginalClasses) {
+                element.dataset.focusOriginalClasses = element.className;
+            }
+
+            if (this.isFocusMode) {
+                element.classList.add('hidden');
+                // Remove common Tailwind display classes that might override 'hidden'
+                element.classList.remove('flex', 'md:flex', 'block', 'md:block');
+            } else {
+                const originalClasses = element.dataset.focusOriginalClasses;
+                if (originalClasses !== undefined) {
+                    element.className = originalClasses;
                 }
-            });
+            }
         });
 
         // Trigger resize on window to let Cytoscape adjust
