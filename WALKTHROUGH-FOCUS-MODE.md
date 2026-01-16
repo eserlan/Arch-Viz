@@ -27,4 +27,4 @@ Implemented a "Focus Mode" that allows users to hide all UI elements (sidebar, f
 ### Visual Verification
 I verified that enabling Focus Mode hides the sidebar, all floating panels, and the minimap, and that these are restored correctly when disabled. The state also persists after a page refresh.
 
-![Focus Mode Demo](file:///home/espen/.gemini/antigravity/brain/4029e4cf-b265-4f1a-9d63-a52d5300dfa6/focus_mode_demo_1768563887608.webp)
+![Focus Mode Demo](/home/espen/.gemini/antigravity/brain/4029e4cf-b265-4f1a-9d63-a52d5300dfa6/focus_mode_demo_1768563887608.webp)
