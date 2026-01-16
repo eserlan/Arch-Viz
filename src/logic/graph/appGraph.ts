@@ -54,10 +54,10 @@ export const createGraphRenderer = ({ container, onStatus, onDirtyStateChange }:
         const verifiedNodes = cy.nodes().toArray();
         const BATCH_SIZE = 500;
         let verifiedIndex = 0;
+        const showVerifiedSettings = localStorage.getItem('settings-show-verified') !== 'false';
 
         const processVerifiedBatch = () => {
             const end = Math.min(verifiedIndex + BATCH_SIZE, verifiedNodes.length);
-            const showVerifiedSettings = localStorage.getItem('settings-show-verified') !== 'false';
 
             for (let i = verifiedIndex; i < end; i++) {
                 const node = verifiedNodes[i];
