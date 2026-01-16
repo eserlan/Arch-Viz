@@ -27,7 +27,7 @@ export const loadGraphData = (): ElementDefinition[] | null => {
 
     // Parse and strip selection state to ensure no node is pre-selected on reload
     const elements = JSON.parse(saved) as ElementDefinition[];
-    return elements.map(el => {
+    return elements.map((el) => {
         if (el.selected !== undefined) {
             // Create a copy and remove selected property
             const newEl = { ...el };
@@ -35,7 +35,10 @@ export const loadGraphData = (): ElementDefinition[] | null => {
             if (newEl.group === 'nodes' && newEl.data) {
                 const nodeData = newEl.data as Record<string, unknown>;
                 if (!nodeData.labelDisplay) {
-                    const baseLabel = (nodeData.name || nodeData.label || nodeData.id || '') as string;
+                    const baseLabel = (nodeData.name ||
+                        nodeData.label ||
+                        nodeData.id ||
+                        '') as string;
                     nodeData.labelDisplay = getNodeLabelDisplay(baseLabel);
                 }
             }
@@ -72,7 +75,17 @@ export const exportToCSV = (cy: CyInstance): string => {
     const edges = cy.edges();
 
     // Build header
-    const headers = ['id', 'name', 'labels', 'tier', 'depends_on', 'owner', 'repo_url', 'comment', 'verified'];
+    const headers = [
+        'id',
+        'name',
+        'labels',
+        'tier',
+        'depends_on',
+        'owner',
+        'repo_url',
+        'comment',
+        'verified',
+    ];
 
     // Build rows from nodes
     const rows = nodes.map((node: NodeSingular) => {
@@ -84,21 +97,23 @@ export const exportToCSV = (cy: CyInstance): string => {
         return [
             data.id || '',
             data.name || data.label || '',
-            Array.isArray(data.labels) ? data.labels.join(';') : (data.labelsDisplay || ''),
+            Array.isArray(data.labels) ? data.labels.join(';') : data.labelsDisplay || '',
             data.tier || '',
             dependsOn,
             data.owner || '',
             data.repoUrl || '',
             data.comment || '',
-            data.verified ? 'true' : 'false'
-        ].map(val => {
-            // Escape commas and quotes in values
-            const valStr = val.toString();
-            if (valStr.includes(',') || valStr.includes('"') || valStr.includes('\n')) {
-                return `"${valStr.replace(/"/g, '""')}"`;
-            }
-            return valStr;
-        }).join(',');
+            data.verified ? 'true' : 'false',
+        ]
+            .map((val) => {
+                // Escape commas and quotes in values
+                const valStr = val.toString();
+                if (valStr.includes(',') || valStr.includes('"') || valStr.includes('\n')) {
+                    return `"${valStr.replace(/"/g, '""')}"`;
+                }
+                return valStr;
+            })
+            .join(',');
     });
 
     return [headers.join(','), ...rows].join('\n');

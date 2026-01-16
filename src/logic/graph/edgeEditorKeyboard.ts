@@ -37,7 +37,7 @@ const handleKeyPress = (event: KeyboardEvent): void => {
  */
 export const registerEdgeEditorKeyListener = (updateStatus: (msg: string) => void): void => {
     if (keyListenerRegistered) return;
-    
+
     updateStatusCallback = updateStatus;
     keyListener = handleKeyPress;
     window.addEventListener('keydown', keyListener);

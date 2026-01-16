@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { initEdgeEditor, enableEditMode, disableEditMode, toggleEditMode, isInEditMode } from './edgeEditor';
+import {
+    initEdgeEditor,
+    enableEditMode,
+    disableEditMode,
+    toggleEditMode,
+    isInEditMode,
+} from './edgeEditor';
 import { saveGraphData } from '../core/storage';
 
 vi.mock('../core/storage', () => ({
@@ -48,7 +54,9 @@ describe('edgeEditor', () => {
 
         expect(mockEh.enableDrawMode).toHaveBeenCalled();
         expect(isInEditMode()).toBe(true);
-        expect(updateStatus).toHaveBeenCalledWith(expect.stringContaining('Edit Mode: Drag to connect'));
+        expect(updateStatus).toHaveBeenCalledWith(
+            expect.stringContaining('Edit Mode: Drag to connect')
+        );
     });
 
     it('should disable edit mode', () => {
@@ -77,7 +85,9 @@ describe('edgeEditor', () => {
         initEdgeEditor(mockCy, updateStatus);
 
         // Find the ehcomplete listener
-        const ehcompleteListener = mockCy.on.mock.calls.find((call: any) => call[0] === 'ehcomplete')[1];
+        const ehcompleteListener = mockCy.on.mock.calls.find(
+            (call: any) => call[0] === 'ehcomplete'
+        )[1];
 
         const mockSource = { id: () => 'node1', data: () => 'Node 1' };
         const mockTarget = { id: () => 'node2', data: () => 'Node 2' };
@@ -85,7 +95,9 @@ describe('edgeEditor', () => {
         ehcompleteListener({}, mockSource, mockTarget, {});
 
         expect(saveGraphData).toHaveBeenCalled();
-        expect(updateStatus).toHaveBeenCalledWith(expect.stringContaining('Connected Node 1 → Node 2'));
+        expect(updateStatus).toHaveBeenCalledWith(
+            expect.stringContaining('Connected Node 1 → Node 2')
+        );
     });
 
     it('should handle edge click for deletion in edit mode', () => {
@@ -96,12 +108,14 @@ describe('edgeEditor', () => {
         enableEditMode(updateStatus);
 
         // Find the tap listener
-        const tapListener = mockCy.on.mock.calls.find(call => call[0] === 'tap' && call[1] === 'edge')[2];
+        const tapListener = mockCy.on.mock.calls.find(
+            (call) => call[0] === 'tap' && call[1] === 'edge'
+        )[2];
 
         const mockEdge = {
             remove: vi.fn(),
             source: () => ({ id: () => 'n1', data: () => 'Source' }),
-            target: () => ({ id: () => 'n2', data: () => 'Target' })
+            target: () => ({ id: () => 'n2', data: () => 'Target' }),
         };
 
         tapListener({ target: mockEdge });
@@ -117,7 +131,9 @@ describe('edgeEditor', () => {
         initEdgeEditor(mockCy, updateStatus);
         // edit mode is FALSE initially
 
-        const tapListener = mockCy.on.mock.calls.find(call => call[0] === 'tap' && call[1] === 'edge')[2];
+        const tapListener = mockCy.on.mock.calls.find(
+            (call) => call[0] === 'tap' && call[1] === 'edge'
+        )[2];
         const mockEdge = { remove: vi.fn() };
 
         tapListener({ target: mockEdge });

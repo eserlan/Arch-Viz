@@ -9,7 +9,7 @@ export const updateSelectionInfo = (cy: CyInstance): void => {
 
     const selectedNodes = cy.nodes(':selected');
     const count = selectedNodes.length;
-    
+
     countElement.textContent = count.toString();
 };
 

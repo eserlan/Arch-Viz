@@ -16,7 +16,7 @@ describe('getNodesAtDepth', () => {
 
         const node = {
             neighborhood: neighborhoodMock,
-            union: unionMock
+            union: unionMock,
         } as any;
 
         const res = getNodesAtDepth(node, 1);
@@ -31,8 +31,8 @@ describe('getNodesAtDepth', () => {
             neighborhood: vi.fn().mockReturnValue('neighbors1'),
             union: vi.fn().mockReturnValue({
                 neighborhood: vi.fn().mockReturnValue('neighbors2'),
-                union: vi.fn().mockReturnValue('finalResult')
-            })
+                union: vi.fn().mockReturnValue('finalResult'),
+            }),
         } as any;
 
         const res = getNodesAtDepth(node, 2);
@@ -48,8 +48,8 @@ describe('getNodesAtDepth', () => {
 
         const cyMock = {
             elements: () => ({
-                components: () => [componentWithoutNode, componentWithNode]
-            })
+                components: () => [componentWithoutNode, componentWithNode],
+            }),
         } as unknown as CyInstance;
 
         const res = getNodesAtDepth(node, 'all', cyMock);
@@ -61,8 +61,8 @@ describe('getNodesAtDepth', () => {
         const node = { id: () => 'target' } as any;
         const cyMock = {
             elements: () => ({
-                components: () => []
-            })
+                components: () => [],
+            }),
         } as unknown as CyInstance;
         const res = getNodesAtDepth(node, 'all', cyMock);
         expect(res).toBe(node);

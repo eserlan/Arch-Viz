@@ -14,7 +14,7 @@ export const showToast = (message: string, type: ToastType = 'info'): void => {
         info: 'bg-slate-800 border-slate-600 text-slate-200',
         success: 'bg-emerald-900/90 border-emerald-500 text-emerald-200',
         warning: 'bg-amber-900/90 border-amber-500 text-amber-200',
-        error: 'bg-red-900/90 border-red-500 text-red-200'
+        error: 'bg-red-900/90 border-red-500 text-red-200',
     };
 
     const toast = document.createElement('div');
@@ -53,7 +53,7 @@ export function initFloatingPanel(config: PanelConfig): void {
         moveBtnId,
         containerId,
         storageKey,
-        defaultClasses = []
+        defaultClasses = [],
     } = config;
 
     const panel = document.getElementById(panelId) as HTMLElement | null;
@@ -163,7 +163,7 @@ export function initFloatingPanel(config: PanelConfig): void {
                     rafId = requestAnimationFrame(() => {
                         const width = panel.offsetWidth;
                         const height = panel.offsetHeight;
-                        let left = cx - (width / 2);
+                        let left = cx - width / 2;
                         let top = cy - 20;
 
                         const maxW = window.innerWidth - width;
@@ -192,10 +192,13 @@ export function initFloatingPanel(config: PanelConfig): void {
                 panel.classList.remove('ring-2', 'ring-emerald-500', 'shadow-emerald-900/50');
                 showToast('Panel placed', 'success');
 
-                localStorage.setItem(storageKey, JSON.stringify({
-                    left: panel.style.left,
-                    top: panel.style.top
-                }));
+                localStorage.setItem(
+                    storageKey,
+                    JSON.stringify({
+                        left: panel.style.left,
+                        top: panel.style.top,
+                    })
+                );
             };
 
             setTimeout(() => {
@@ -208,7 +211,12 @@ export function initFloatingPanel(config: PanelConfig): void {
 /**
  * Initialize a simple modal (Help, etc.)
  */
-export function initModal(modalId: string, openBtnId: string, closeBtnId: string, contentId: string | null = null): void {
+export function initModal(
+    modalId: string,
+    openBtnId: string,
+    closeBtnId: string,
+    contentId: string | null = null
+): void {
     const modal = document.getElementById(modalId) as HTMLDialogElement | null;
     const openBtn = document.getElementById(openBtnId);
     const closeBtn = document.getElementById(closeBtnId);
@@ -226,8 +234,12 @@ export function initModal(modalId: string, openBtnId: string, closeBtnId: string
 
     modal.addEventListener('click', (e) => {
         const rect = modal.getBoundingClientRect();
-        if (e.clientX < rect.left || e.clientX > rect.right ||
-            e.clientY < rect.top || e.clientY > rect.bottom) {
+        if (
+            e.clientX < rect.left ||
+            e.clientX > rect.right ||
+            e.clientY < rect.top ||
+            e.clientY > rect.bottom
+        ) {
             modal.close();
         }
     });

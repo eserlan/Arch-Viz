@@ -20,15 +20,20 @@ export const initLayoutManager = (cy: CyInstance): void => {
         const layoutValue = target.value;
         const isHorizontalDagre = layoutValue === 'dagre-horizontal';
         const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
-        const layoutName = (isHorizontalDagre || isVerticalDagre) ? 'dagre' : layoutValue;
+        const layoutName = isHorizontalDagre || isVerticalDagre ? 'dagre' : layoutValue;
 
         // Check if grouping is active and layout doesn't support it
-        const groupingSelect = document.getElementById('groupingSelect') as HTMLSelectElement | null;
+        const groupingSelect = document.getElementById(
+            'groupingSelect'
+        ) as HTMLSelectElement | null;
         const hasGrouping = groupingSelect && groupingSelect.value !== 'none';
         const hasParentNodes = cy.nodes(':parent').length > 0;
 
         if ((hasGrouping || hasParentNodes) && !COMPOUND_COMPATIBLE_LAYOUTS.includes(layoutValue)) {
-            showToast(`${layoutName} layout doesn't support grouping - disabling groups`, 'warning');
+            showToast(
+                `${layoutName} layout doesn't support grouping - disabling groups`,
+                'warning'
+            );
             disableGrouping(cy);
             if (groupingSelect) {
                 groupingSelect.value = 'none';
@@ -55,7 +60,7 @@ export const initLayoutManager = (cy: CyInstance): void => {
             padding: 160,
             randomize: false,
             nodeDimensionsIncludeLabels: true,
-            spacingFactor: (layoutName === 'circle' || layoutName === 'concentric') ? 0.7 : 1,
+            spacingFactor: layoutName === 'circle' || layoutName === 'concentric' ? 0.7 : 1,
             rankDir: isHorizontalDagre ? 'LR' : 'TB',
         };
 
@@ -100,10 +105,12 @@ export const initLayoutManager = (cy: CyInstance): void => {
             // For force-directed layouts, fix the selected node position
             if (selectedNode) {
                 const pos = selectedNode.position();
-                (finalConfig as any).fixedNodeConstraint = [{
-                    nodeId: selectedNodeId,
-                    position: { x: pos.x, y: pos.y }
-                }];
+                (finalConfig as any).fixedNodeConstraint = [
+                    {
+                        nodeId: selectedNodeId,
+                        position: { x: pos.x, y: pos.y },
+                    },
+                ];
             }
         } else {
             finalConfig = animationOptions;
@@ -118,7 +125,7 @@ export const initLayoutManager = (cy: CyInstance): void => {
             cy.animate({
                 fit: { padding: 160 },
                 duration: 800,
-                easing: 'ease-in-out-cubic'
+                easing: 'ease-in-out-cubic',
             } as any);
             updateStatus(`Layout: ${layoutName} applied`);
         };

@@ -4,7 +4,7 @@ import { toggleEditMode } from './edgeEditor';
 
 // Mock the dependencies
 vi.mock('./edgeEditor', () => ({
-    toggleEditMode: vi.fn()
+    toggleEditMode: vi.fn(),
 }));
 
 describe('Edge Editor Keyboard Shortcuts', () => {
@@ -13,7 +13,7 @@ describe('Edge Editor Keyboard Shortcuts', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         updateStatus = vi.fn();
-        
+
         // Setup DOM
         document.body.innerHTML = `
             <div id="cy"></div>
@@ -45,12 +45,12 @@ describe('Edge Editor Keyboard Shortcuts', () => {
         const input = document.createElement('input');
         document.body.appendChild(input);
 
-        const event = new KeyboardEvent('keydown', { 
+        const event = new KeyboardEvent('keydown', {
             key: 'm',
-            bubbles: true 
+            bubbles: true,
         });
         Object.defineProperty(event, 'target', { value: input, enumerable: true });
-        
+
         window.dispatchEvent(event);
 
         expect(toggleEditMode).not.toHaveBeenCalled();
@@ -60,21 +60,21 @@ describe('Edge Editor Keyboard Shortcuts', () => {
         const textarea = document.createElement('textarea');
         document.body.appendChild(textarea);
 
-        const event = new KeyboardEvent('keydown', { 
+        const event = new KeyboardEvent('keydown', {
             key: 'm',
-            bubbles: true 
+            bubbles: true,
         });
         Object.defineProperty(event, 'target', { value: textarea, enumerable: true });
-        
+
         window.dispatchEvent(event);
 
         expect(toggleEditMode).not.toHaveBeenCalled();
     });
 
     it('should not trigger when Ctrl+M is pressed', () => {
-        const event = new KeyboardEvent('keydown', { 
-            key: 'm', 
-            ctrlKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'm',
+            ctrlKey: true,
         });
         window.dispatchEvent(event);
 
@@ -82,9 +82,9 @@ describe('Edge Editor Keyboard Shortcuts', () => {
     });
 
     it('should not trigger when Alt+M is pressed', () => {
-        const event = new KeyboardEvent('keydown', { 
-            key: 'm', 
-            altKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'm',
+            altKey: true,
         });
         window.dispatchEvent(event);
 
@@ -92,9 +92,9 @@ describe('Edge Editor Keyboard Shortcuts', () => {
     });
 
     it('should not trigger when Meta+M is pressed', () => {
-        const event = new KeyboardEvent('keydown', { 
-            key: 'm', 
-            metaKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'm',
+            metaKey: true,
         });
         window.dispatchEvent(event);
 
@@ -102,9 +102,9 @@ describe('Edge Editor Keyboard Shortcuts', () => {
     });
 
     it('should not trigger when Shift+M is pressed', () => {
-        const event = new KeyboardEvent('keydown', { 
-            key: 'm', 
-            shiftKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'm',
+            shiftKey: true,
         });
         window.dispatchEvent(event);
 

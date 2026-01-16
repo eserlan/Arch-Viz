@@ -1,9 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 vi.mock('./history', () => ({
-    recordSnapshot: vi.fn()
+    recordSnapshot: vi.fn(),
 }));
 import { recordSnapshot } from './history';
-import { saveGraphData, loadGraphData, clearGraphData, getDirtyState, setDirty, exportToCSV, downloadCSV } from './storage';
+import {
+    saveGraphData,
+    loadGraphData,
+    clearGraphData,
+    getDirtyState,
+    setDirty,
+    exportToCSV,
+    downloadCSV,
+} from './storage';
 import { CyInstance } from '../../types';
 
 describe('Storage Module', () => {
@@ -38,7 +46,7 @@ describe('Storage Module', () => {
         const data: any[] = [
             { data: { id: 'node1' }, selected: true },
             { data: { id: 'node2' }, selected: false },
-            { data: { id: 'node3' } }
+            { data: { id: 'node3' } },
         ];
         localStorage.setItem('arch-viz-elements', JSON.stringify(data));
 
@@ -98,7 +106,7 @@ describe('Storage Module', () => {
 
         expect(handler).toHaveBeenCalledWith(
             expect.objectContaining({
-                detail: { isDirty: true }
+                detail: { isDirty: true },
             })
         );
 
@@ -111,25 +119,39 @@ describe('Storage Module', () => {
             nodes: () => [
                 {
                     data: (key?: string) => {
-                        const d: any = { id: 'svc-a', name: 'Service A', labels: ['Core'], tier: '1', owner: 'Team A', repoUrl: 'http://example.com' };
+                        const d: any = {
+                            id: 'svc-a',
+                            name: 'Service A',
+                            labels: ['Core'],
+                            tier: '1',
+                            owner: 'Team A',
+                            repoUrl: 'http://example.com',
+                        };
                         return key ? d[key] : d;
                     },
-                    id: () => 'svc-a'
+                    id: () => 'svc-a',
                 },
                 {
                     data: (key?: string) => {
-                        const d: any = { id: 'svc-b', name: 'Service B', labels: ['Auth'], tier: '2', owner: 'Team B', repoUrl: '' };
+                        const d: any = {
+                            id: 'svc-b',
+                            name: 'Service B',
+                            labels: ['Auth'],
+                            tier: '2',
+                            owner: 'Team B',
+                            repoUrl: '',
+                        };
                         return key ? d[key] : d;
                     },
-                    id: () => 'svc-b'
-                }
+                    id: () => 'svc-b',
+                },
             ],
             edges: () => [
                 {
                     source: () => ({ id: () => 'svc-a' }),
-                    target: () => ({ id: () => 'svc-b' })
-                }
-            ]
+                    target: () => ({ id: () => 'svc-b' }),
+                },
+            ],
         } as unknown as CyInstance;
 
         const csv = exportToCSV(mockCy);
@@ -143,16 +165,18 @@ describe('Storage Module', () => {
 
     it('should export comment field in CSV', () => {
         const mockCy = {
-            nodes: () => [{
-                id: () => 'node1',
-                data: () => ({
-                    id: 'node1',
-                    name: 'Node 1',
-                    comment: 'My Comment',
-                    verified: true
-                })
-            }],
-            edges: () => []
+            nodes: () => [
+                {
+                    id: () => 'node1',
+                    data: () => ({
+                        id: 'node1',
+                        name: 'Node 1',
+                        comment: 'My Comment',
+                        verified: true,
+                    }),
+                },
+            ],
+            edges: () => [],
         } as unknown as CyInstance;
 
         const csv = exportToCSV(mockCy);
@@ -164,16 +188,18 @@ describe('Storage Module', () => {
 
     it('should handle multiline comments in CSV export', () => {
         const mockCy = {
-            nodes: () => [{
-                id: () => 'node1',
-                data: () => ({
-                    id: 'node1',
-                    name: 'Node 1',
-                    comment: 'Line 1\nLine 2',
-                    verified: false
-                })
-            }],
-            edges: () => []
+            nodes: () => [
+                {
+                    id: () => 'node1',
+                    data: () => ({
+                        id: 'node1',
+                        name: 'Node 1',
+                        comment: 'Line 1\nLine 2',
+                        verified: false,
+                    }),
+                },
+            ],
+            edges: () => [],
         } as unknown as CyInstance;
 
         const csv = exportToCSV(mockCy);
@@ -186,7 +212,7 @@ describe('Storage Module', () => {
         const mockLink = {
             href: '',
             download: '',
-            click: vi.fn()
+            click: vi.fn(),
         };
         const originalCreateElement = document.createElement.bind(document);
         vi.spyOn(document, 'createElement').mockImplementation((tag) => {
@@ -194,11 +220,11 @@ describe('Storage Module', () => {
             return originalCreateElement(tag);
         });
         vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
-        vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
+        vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
 
         const mockCy = {
             nodes: () => [],
-            edges: () => []
+            edges: () => [],
         } as unknown as CyInstance;
 
         downloadCSV(mockCy);
@@ -215,7 +241,7 @@ describe('Storage Module', () => {
         const mockLink = { href: '', download: '', click: vi.fn() };
         vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
         vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
-        vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
+        vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
 
         const mockCy = { nodes: () => [], edges: () => [] } as unknown as CyInstance;
 

@@ -23,7 +23,8 @@ describe('Dynamic Zoom Logic', () => {
         const lowZoom = 0.5;
         const delta = 100;
 
-        const changeAtLow = Math.abs(calculateDynamicZoom(lowZoom, delta, minZoom, maxZoom) - lowZoom) / lowZoom;
+        const changeAtLow =
+            Math.abs(calculateDynamicZoom(lowZoom, delta, minZoom, maxZoom) - lowZoom) / lowZoom;
         expect(changeAtLow).toBeGreaterThan(0.01);
     });
 

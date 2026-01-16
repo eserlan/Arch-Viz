@@ -25,12 +25,12 @@ const handleKeyPress = (event: KeyboardEvent): void => {
     // Check if 'e' key was pressed (without modifier keys)
     if (event.key.toLowerCase() === 'e' && !hasModifierKeys(event)) {
         const currentNode = getCurrentSelectedNode();
-        
+
         // Only toggle if a node is selected (panel is visible)
         if (currentNode) {
             event.preventDefault();
             const isEditing = getIsEditMode();
-            
+
             if (isEditing) {
                 // Cancel edit mode and refresh panel
                 showPanel(currentNode);
@@ -44,7 +44,7 @@ const handleKeyPress = (event: KeyboardEvent): void => {
 
 export const registerPanelKeyListener = (): void => {
     if (keyListenerRegistered) return;
-    
+
     keyListener = handleKeyPress;
     window.addEventListener('keydown', keyListener);
     keyListenerRegistered = true;

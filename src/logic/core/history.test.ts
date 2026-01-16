@@ -4,7 +4,7 @@ import { populateLabelFilter, populateTeamFilter } from '../graph/filters';
 import { hidePanel } from '../ui/panel';
 vi.mock('../graph/filters', () => ({
     populateLabelFilter: vi.fn(),
-    populateTeamFilter: vi.fn()
+    populateTeamFilter: vi.fn(),
 }));
 vi.mock('../ui/panel/index', () => ({ hidePanel: vi.fn() }));
 
@@ -19,12 +19,12 @@ const createCy = () => {
         add,
         elements: () => ({
             remove: elementsRemove,
-            removeClass: elementsRemoveClass
+            removeClass: elementsRemoveClass,
         }),
         nodes: () => ({
             unselect: nodesUnselect,
-            toArray: nodesToArray
-        })
+            toArray: nodesToArray,
+        }),
     };
 
     return { cy, add, elementsRemove, elementsRemoveClass, nodesUnselect };
@@ -73,7 +73,9 @@ describe('history', () => {
         recordSnapshot(updated);
 
         window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true }));
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, shiftKey: true }));
+        window.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, shiftKey: true })
+        );
 
         expect(add).toHaveBeenLastCalledWith(updated);
         expect(status).toHaveBeenCalledWith('Redo applied');
@@ -144,7 +146,9 @@ describe('history', () => {
 
         const input = document.createElement('input');
         document.body.appendChild(input);
-        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true }));
+        input.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true })
+        );
 
         expect(add).not.toHaveBeenCalled();
     });

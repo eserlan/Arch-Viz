@@ -16,11 +16,11 @@ describe('exports logic', () => {
         };
         // Mock global fetch and ClipboardItem
         global.fetch = vi.fn().mockResolvedValue({
-            blob: vi.fn().mockResolvedValue(new Blob(['test'], { type: 'image/png' }))
+            blob: vi.fn().mockResolvedValue(new Blob(['test'], { type: 'image/png' })),
         });
         (global as any).ClipboardItem = vi.fn();
         (global as any).navigator.clipboard = {
-            write: vi.fn().mockResolvedValue(undefined)
+            write: vi.fn().mockResolvedValue(undefined),
         };
     });
 
@@ -35,7 +35,7 @@ describe('exports logic', () => {
         const linkSpy = {
             click: vi.fn(),
             href: '',
-            download: ''
+            download: '',
         };
         vi.spyOn(document, 'createElement').mockReturnValue(linkSpy as any);
 

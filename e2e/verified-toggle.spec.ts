@@ -19,7 +19,10 @@ test.describe('Verified Indicator Toggle', () => {
         // Check if verified nodes have the class 'is-verified'
         const hasVerifiedClassInitially = await page.evaluate(() => {
             const cy = (window as any).cy;
-            return cy.nodes().filter((n: any) => n.data('verified')).every((n: any) => n.hasClass('is-verified'));
+            return cy
+                .nodes()
+                .filter((n: any) => n.data('verified'))
+                .every((n: any) => n.hasClass('is-verified'));
         });
         expect(hasVerifiedClassInitially).toBe(true);
 
@@ -30,7 +33,10 @@ test.describe('Verified Indicator Toggle', () => {
         // Check if verified nodes no longer have the class 'is-verified'
         const hasVerifiedClassAfterToggleOff = await page.evaluate(() => {
             const cy = (window as any).cy;
-            return cy.nodes().filter((n: any) => n.data('verified')).every((n: any) => !n.hasClass('is-verified'));
+            return cy
+                .nodes()
+                .filter((n: any) => n.data('verified'))
+                .every((n: any) => !n.hasClass('is-verified'));
         });
         expect(hasVerifiedClassAfterToggleOff).toBe(true);
 
@@ -40,7 +46,10 @@ test.describe('Verified Indicator Toggle', () => {
 
         const hasVerifiedClassAfterToggleOn = await page.evaluate(() => {
             const cy = (window as any).cy;
-            return cy.nodes().filter((n: any) => n.data('verified')).every((n: any) => n.hasClass('is-verified'));
+            return cy
+                .nodes()
+                .filter((n: any) => n.data('verified'))
+                .every((n: any) => n.hasClass('is-verified'));
         });
         expect(hasVerifiedClassAfterToggleOn).toBe(true);
     });
@@ -62,7 +71,10 @@ test.describe('Verified Indicator Toggle', () => {
         // Check Cytoscape state too
         const hasVerifiedClassAfterReload = await page.evaluate(() => {
             const cy = (window as any).cy;
-            return cy.nodes().filter((n: any) => n.data('verified')).some((n: any) => n.hasClass('is-verified'));
+            return cy
+                .nodes()
+                .filter((n: any) => n.data('verified'))
+                .some((n: any) => n.hasClass('is-verified'));
         });
         expect(hasVerifiedClassAfterReload).toBe(false);
     });

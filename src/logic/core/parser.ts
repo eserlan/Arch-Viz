@@ -29,7 +29,12 @@ export const parseCSV = (csvString: string): ParseResult => {
 
     // Basic validation
     if (!csvString || typeof csvString !== 'string' || csvString.trim().length === 0) {
-        return { elements: [], skipped: 0, error: 'Empty or invalid file', hints: ['The file appears to be empty.'] };
+        return {
+            elements: [],
+            skipped: 0,
+            error: 'Empty or invalid file',
+            hints: ['The file appears to be empty.'],
+        };
     }
 
     const { data, errors, meta } = Papa.parse(csvString, {
@@ -49,7 +54,7 @@ export const parseCSV = (csvString: string): ParseResult => {
             elements: [],
             skipped: 0,
             error: 'No data rows found',
-            hints: ['The CSV file has no data rows, only headers or is empty.']
+            hints: ['The CSV file has no data rows, only headers or is empty.'],
         };
     }
 
@@ -66,12 +71,13 @@ export const parseCSV = (csvString: string): ParseResult => {
     }
 
     if (!hasId || !hasName) {
-        const foundHeaders = headers.length > 0 ? `Found columns: ${headers.join(', ')}` : 'No headers found';
+        const foundHeaders =
+            headers.length > 0 ? `Found columns: ${headers.join(', ')}` : 'No headers found';
         return {
             elements: [],
             skipped: typedData.length,
             error: 'Missing required columns',
-            hints: [...hints, foundHeaders, "Required: id, name (or label)"]
+            hints: [...hints, foundHeaders, 'Required: id, name (or label)'],
         };
     }
 
@@ -93,13 +99,17 @@ export const parseCSV = (csvString: string): ParseResult => {
         const tier = row.tier?.toString().trim() || '3';
         const owner = row.owner?.trim();
         const repoUrl = row.repo_url?.trim();
-        const comment = row.comment
-            ? row.comment.replace(/^[ \t]+|[ \t]+$/g, '')
-            : undefined;
-        const verified = row.verified?.trim().toLowerCase() === 'true' || row.verified?.trim() === '1';
+        const comment = row.comment ? row.comment.replace(/^[ \t]+|[ \t]+$/g, '') : undefined;
+        const verified =
+            row.verified?.trim().toLowerCase() === 'true' || row.verified?.trim() === '1';
 
         // Parse semicolon-separated labels
-        const labels = labelsRaw ? labelsRaw.split(';').map((d) => d.trim()).filter(Boolean) : [];
+        const labels = labelsRaw
+            ? labelsRaw
+                  .split(';')
+                  .map((d) => d.trim())
+                  .filter(Boolean)
+            : [];
         const labelClasses = labels.map((d) => `label-${slugify(d)}`).join(' ');
         const tierClass = slugify(`tier-${tier}`);
 
@@ -121,7 +131,8 @@ export const parseCSV = (csvString: string): ParseResult => {
                 comment,
                 verified,
             },
-            classes: `${tierClass} ${labelClasses} ${shapeClass} ${verified ? 'is-verified' : ''}`.trim(),
+            classes:
+                `${tierClass} ${labelClasses} ${shapeClass} ${verified ? 'is-verified' : ''}`.trim(),
         });
 
         if (row.depends_on) {
@@ -144,7 +155,7 @@ export const parseCSV = (csvString: string): ParseResult => {
     });
 
     // Check if we got any valid nodes
-    const nodes = elements.filter(e => e.group === 'nodes');
+    const nodes = elements.filter((e) => e.group === 'nodes');
     if (nodes.length === 0) {
         return {
             elements: [],
@@ -153,8 +164,8 @@ export const parseCSV = (csvString: string): ParseResult => {
             hints: [
                 `All ${typedData.length} row(s) were skipped.`,
                 "Each row needs at least 'id' and 'name' values.",
-                "Check that your data rows have values in these columns."
-            ]
+                'Check that your data rows have values in these columns.',
+            ],
         };
     }
 

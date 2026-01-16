@@ -11,7 +11,7 @@ describe('Search Input Keyboard Shortcuts', () => {
         `;
 
         searchInput = document.getElementById('searchInput') as HTMLInputElement;
-        
+
         // Register the keyboard listener
         registerSearchKeyListener();
     });
@@ -68,7 +68,7 @@ describe('Search Input Keyboard Shortcuts', () => {
         window.dispatchEvent(event1);
 
         // Wait longer than threshold (300ms)
-        await new Promise(resolve => setTimeout(resolve, 350));
+        await new Promise((resolve) => setTimeout(resolve, 350));
 
         // Second F press after threshold
         const event2 = new KeyboardEvent('keydown', { key: 'f' });
@@ -85,12 +85,12 @@ describe('Search Input Keyboard Shortcuts', () => {
         document.body.appendChild(otherInput);
         otherInput.focus();
 
-        const event = new KeyboardEvent('keydown', { 
+        const event = new KeyboardEvent('keydown', {
             key: 'f',
-            bubbles: true 
+            bubbles: true,
         });
         Object.defineProperty(event, 'target', { value: otherInput, enumerable: true });
-        
+
         window.dispatchEvent(event);
 
         // Search input should not be focused
@@ -103,12 +103,12 @@ describe('Search Input Keyboard Shortcuts', () => {
         document.body.appendChild(textarea);
         textarea.focus();
 
-        const event = new KeyboardEvent('keydown', { 
+        const event = new KeyboardEvent('keydown', {
             key: 'f',
-            bubbles: true 
+            bubbles: true,
         });
         Object.defineProperty(event, 'target', { value: textarea, enumerable: true });
-        
+
         window.dispatchEvent(event);
 
         // Search input should not be focused
@@ -117,9 +117,9 @@ describe('Search Input Keyboard Shortcuts', () => {
     });
 
     it('should not trigger when Ctrl+F is pressed', () => {
-        const event = new KeyboardEvent('keydown', { 
-            key: 'f', 
-            ctrlKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'f',
+            ctrlKey: true,
         });
         window.dispatchEvent(event);
 
@@ -128,9 +128,9 @@ describe('Search Input Keyboard Shortcuts', () => {
     });
 
     it('should not trigger when Alt+F is pressed', () => {
-        const event = new KeyboardEvent('keydown', { 
-            key: 'f', 
-            altKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'f',
+            altKey: true,
         });
         window.dispatchEvent(event);
 
@@ -138,9 +138,9 @@ describe('Search Input Keyboard Shortcuts', () => {
     });
 
     it('should not trigger when Meta+F (Cmd+F) is pressed', () => {
-        const event = new KeyboardEvent('keydown', { 
-            key: 'f', 
-            metaKey: true 
+        const event = new KeyboardEvent('keydown', {
+            key: 'f',
+            metaKey: true,
         });
         window.dispatchEvent(event);
 
@@ -150,7 +150,7 @@ describe('Search Input Keyboard Shortcuts', () => {
     it('should trigger input event when clearing text on double-tap', () => {
         const inputEventSpy = vi.fn();
         searchInput.addEventListener('input', inputEventSpy);
-        
+
         searchInput.value = 'test search';
         searchInput.focus();
 
@@ -179,7 +179,7 @@ describe('Search Input Keyboard Shortcuts', () => {
         registerSearchKeyListener();
 
         const focusSpy = vi.spyOn(searchInput, 'focus');
-        
+
         const event = new KeyboardEvent('keydown', { key: 'f' });
         window.dispatchEvent(event);
 
@@ -203,7 +203,7 @@ describe('Search Input Keyboard Shortcuts', () => {
         // First double-tap
         window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
         window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
-        
+
         expect(searchInput.value).toBe('');
         expect(document.activeElement).not.toBe(searchInput);
 
@@ -211,7 +211,7 @@ describe('Search Input Keyboard Shortcuts', () => {
         searchInput.value = 'new text';
         const event = new KeyboardEvent('keydown', { key: 'f' });
         window.dispatchEvent(event);
-        
+
         expect(document.activeElement).toBe(searchInput);
         expect(searchInput.value).toBe('new text'); // Should not clear
     });

@@ -19,7 +19,7 @@ describe('selectionInfo', () => {
 
         mockNodes = {
             length: 0,
-            nodes: [] as any[]
+            nodes: [] as any[],
         };
 
         mockCy = {
@@ -27,7 +27,7 @@ describe('selectionInfo', () => {
                 const selector = typeof args[0] === 'string' ? args[0] : null;
                 const handler = selector ? args[1] : args[0];
                 const key = selector ? `${event}:${selector}` : event;
-                
+
                 if (!eventHandlers[key]) {
                     eventHandlers[key] = [];
                 }
@@ -37,11 +37,11 @@ describe('selectionInfo', () => {
                 if (selector === ':selected') {
                     return {
                         length: mockNodes.length,
-                        nodes: mockNodes.nodes
+                        nodes: mockNodes.nodes,
                     };
                 }
                 return mockNodes;
-            })
+            }),
         };
     });
 

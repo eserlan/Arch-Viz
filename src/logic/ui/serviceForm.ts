@@ -23,11 +23,13 @@ export const initServiceForm = (cy: CyInstance, onNodeAdded?: () => void): void 
         newEditBtn.addEventListener('click', () => {
             const active = toggleEditMode(updateStatus);
             if (active) {
-                newEditBtn.className = 'w-full bg-amber-600 border border-amber-500 text-white text-xs rounded px-3 py-2 flex items-center justify-center gap-2 transition-colors';
+                newEditBtn.className =
+                    'w-full bg-amber-600 border border-amber-500 text-white text-xs rounded px-3 py-2 flex items-center justify-center gap-2 transition-colors';
                 newEditLabel.textContent = 'Exit Edit Mode';
                 addServiceBtnSidebar?.classList.remove('hidden');
             } else {
-                newEditBtn.className = 'w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-2 hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors flex items-center justify-center gap-2';
+                newEditBtn.className =
+                    'w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-2 hover:bg-slate-700 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors flex items-center justify-center gap-2';
                 newEditLabel.textContent = 'Enter Edit Mode';
                 addServiceBtnSidebar?.classList.add('hidden');
             }
@@ -56,11 +58,11 @@ export const initServiceForm = (cy: CyInstance, onNodeAdded?: () => void): void 
                 id: formData.get('id') as string,
                 name: formData.get('name') as string,
                 owner: formData.get('owner') as string,
-                tier: parseInt(formData.get('tier') as string, 10) as Tier
+                tier: parseInt(formData.get('tier') as string, 10) as Tier,
             };
 
             try {
-                if (!cy) throw new Error("Graph not initialized");
+                if (!cy) throw new Error('Graph not initialized');
                 addNode(cy, data);
                 updateStatus(`Created service: ${data.name}`);
                 addServiceModal?.close();

@@ -9,23 +9,23 @@ import { populateLabelFilter } from './filters';
 
 vi.mock('../ui/panel/index', () => ({
     showPanel: vi.fn(),
-    hidePanel: vi.fn()
+    hidePanel: vi.fn(),
 }));
 
 vi.mock('./graphUtils', () => ({
-    getNodesAtDepth: vi.fn()
+    getNodesAtDepth: vi.fn(),
 }));
 
 vi.mock('../core/storage', () => ({
-    saveGraphData: vi.fn()
+    saveGraphData: vi.fn(),
 }));
 
 vi.mock('../ui/ui', () => ({
-    showToast: vi.fn()
+    showToast: vi.fn(),
 }));
 
 vi.mock('./filters', () => ({
-    populateLabelFilter: vi.fn()
+    populateLabelFilter: vi.fn(),
 }));
 
 describe('Graph Events Logic', () => {
@@ -46,12 +46,12 @@ describe('Graph Events Logic', () => {
         eventHandlers = {};
         mockElements = {
             addClass: vi.fn().mockReturnThis(),
-            removeClass: vi.fn().mockReturnThis()
+            removeClass: vi.fn().mockReturnThis(),
         };
 
         selectedCollection = {
             length: 0,
-            0: undefined
+            0: undefined,
         };
 
         mockCy = {
@@ -72,12 +72,12 @@ describe('Graph Events Logic', () => {
                 return {
                     length: 0,
                     unselect: vi.fn(),
-                    toArray: vi.fn(() => [])
+                    toArray: vi.fn(() => []),
                 };
             }),
             container: vi.fn(() => document.getElementById('cy')),
             pan: vi.fn(() => ({ x: 0, y: 0 })),
-            zoom: vi.fn(() => 1)
+            zoom: vi.fn(() => 1),
         } as unknown as CyInstance;
 
         vi.clearAllMocks();
@@ -121,7 +121,7 @@ describe('Graph Events Logic', () => {
         const tapHandlers = eventHandlers['tap'];
         // The one that hides the panel checks if target === cy
         // We need to find the correct handler or execute all
-        tapHandlers.forEach(handler => handler({ target: mockCy }));
+        tapHandlers.forEach((handler) => handler({ target: mockCy }));
 
         expect(panel.hidePanel).toHaveBeenCalled();
         expect(mockElements.removeClass).toHaveBeenCalledWith('dimmed edge-inbound edge-outbound');
@@ -134,7 +134,7 @@ describe('Graph Events Logic', () => {
                 if (key === 'labels') return ['Core', 'Auth'];
                 return null;
             }),
-            renderedPosition: vi.fn(() => ({ x: 100, y: 100 }))
+            renderedPosition: vi.fn(() => ({ x: 100, y: 100 })),
         };
 
         initGraphEvents(mockCy);
@@ -155,7 +155,7 @@ describe('Graph Events Logic', () => {
             incomers: vi.fn(() => ({ addClass: vi.fn() })),
         };
         const highlightCollection = {
-            removeClass: vi.fn()
+            removeClass: vi.fn(),
         };
         (graphUtils.getNodesAtDepth as any).mockReturnValue(highlightCollection);
 
@@ -177,7 +177,12 @@ describe('Graph Events Logic', () => {
     });
 
     it('should toggle verified state from context menu', () => {
-        const nodeData: Record<string, any> = { id: 'n1', name: 'Node A', verified: false, labels: [] };
+        const nodeData: Record<string, any> = {
+            id: 'n1',
+            name: 'Node A',
+            verified: false,
+            labels: [],
+        };
         let nodeClasses: string[] = ['node', 'some-class'];
         const mockNode = {
             data: vi.fn((key?: string, val?: any) => {
@@ -205,7 +210,7 @@ describe('Graph Events Logic', () => {
                 return mockNode;
             }),
             id: () => nodeData.id,
-            renderedPosition: vi.fn(() => ({ x: 100, y: 120 }))
+            renderedPosition: vi.fn(() => ({ x: 100, y: 120 })),
         };
 
         mockElements.jsons = vi.fn(() => [{ data: { id: 'n1' } }]);
@@ -217,8 +222,8 @@ describe('Graph Events Logic', () => {
             originalEvent: {
                 clientX: 100,
                 clientY: 120,
-                preventDefault: vi.fn()
-            }
+                preventDefault: vi.fn(),
+            },
         });
 
         const toggleBtn = document.getElementById('toggleVerifiedBtn') as HTMLButtonElement;
@@ -247,8 +252,8 @@ describe('Graph Events Logic', () => {
             originalEvent: {
                 clientX: 100,
                 clientY: 120,
-                preventDefault: vi.fn()
-            }
+                preventDefault: vi.fn(),
+            },
         });
 
         // --- Test: Unmark as verified ---
@@ -257,7 +262,10 @@ describe('Graph Events Logic', () => {
         expect(mockNode.data).toHaveBeenCalledWith('verified', false);
         expect(mockNode.toggleClass).toHaveBeenCalledWith('is-verified', false);
         // CHECK 2: Expect 'Verified' label to be removed
-        expect(mockNode.data).toHaveBeenCalledWith('labels', expect.not.arrayContaining(['Verified']));
+        expect(mockNode.data).toHaveBeenCalledWith(
+            'labels',
+            expect.not.arrayContaining(['Verified'])
+        );
         expect(mockNode.data).toHaveBeenCalledWith('labelsDisplay', '');
     });
 });

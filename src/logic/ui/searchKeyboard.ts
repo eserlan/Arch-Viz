@@ -30,14 +30,14 @@ const handleKeyPress = (event: KeyboardEvent): void => {
 
         const now = Date.now();
         const timeSinceLastPress = now - lastFKeyPress;
-        
+
         // Check if we're already focused on the search input
         const isFocusedOnSearch = document.activeElement === searchInput;
-        
+
         if (isFocusedOnSearch) {
             // When focused on search input, ALWAYS prevent default to avoid typing 'f'
             event.preventDefault();
-            
+
             if (timeSinceLastPress < DOUBLE_TAP_THRESHOLD) {
                 // Double tap detected while focused - clear and blur
                 searchInput.value = '';
@@ -60,7 +60,7 @@ const handleKeyPress = (event: KeyboardEvent): void => {
 
 export const registerSearchKeyListener = (): void => {
     if (keyListenerRegistered) return;
-    
+
     keyListener = handleKeyPress;
     window.addEventListener('keydown', keyListener);
     keyListenerRegistered = true;

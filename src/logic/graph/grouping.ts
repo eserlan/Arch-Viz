@@ -8,11 +8,13 @@ let cyRef: CyInstance | null = null;
  * Create parent nodes for team grouping
  */
 export const enableTeamGrouping = (cy: CyInstance): void => {
-    const nodes = cy.nodes().filter(node => !node.data('isTeamGroup') && !node.data('isLabelGroup'));
+    const nodes = cy
+        .nodes()
+        .filter((node) => !node.data('isTeamGroup') && !node.data('isLabelGroup'));
     const teams = new Set<string>();
 
     // Collect all unique teams/owners
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
         const owner = node.data('owner');
         if (owner) {
             teams.add(owner);
@@ -20,7 +22,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
     });
 
     // Create parent nodes for each team
-    teams.forEach(team => {
+    teams.forEach((team) => {
         const teamId = `team-${team.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
         // Check if parent already exists
@@ -38,7 +40,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
         }
 
         // Assign children to parent
-        nodes.forEach(node => {
+        nodes.forEach((node) => {
             if (node.data('owner') === team) {
                 node.move({ parent: teamId });
             }
@@ -46,7 +48,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
     });
 
     // Handle nodes without owner - group them as "Unassigned"
-    const unassignedNodes = nodes.filter(node => !node.data('owner'));
+    const unassignedNodes = nodes.filter((node) => !node.data('owner'));
     if (unassignedNodes.length > 0) {
         const unassignedId = 'team-unassigned';
         if (cy.getElementById(unassignedId).length === 0) {
@@ -61,7 +63,7 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
                 classes: 'team-group',
             });
         }
-        unassignedNodes.forEach(node => {
+        unassignedNodes.forEach((node) => {
             node.move({ parent: unassignedId });
         });
     }
@@ -73,11 +75,13 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
  * Create parent nodes for label grouping (uses first label)
  */
 export const enableLabelGrouping = (cy: CyInstance): void => {
-    const nodes = cy.nodes().filter(node => !node.data('isTeamGroup') && !node.data('isLabelGroup'));
+    const nodes = cy
+        .nodes()
+        .filter((node) => !node.data('isTeamGroup') && !node.data('isLabelGroup'));
     const labelGroups = new Set<string>();
 
     // Collect all unique first labels
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
         const labels = node.data('labels') || [];
         if (Array.isArray(labels) && labels.length > 0) {
             labelGroups.add(labels[0]);
@@ -85,7 +89,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
     });
 
     // Create parent nodes for each label
-    labelGroups.forEach(label => {
+    labelGroups.forEach((label) => {
         const labelId = `label-group-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
         // Check if parent already exists
@@ -103,7 +107,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
         }
 
         // Assign children to parent (based on first label)
-        nodes.forEach(node => {
+        nodes.forEach((node) => {
             const nodeLabels = node.data('labels') || [];
             if (Array.isArray(nodeLabels) && nodeLabels[0] === label) {
                 node.move({ parent: labelId });
@@ -112,7 +116,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
     });
 
     // Handle nodes without labels - group them as "Unlabeled"
-    const unlabeledNodes = nodes.filter(node => {
+    const unlabeledNodes = nodes.filter((node) => {
         const labels = node.data('labels') || [];
         return !Array.isArray(labels) || labels.length === 0;
     });
@@ -131,7 +135,7 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
                 classes: 'label-group team-group',
             });
         }
-        unlabeledNodes.forEach(node => {
+        unlabeledNodes.forEach((node) => {
             node.move({ parent: unlabeledId });
         });
     }
@@ -146,7 +150,7 @@ export const disableGrouping = (cy: CyInstance): void => {
     const nodes = cy.nodes();
 
     // Move all child nodes to root level
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
         if (!node.data('isTeamGroup') && !node.data('isLabelGroup') && node.parent().length > 0) {
             node.move({ parent: null });
         }
@@ -167,7 +171,7 @@ const runLayout = (cy: CyInstance): void => {
     const layoutValue = layoutSelect?.value || 'fcose';
     const isHorizontalDagre = layoutValue === 'dagre-horizontal';
     const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
-    const layoutName = (isHorizontalDagre || isVerticalDagre) ? 'dagre' : layoutValue;
+    const layoutName = isHorizontalDagre || isVerticalDagre ? 'dagre' : layoutValue;
 
     const layout = cy.layout({
         name: layoutName,

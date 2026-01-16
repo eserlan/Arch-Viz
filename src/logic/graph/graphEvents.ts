@@ -30,7 +30,8 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
         menu = document.createElement('div');
         menu.id = contextMenuId;
-        menu.className = 'hidden absolute z-50 min-w-[160px] bg-slate-900/95 border border-slate-700 rounded-lg shadow-xl text-xs text-slate-200';
+        menu.className =
+            'hidden absolute z-50 min-w-[160px] bg-slate-900/95 border border-slate-700 rounded-lg shadow-xl text-xs text-slate-200';
         menu.innerHTML = `
             <button id="${toggleVerifiedId}" class="w-full px-3 py-2 text-left hover:bg-slate-800 transition-colors flex items-center gap-2">
                 <span data-role="toggle-verified-text">Mark verified</span>
@@ -70,17 +71,22 @@ export const initGraphEvents = (cy: CyInstance): void => {
                 contextMenuNode.data('labels', labels);
                 contextMenuNode.data('labelsDisplay', labels.join(', '));
 
-                const labelClasses = labels.map((d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
+                const labelClasses = labels.map(
+                    (d: string) => `label-${d.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+                );
                 const currentClasses = contextMenuNode.classes();
                 const classArray = Array.isArray(currentClasses)
                     ? currentClasses
                     : currentClasses.split(/\s+/).filter(Boolean);
-                const filteredClasses = classArray.filter(c => !c.startsWith('label-'));
+                const filteredClasses = classArray.filter((c) => !c.startsWith('label-'));
                 contextMenuNode.classes([...filteredClasses, ...labelClasses]);
 
                 saveGraphData(cy.elements().jsons() as any);
                 populateLabelFilter(cy.nodes().toArray());
-                showToast(`${contextMenuNode.data('name') || contextMenuNode.id()} ${newState ? 'marked' : 'unmarked'} as verified`, 'success');
+                showToast(
+                    `${contextMenuNode.data('name') || contextMenuNode.id()} ${newState ? 'marked' : 'unmarked'} as verified`,
+                    'success'
+                );
                 closeContextMenu();
             });
         }
@@ -121,13 +127,16 @@ export const initGraphEvents = (cy: CyInstance): void => {
         closeContextMenu();
         const node = evt.target as NodeSingular;
         const eventWithOriginal = evt as CytoscapeEventWithOriginal;
-        
+
         // Multi-select with Ctrl/Cmd key, otherwise single select
-        if (!eventWithOriginal.originalEvent?.ctrlKey && !eventWithOriginal.originalEvent?.metaKey) {
+        if (
+            !eventWithOriginal.originalEvent?.ctrlKey &&
+            !eventWithOriginal.originalEvent?.metaKey
+        ) {
             cy.nodes().unselect();
             updateSelectionInfo(cy);
         }
-        
+
         node.select();
         lastFocusedNode = node;
         showPanel(node);
@@ -152,7 +161,9 @@ export const initGraphEvents = (cy: CyInstance): void => {
         contextMenuNode = node;
 
         const menu = ensureContextMenu();
-        const toggleBtn = menu.querySelector(`#${toggleVerifiedId} [data-role="toggle-verified-text"]`) as HTMLElement | null;
+        const toggleBtn = menu.querySelector(
+            `#${toggleVerifiedId} [data-role="toggle-verified-text"]`
+        ) as HTMLElement | null;
         if (toggleBtn) {
             toggleBtn.textContent = node.data('verified') ? 'Unmark verified' : 'Mark verified';
         }
@@ -177,10 +188,13 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
         const maxLeft = window.innerWidth - menuRect.width - CONTEXT_MENU_VIEWPORT_PADDING;
         const maxTop = window.innerHeight - menuRect.height - CONTEXT_MENU_VIEWPORT_PADDING;
-        if (left > maxLeft) menu.style.left = `${Math.max(CONTEXT_MENU_VIEWPORT_PADDING, maxLeft)}px`;
+        if (left > maxLeft)
+            menu.style.left = `${Math.max(CONTEXT_MENU_VIEWPORT_PADDING, maxLeft)}px`;
         if (top > maxTop) menu.style.top = `${Math.max(CONTEXT_MENU_VIEWPORT_PADDING, maxTop)}px`;
-        if (left < CONTEXT_MENU_VIEWPORT_PADDING) menu.style.left = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
-        if (top < CONTEXT_MENU_VIEWPORT_PADDING) menu.style.top = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
+        if (left < CONTEXT_MENU_VIEWPORT_PADDING)
+            menu.style.left = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
+        if (top < CONTEXT_MENU_VIEWPORT_PADDING)
+            menu.style.top = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
     });
 
     cy.on('cxttap', (evt: EventObject) => {

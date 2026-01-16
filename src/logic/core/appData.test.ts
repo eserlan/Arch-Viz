@@ -4,11 +4,11 @@ import { loadGraphData } from './storage';
 import { parseCSV } from './parser';
 
 vi.mock('./storage', () => ({
-    loadGraphData: vi.fn()
+    loadGraphData: vi.fn(),
 }));
 
 vi.mock('./parser', () => ({
-    parseCSV: vi.fn()
+    parseCSV: vi.fn(),
 }));
 
 describe('loadGraphElements', () => {
@@ -29,11 +29,14 @@ describe('loadGraphElements', () => {
 
     it('fetches and parses csv when no saved data exists', async () => {
         vi.mocked(loadGraphData).mockReturnValue(null);
-        vi.mocked(parseCSV).mockReturnValue({ elements: [{ data: { id: 'b' } }], skipped: 2 } as any);
+        vi.mocked(parseCSV).mockReturnValue({
+            elements: [{ data: { id: 'b' } }],
+            skipped: 2,
+        } as any);
 
         const fetchImpl = vi.fn().mockResolvedValue({
             ok: true,
-            text: vi.fn().mockResolvedValue('id,name')
+            text: vi.fn().mockResolvedValue('id,name'),
         });
 
         const result = await loadGraphElements('/data.csv', fetchImpl as any);
@@ -43,7 +46,7 @@ describe('loadGraphElements', () => {
         expect(result).toEqual({
             elements: [{ data: { id: 'b' } }],
             skipped: 2,
-            fromStorage: false
+            fromStorage: false,
         });
     });
 });

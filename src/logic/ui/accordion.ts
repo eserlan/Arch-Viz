@@ -7,8 +7,12 @@ export const initAccordion = (): void => {
     if (infoToggle && infoContent) {
         infoToggle.addEventListener('click', () => {
             const isOpen = infoContent.classList.toggle('is-open');
-            if (infoChevron) infoChevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-            if (infoExpandLabel) infoExpandLabel.textContent = isOpen ? '(Click to collapse details)' : '(Click to expand details)';
+            if (infoChevron)
+                infoChevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+            if (infoExpandLabel)
+                infoExpandLabel.textContent = isOpen
+                    ? '(Click to collapse details)'
+                    : '(Click to expand details)';
         });
     }
 };

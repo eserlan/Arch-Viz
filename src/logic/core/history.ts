@@ -17,7 +17,8 @@ const isEditableTarget = (target: EventTarget | null): boolean => {
 
 const MAX_HISTORY = 50;
 
-const cloneElements = (elements: ElementDefinition[]): ElementDefinition[] => structuredClone(elements);
+const cloneElements = (elements: ElementDefinition[]): ElementDefinition[] =>
+    structuredClone(elements);
 
 const hashElements = (elements: ElementDefinition[]): string => {
     const json = JSON.stringify(elements);
@@ -87,7 +88,10 @@ const registerKeyListener = (): void => {
             return;
         }
 
-        if (event.key.toLowerCase() === 'y' || (event.key.toLowerCase() === 'z' && event.shiftKey)) {
+        if (
+            event.key.toLowerCase() === 'y' ||
+            (event.key.toLowerCase() === 'z' && event.shiftKey)
+        ) {
             event.preventDefault();
             performRedo();
         }

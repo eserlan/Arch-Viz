@@ -8,7 +8,7 @@ import {
     setSelectedNode,
     setOriginalData,
     setIsEditMode,
-    TIER_LABELS
+    TIER_LABELS,
 } from './state';
 
 export const showPanel = (node: NodeSingular): void => {
@@ -27,11 +27,11 @@ export const showPanel = (node: NodeSingular): void => {
     const incomingEdges = node.incomers('edge');
     const outboundConnections = outgoingEdges.map((edge: EdgeSingular) => ({
         id: edge.id(),
-        target: edge.target().data('name') || edge.target().data('label') || edge.target().id()
+        target: edge.target().data('name') || edge.target().data('label') || edge.target().id(),
     }));
     const inboundConnections = incomingEdges.map((edge: EdgeSingular) => ({
         id: edge.id(),
-        source: edge.source().data('name') || edge.source().data('label') || edge.source().id()
+        source: edge.source().data('name') || edge.source().data('label') || edge.source().id(),
     }));
 
     // Store original data for dirty checking
@@ -42,7 +42,7 @@ export const showPanel = (node: NodeSingular): void => {
         owner: data.owner || '',
         repoUrl: data.repoUrl || '',
         comment: data.comment || '',
-        verified: Boolean(data.verified)
+        verified: Boolean(data.verified),
     });
 
     panelContent.innerHTML = `
@@ -68,9 +68,11 @@ export const showPanel = (node: NodeSingular): void => {
     </div>
     <div class="info-item">
       <label>Repo URL</label>
-      <div class="info-value" data-key="repoUrl">${data.repoUrl
-            ? `<a href="${data.repoUrl}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline break-all">${data.repoUrl}</a>`
-            : '<span class="text-slate-500 italic">Not set</span>'}</div>
+      <div class="info-value" data-key="repoUrl">${
+          data.repoUrl
+              ? `<a href="${data.repoUrl}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline break-all">${data.repoUrl}</a>`
+              : '<span class="text-slate-500 italic">Not set</span>'
+      }</div>
     </div>
     <div class="info-item">
       <label>Comment</label>
@@ -79,9 +81,16 @@ export const showPanel = (node: NodeSingular): void => {
     <div class="info-item">
       <label>Outbound Connections</label>
       <div class="info-value connections-list">
-        ${outboundConnections.length > 0
-            ? outboundConnections.map(c => `<span class="connection-tag connection-tag--outbound" data-id="${c.id}">→ ${c.target}</span>`).join('')
-            : '<span class="text-slate-500 italic text-xs">No outbound connections</span>'}
+        ${
+            outboundConnections.length > 0
+                ? outboundConnections
+                      .map(
+                          (c) =>
+                              `<span class="connection-tag connection-tag--outbound" data-id="${c.id}">→ ${c.target}</span>`
+                      )
+                      .join('')
+                : '<span class="text-slate-500 italic text-xs">No outbound connections</span>'
+        }
       </div>
     </div>
     <!-- Note: Edit mode intentionally only affects the outbound connections list.
@@ -89,9 +98,16 @@ export const showPanel = (node: NodeSingular): void => {
     <div class="info-item">
       <label>Inbound Connections</label>
       <div class="info-value connections-list">
-        ${inboundConnections.length > 0
-            ? inboundConnections.map(c => `<span class="connection-tag connection-tag--inbound" data-id="${c.id}">← ${c.source}</span>`).join('')
-            : '<span class="text-slate-500 italic text-xs">No inbound connections</span>'}
+        ${
+            inboundConnections.length > 0
+                ? inboundConnections
+                      .map(
+                          (c) =>
+                              `<span class="connection-tag connection-tag--inbound" data-id="${c.id}">← ${c.source}</span>`
+                      )
+                      .join('')
+                : '<span class="text-slate-500 italic text-xs">No inbound connections</span>'
+        }
       </div>
     </div>
   `;

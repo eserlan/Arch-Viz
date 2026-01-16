@@ -15,7 +15,6 @@ export const getUpdateStatusRef = () => updateStatusRef;
 export const getOriginalData = () => originalData;
 export const getIsEditMode = () => isEditMode;
 
-
 export const setSelectedNode = (node: NodeSingular | null) => {
     currentSelectedNode = node;
 };
@@ -64,5 +63,5 @@ export const TIER_LABELS: Record<number, string> = {
     1: 'Tier 1 (Critical)',
     2: 'Tier 2 (Major)',
     3: 'Tier 3 (Minor)',
-    4: 'Tier 4 (Low)'
+    4: 'Tier 4 (Low)',
 };

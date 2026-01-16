@@ -54,14 +54,16 @@ describe('uploader', () => {
     });
 
     it('should handle file drop and successful parse', async () => {
-        const mockFiles = [{
-            name: 'test.csv',
-            size: 100
-        }];
+        const mockFiles = [
+            {
+                name: 'test.csv',
+                size: 100,
+            },
+        ];
 
         const dropEvent = new Event('drop');
         Object.defineProperty(dropEvent, 'dataTransfer', {
-            value: { files: mockFiles }
+            value: { files: mockFiles },
         });
         Object.defineProperty(dropEvent, 'preventDefault', { value: vi.fn() });
         Object.defineProperty(dropEvent, 'stopPropagation', { value: vi.fn() });
@@ -75,13 +77,16 @@ describe('uploader', () => {
             }),
         };
         // Use a constructor function
-        vi.stubGlobal('FileReader', vi.fn().mockImplementation(function () {
-            return mockFileReader;
-        }));
+        vi.stubGlobal(
+            'FileReader',
+            vi.fn().mockImplementation(function () {
+                return mockFileReader;
+            })
+        );
 
         (parseCSV as any).mockReturnValue({
             elements: [{ data: { id: '1' } }],
-            skipped: 0
+            skipped: 0,
         });
 
         initUploader(mockRender, mockUpdateStatus, mockGetCy, mockShowToast);
@@ -107,13 +112,16 @@ describe('uploader', () => {
                 }
             }),
         };
-        vi.stubGlobal('FileReader', vi.fn().mockImplementation(function () {
-            return mockFileReader;
-        }));
+        vi.stubGlobal(
+            'FileReader',
+            vi.fn().mockImplementation(function () {
+                return mockFileReader;
+            })
+        );
 
         (parseCSV as any).mockReturnValue({
             error: 'Invalid CSV',
-            hints: ['Check headers']
+            hints: ['Check headers'],
         });
 
         vi.useFakeTimers();
@@ -136,6 +144,9 @@ describe('uploader', () => {
         initUploader(mockRender, mockUpdateStatus, mockGetCy, mockShowToast);
         mainElem.dispatchEvent(dropEvent);
 
-        expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining('Only .csv files'), 'error');
+        expect(mockShowToast).toHaveBeenCalledWith(
+            expect.stringContaining('Only .csv files'),
+            'error'
+        );
     });
 });

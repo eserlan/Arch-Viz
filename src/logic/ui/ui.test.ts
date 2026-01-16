@@ -10,7 +10,7 @@ describe('UI Logic', () => {
         menuId: 'testMenu',
         moveBtnId: 'testMoveBtn',
         containerId: 'testContainer',
-        storageKey: 'test-pos'
+        storageKey: 'test-pos',
     };
 
     beforeEach(() => {
@@ -32,11 +32,14 @@ describe('UI Logic', () => {
         vi.stubGlobal('requestAnimationFrame', (cb: any) => cb());
 
         // Mock ResizeObserver (not available in jsdom)
-        vi.stubGlobal('ResizeObserver', class {
-            observe = vi.fn();
-            unobserve = vi.fn();
-            disconnect = vi.fn();
-        });
+        vi.stubGlobal(
+            'ResizeObserver',
+            class {
+                observe = vi.fn();
+                unobserve = vi.fn();
+                disconnect = vi.fn();
+            }
+        );
 
         // Mock showModal/close for dialog
         HTMLDialogElement.prototype.showModal = vi.fn();

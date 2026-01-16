@@ -5,12 +5,12 @@ import * as ui from './ui';
 import { CyInstance } from '../../types';
 
 vi.mock('../graph/nodeOperations', () => ({
-    addNode: vi.fn()
+    addNode: vi.fn(),
 }));
 
 vi.mock('./ui', () => ({
     showToast: vi.fn(),
-    updateStatus: vi.fn()
+    updateStatus: vi.fn(),
 }));
 
 describe('Service Form Logic', () => {
@@ -54,12 +54,15 @@ describe('Service Form Logic', () => {
         const form = document.getElementById('addServiceForm')!;
         form.dispatchEvent(new Event('submit'));
 
-        expect(nodeOps.addNode).toHaveBeenCalledWith(mockCy, expect.objectContaining({
-            id: 'test-id',
-            name: 'Test Name',
-            owner: 'Test Owner',
-            tier: 1
-        }));
+        expect(nodeOps.addNode).toHaveBeenCalledWith(
+            mockCy,
+            expect.objectContaining({
+                id: 'test-id',
+                name: 'Test Name',
+                owner: 'Test Owner',
+                tier: 1,
+            })
+        );
         expect(ui.showToast).toHaveBeenCalledWith(expect.stringContaining('Test Name'), 'success');
         expect(onAdded).toHaveBeenCalled();
     });

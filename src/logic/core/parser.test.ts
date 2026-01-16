@@ -12,7 +12,7 @@ service-a,Service A,Label A,1,service-b,Owner A,http://repo-a`;
         expect(skipped).toBe(0);
         expect(elements).toHaveLength(2); // 1 node, 1 edge
 
-        const node = (elements as any[]).find(el => el.group === 'nodes');
+        const node = (elements as any[]).find((el) => el.group === 'nodes');
         expect(node.data.id).toBe('service-a');
         expect(node.data.name).toBe('Service A');
         expect(node.data.labels).toEqual(['Label A']);
@@ -39,8 +39,8 @@ payment-proxy,Payments,Payment,2`;
 
         const { elements } = parseCSV(csv);
 
-        const dbNode = (elements as any[]).find(n => n.data.id === 'user-db');
-        const normalNode = (elements as any[]).find(n => n.data.id === 'payment-proxy');
+        const dbNode = (elements as any[]).find((n) => n.data.id === 'user-db');
+        const normalNode = (elements as any[]).find((n) => n.data.id === 'payment-proxy');
 
         expect(dbNode.classes).toContain('is-database');
         expect(normalNode.classes).not.toContain('is-database');
@@ -62,7 +62,7 @@ service-valid,Label,Tags,1
 service-a,A,D,1,service-b;service-c`;
 
         const { elements } = parseCSV(csv);
-        const edges = (elements as any[]).filter(el => el.group === 'edges');
+        const edges = (elements as any[]).filter((el) => el.group === 'edges');
 
         expect(edges).toHaveLength(2);
         expect(edges[0].data.target).toBe('service-b');
@@ -86,7 +86,7 @@ legacy-srv,Legacy Service,OldDomain,2,`;
         const { error, hints } = parseCSV('');
 
         expect(error).toBe('Empty or invalid file');
-        expect((hints as string[])).toContain('The file appears to be empty.');
+        expect(hints as string[]).toContain('The file appears to be empty.');
     });
 
     it('should return error for missing required columns', () => {
@@ -96,8 +96,12 @@ legacy-srv,Legacy Service,OldDomain,2,`;
         const { error, hints, elements } = parseCSV(csv);
 
         expect(error).toBe('Missing required columns');
-        expect((hints as string[])).toContain("Missing 'id' column - each service needs a unique identifier.");
-        expect((hints as string[])).toContain("Missing 'name' (or 'label') column - each service needs a display name.");
+        expect(hints as string[]).toContain(
+            "Missing 'id' column - each service needs a unique identifier."
+        );
+        expect(hints as string[]).toContain(
+            "Missing 'name' (or 'label') column - each service needs a display name."
+        );
         expect(elements).toHaveLength(0);
     });
 
@@ -110,7 +114,7 @@ legacy-srv,Legacy Service,OldDomain,2,`;
 
         expect(error).toBe('No valid services found');
         expect(skipped).toBe(2);
-        expect((hints as string[])).toContain("Each row needs at least 'id' and 'name' values.");
+        expect(hints as string[]).toContain("Each row needs at least 'id' and 'name' values.");
     });
 
     it('should parse comments correctly', () => {
@@ -121,8 +125,8 @@ comment"`;
         const { elements } = parseCSV(csv);
 
         expect(elements).toHaveLength(2);
-        const nodeA = (elements as any[]).find(n => n.data.id === 'service-a');
-        const nodeB = (elements as any[]).find(n => n.data.id === 'service-b');
+        const nodeA = (elements as any[]).find((n) => n.data.id === 'service-a');
+        const nodeB = (elements as any[]).find((n) => n.data.id === 'service-b');
 
         expect(nodeA.data.comment).toBe('This is a comment');
         expect(nodeB.data.comment).toContain('Multiline\ncomment');

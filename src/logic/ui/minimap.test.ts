@@ -25,7 +25,7 @@ describe('Mini map logic', () => {
         mockCy = {
             elements: vi.fn(() => ({
                 length: 1,
-                boundingBox: vi.fn(() => ({ x1: 0, y1: 0, w: 100, h: 100 }))
+                boundingBox: vi.fn(() => ({ x1: 0, y1: 0, w: 100, h: 100 })),
             })),
             extent: vi.fn(() => extent),
             png: vi.fn(() => 'data:image/png;base64,mini-map'),
@@ -36,7 +36,7 @@ describe('Mini map logic', () => {
             on: vi.fn((event: string, handler: (...args: any[]) => any) => {
                 eventHandlers[event] = handler;
             }),
-            off: vi.fn()
+            off: vi.fn(),
         } as unknown as CyInstance;
 
         const image = document.getElementById('minimapImage') as HTMLImageElement;
@@ -63,7 +63,7 @@ describe('Mini map logic', () => {
             full: true,
             maxWidth: 220,
             maxHeight: 160,
-            bg: '#0f172a'
+            bg: '#0f172a',
         });
         expect(image.src).toContain('data:image/png');
         expect(parseFloat(viewport.style.width)).toBeCloseTo(110, 5);
@@ -108,10 +108,12 @@ describe('Mini map logic', () => {
             bottom: 160,
             x: 0,
             y: 0,
-            toJSON: () => ({})
+            toJSON: () => ({}),
         } as DOMRect);
 
-        container.dispatchEvent(new MouseEvent('pointerdown', { clientX: 110, clientY: 80, button: 0 }));
+        container.dispatchEvent(
+            new MouseEvent('pointerdown', { clientX: 110, clientY: 80, button: 0 })
+        );
         window.dispatchEvent(new MouseEvent('pointermove', { clientX: 110, clientY: 80 }));
 
         expect(mockCy.pan).toHaveBeenCalled();
