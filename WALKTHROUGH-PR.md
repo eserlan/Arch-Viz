@@ -7,6 +7,12 @@ I have updated the image export functionality to capture only the active viewpor
 ### Logic Layer
 - **[exports.ts](file:///home/espen/proj/Arch-Viz/src/logic/utils/exports.ts)**: Changed `full: true` to `full: false` in `cy.png()` options for both clipboard and file saving.
 
+### Quality Assurance (PR Review Fixes)
+- **E2E Tests**: Refactored `e2e/exports.spec.ts` for better maintainability and robustness:
+  - Extracted shared logic into a `checkViewportExport` helper.
+  - Added `try...finally` blocks to guarantee `cy.png` restoration.
+  - Removed unnecessary `async` declarations from `page.evaluate`.
+
 ## Verification Results
 
 ### Manual Verification
