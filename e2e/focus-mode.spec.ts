@@ -15,6 +15,7 @@ test.describe('Focus Mode', () => {
         // Check initial state
         await expect(sidebar).toBeVisible();
         await expect(minimap).toBeVisible();
+        await expect(page.locator('#focusModeCopyBtn')).toBeHidden();
 
         // Enable Focus Mode
         await toggleBtn.click();
@@ -22,6 +23,7 @@ test.describe('Focus Mode', () => {
         // Check hidden state
         await expect(sidebar).toBeHidden();
         await expect(minimap).toBeHidden();
+        await expect(page.locator('#focusModeCopyBtn')).toBeVisible();
 
         // Disable Focus Mode
         await toggleBtn.click();
@@ -29,6 +31,7 @@ test.describe('Focus Mode', () => {
         // Check restored state
         await expect(sidebar).toBeVisible();
         await expect(minimap).toBeVisible();
+        await expect(page.locator('#focusModeCopyBtn')).toBeHidden();
     });
 
     test('should not re-apply "hidden" class if it was removed by user before toggling', async ({

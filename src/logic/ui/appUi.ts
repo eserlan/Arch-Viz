@@ -46,6 +46,9 @@ export const initSidebarActions = (
         .getElementById('copyImageBtn')
         ?.addEventListener('click', () => copyImageToClipboard(getCy() || null));
     document
+        .getElementById('focusModeCopyBtn')
+        ?.addEventListener('click', () => copyImageToClipboard(getCy() || null));
+    document
         .getElementById('saveImageBtn')
         ?.addEventListener('click', () => saveImageAsPng(getCy() || null));
 
