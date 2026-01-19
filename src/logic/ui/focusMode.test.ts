@@ -17,6 +17,7 @@ describe('FocusModeManager', () => {
             <div id="selectionInfoPanel"></div>
             <div id="minimap" class="hidden md:flex flex-col"></div>
             <div id="servicePanel" class="opacity-0"></div>
+            <button id="focusModeCopyBtn" class="hidden"></button>
         `;
 
         manager = new FocusModeManager();
@@ -35,6 +36,10 @@ describe('FocusModeManager', () => {
 
         const sidebar = document.getElementById('appSidebar');
         expect(sidebar?.classList.contains('focus-mode-hidden')).toBe(true);
+
+        const copyBtn = document.getElementById('focusModeCopyBtn');
+        expect(copyBtn?.classList.contains('hidden')).toBe(false);
+
         // Other classes should be preserved
         expect(sidebar?.classList.contains('md:flex')).toBe(true);
         expect(sidebar?.classList.contains('w-64')).toBe(true);
@@ -49,6 +54,10 @@ describe('FocusModeManager', () => {
 
         const minimap = document.getElementById('minimap');
         expect(minimap?.classList.contains('focus-mode-hidden')).toBe(false);
+
+        const copyBtn = document.getElementById('focusModeCopyBtn');
+        expect(copyBtn?.classList.contains('hidden')).toBe(true);
+
         // Original classes intact
         expect(minimap?.className).toBe('hidden md:flex flex-col');
     });
