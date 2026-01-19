@@ -11,15 +11,14 @@ describe('UI Logic', () => {
         moveBtnId: 'testMoveBtn',
         containerId: 'testContainer',
         storageKey: 'test-pos',
+        minimizeBtnId: 'testMinimizeBtn',
+        minimizedStorageKey: 'test-minimized',
     };
 
     beforeEach(() => {
         document.body.innerHTML = `
             <div id="toastContainer"></div>
             <div id="testPanel" class="opacity-0"></div>
-            <button id="testMenuBtn"></button>
-            <div id="testMenu" class="hidden"></div>
-            <button id="testMoveBtn"></button>
             <div id="testContainer"></div>
             
             <dialog id="testModal">
@@ -111,6 +110,51 @@ describe('UI Logic', () => {
             expect(panel.style.cursor).toBe('');
             expect(localStorage.getItem('move-test-pos')).toContain('400px');
             vi.useRealTimers();
+        });
+
+        it('should toggle minimized class when minimize button is clicked', () => {
+            initFloatingPanel(panelConfig);
+            const panel = document.getElementById('testPanel')!;
+            const minimizeBtn = document.getElementById('testMinimizeBtn')!;
+
+            expect(panel.classList.contains('minimized')).toBe(false);
+            minimizeBtn.click();
+            expect(panel.classList.contains('minimized')).toBe(true);
+            minimizeBtn.click();
+            expect(panel.classList.contains('minimized')).toBe(false);
+        });
+
+        it('should update minimize button icon when clicked', () => {
+            initFloatingPanel(panelConfig);
+            const minimizeBtn = document.getElementById('testMinimizeBtn')!;
+
+            // Initial state: MINIMIZE icon
+            expect(minimizeBtn.innerHTML).toContain('M18 12H6'); // From ICONS.MINIMIZE
+
+            minimizeBtn.click();
+            // Minimized state: RESTORE icon
+            expect(minimizeBtn.innerHTML).toContain('M5 15l7-7 7 7'); // From ICONS.RESTORE
+        });
+
+        it('should save minimized state to localStorage', () => {
+            initFloatingPanel(panelConfig);
+            const minimizeBtn = document.getElementById('testMinimizeBtn')!;
+
+            minimizeBtn.click();
+            expect(localStorage.getItem('test-minimized')).toBe('true');
+
+            minimizeBtn.click();
+            expect(localStorage.getItem('test-minimized')).toBe('false');
+        });
+
+        it('should restore minimized state from localStorage on init', () => {
+            localStorage.setItem('test-minimized', 'true');
+            initFloatingPanel(panelConfig);
+            const panel = document.getElementById('testPanel')!;
+            const minimizeBtn = document.getElementById('testMinimizeBtn')!;
+
+            expect(panel.classList.contains('minimized')).toBe(true);
+            expect(minimizeBtn.innerHTML).toContain('M5 15l7-7 7 7');
         });
     });
 

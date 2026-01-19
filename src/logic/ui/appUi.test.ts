@@ -103,37 +103,40 @@ describe('appUi helpers', () => {
             
             <button id="highlightLabelsPanel"></button>
             <button id="highlightTeamsPanel"></button>
-            <div id="floatingFilterPanel"></div>
-            <div id="floatingTeamPanel"></div>
+            <div id="floatingFilterPanel">
+                <button id="minimizeLabelsBtn"></button>
+            </div>
+            <div id="floatingTeamPanel">
+                <button id="minimizeTeamsBtn"></button>
+            </div>
         `;
+
+        // Stub minimize button listeners (since initFloatingPanel is mocked)
+        const labelsPanel = document.getElementById('floatingFilterPanel')!;
+        const teamsPanel = document.getElementById('floatingTeamPanel')!;
+        document.getElementById('minimizeLabelsBtn')?.addEventListener('click', () => {
+            labelsPanel.classList.toggle('minimized');
+        });
+        document.getElementById('minimizeTeamsBtn')?.addEventListener('click', () => {
+            teamsPanel.classList.toggle('minimized');
+        });
 
         initPanelsAndModals();
 
         const labelsBtn = document.getElementById('highlightLabelsPanel');
         const teamsBtn = document.getElementById('highlightTeamsPanel');
-        const labelsPanel = document.getElementById('floatingFilterPanel');
-        const teamsPanel = document.getElementById('floatingTeamPanel');
 
-        vi.useFakeTimers();
-
-        // Click labels button
+        // Click labels button - should toggle minimized
         labelsBtn?.click();
-        expect(labelsPanel?.classList.contains('ring-4')).toBe(true);
-        expect(labelsPanel?.classList.contains('ring-emerald-400')).toBe(true);
+        expect(labelsPanel?.classList.contains('minimized')).toBe(true);
+        labelsBtn?.click();
+        expect(labelsPanel?.classList.contains('minimized')).toBe(false);
 
-        // Fast-forward time
-        vi.advanceTimersByTime(1500);
-        expect(labelsPanel?.classList.contains('ring-4')).toBe(false);
-
-        // Click teams button
+        // Click teams button - should toggle minimized
         teamsBtn?.click();
-        expect(teamsPanel?.classList.contains('ring-4')).toBe(true);
-        expect(teamsPanel?.classList.contains('ring-emerald-400')).toBe(true);
-
-        vi.advanceTimersByTime(1500);
-        expect(teamsPanel?.classList.contains('ring-4')).toBe(false);
-
-        vi.useRealTimers();
+        expect(teamsPanel?.classList.contains('minimized')).toBe(true);
+        teamsBtn?.click();
+        expect(teamsPanel?.classList.contains('minimized')).toBe(false);
     });
 
     describe('initSettings', () => {

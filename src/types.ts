@@ -40,6 +40,8 @@ export interface PanelConfig {
     moveBtnId: string;
     containerId: string;
     storageKey: string;
+    minimizeBtnId: string;
+    minimizedStorageKey: string;
     defaultClasses?: string[];
 }
 

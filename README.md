@@ -5,6 +5,7 @@
 Interactive service dependency map for 150+ services. The app is a static, client-side SPA built with Vite that renders a Cytoscape force-directed graph from a CSV registry.
 
 ## Tech Stack
+- TypeScript
 - Vite (bundling for static hosting)
 - Cytoscape.js with the `fcose` layout extension
 - PapaParse for CSV ingestion

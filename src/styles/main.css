@@ -58,15 +58,16 @@ body {
     pointer-events: auto;
 }
 
-#servicePanel.minimized {
-    height: 60px;
-    /* Reduced height to show only the header */
-    padding-bottom: 0;
+.minimized {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-bottom: 4px !important;
 }
 
-#servicePanel.minimized #panelContent,
-#servicePanel.minimized #editActions {
-    display: none;
+.minimized>div:nth-child(2),
+.minimized #panelContent,
+.minimized #editActions {
+    display: none !important;
 }
 
 #panelContent {
