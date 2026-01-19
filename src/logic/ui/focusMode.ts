@@ -52,6 +52,12 @@ export class FocusModeManager {
             element.classList.toggle('focus-mode-hidden', this.isFocusMode);
         });
 
+        // Toggle focus mode copy button visibility
+        const copyBtn = document.getElementById('focusModeCopyBtn');
+        if (copyBtn) {
+            copyBtn.classList.toggle('hidden', !this.isFocusMode);
+        }
+
         // Trigger resize on window to let Cytoscape adjust
         window.dispatchEvent(new Event('resize'));
     }
