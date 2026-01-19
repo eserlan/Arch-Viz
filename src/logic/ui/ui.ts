@@ -1,6 +1,7 @@
 import { HELP_CONTENT_HTML } from '../core/constants';
 import { ICONS } from '../graph/icons';
 import { ToastType, PanelConfig } from '../../types';
+import { MinimizeManager } from './MinimizeManager';
 
 /**
  * UI Utilities and Shared Components
@@ -53,6 +54,8 @@ export function initFloatingPanel(config: PanelConfig): void {
         moveBtnId,
         containerId,
         storageKey,
+        minimizeBtnId,
+        minimizedStorageKey,
         defaultClasses = [],
     } = config;
 
@@ -66,15 +69,20 @@ export function initFloatingPanel(config: PanelConfig): void {
             ${ICONS[iconKey] || ''}
             <label class="text-[11px] uppercase tracking-widest text-slate-300 font-bold">${title}</label>
           </div>
-          <div class="relative">
-            <button id="${menuBtnId}" class="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors focus:outline-none">
-              ${ICONS.MENU}
+          <div class="flex items-center gap-1">
+            <button id="${minimizeBtnId}" class="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors focus:outline-none" title="Minimize/Restore">
+              ${ICONS.MINIMIZE}
             </button>
-            <div id="${menuId}" class="hidden absolute right-0 top-full mt-1 w-32 bg-slate-800 border border-slate-700 rounded shadow-xl z-50 overflow-hidden">
-              <button id="${moveBtnId}" class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2 transition-colors">
-                ${ICONS.MOVE}
-                Move
+            <div class="relative">
+              <button id="${menuBtnId}" class="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors focus:outline-none">
+                ${ICONS.MENU}
               </button>
+              <div id="${menuId}" class="hidden absolute right-0 top-full mt-1 w-32 bg-slate-800 border border-slate-700 rounded shadow-xl z-50 overflow-hidden">
+                <button id="${moveBtnId}" class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2 transition-colors">
+                  ${ICONS.MOVE}
+                  Move
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -83,9 +91,20 @@ export function initFloatingPanel(config: PanelConfig): void {
         </div>
     `;
 
-    const menuBtn = document.getElementById(menuBtnId);
-    const menu = document.getElementById(menuId);
-    const moveBtn = document.getElementById(moveBtnId);
+    const menuBtn = panel.querySelector(`#${menuBtnId}`) as HTMLElement | null;
+    const menu = panel.querySelector(`#${menuId}`) as HTMLElement | null;
+    const moveBtn = panel.querySelector(`#${moveBtnId}`) as HTMLElement | null;
+    const minimizeBtn = panel.querySelector(`#${minimizeBtnId}`) as HTMLElement | null;
+
+    // Initialize minimize manager
+    if (minimizeBtn && minimizedStorageKey) {
+        const minimizeManager = new MinimizeManager({
+            panel,
+            button: minimizeBtn,
+            storageKey: minimizedStorageKey,
+        });
+        minimizeManager.init();
+    }
 
     // Restore panel position and size
     const savedPos = localStorage.getItem(storageKey);

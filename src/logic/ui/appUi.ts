@@ -91,6 +91,8 @@ export const initPanelsAndModals = (): void => {
         moveBtnId: 'movePanelBtn',
         containerId: 'labelFilterContainer',
         storageKey: 'panel-pos',
+        minimizeBtnId: 'minimizeLabelsBtn',
+        minimizedStorageKey: 'panel-labels-minimized',
         defaultClasses: ['-translate-x-1/2', 'left-1/2', 'top-6'],
     });
 
@@ -103,19 +105,21 @@ export const initPanelsAndModals = (): void => {
         moveBtnId: 'moveTeamPanelBtn',
         containerId: 'teamFilterContainer',
         storageKey: 'team-panel-pos',
+        minimizeBtnId: 'minimizeTeamsBtn',
+        minimizedStorageKey: 'panel-teams-minimized',
         defaultClasses: ['right-72', 'top-6'],
     });
 
-    // Initialize panel highlight buttons
-    const highlightLabelsBtn = document.getElementById('highlightLabelsPanel');
-    const highlightTeamsBtn = document.getElementById('highlightTeamsPanel');
+    // Initialize panel toggle buttons (minimize/restore from sidebar)
+    const toggleLabelsBtn = document.getElementById('highlightLabelsPanel');
+    const toggleTeamsBtn = document.getElementById('highlightTeamsPanel');
 
-    highlightLabelsBtn?.addEventListener('click', () => {
-        highlightPanel('floatingFilterPanel');
+    toggleLabelsBtn?.addEventListener('click', () => {
+        document.getElementById('minimizeLabelsBtn')?.click();
     });
 
-    highlightTeamsBtn?.addEventListener('click', () => {
-        highlightPanel('floatingTeamPanel');
+    toggleTeamsBtn?.addEventListener('click', () => {
+        document.getElementById('minimizeTeamsBtn')?.click();
     });
 
     focusModeManager.init();
