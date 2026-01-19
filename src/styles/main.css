@@ -64,9 +64,7 @@ body {
     padding-bottom: 4px !important;
 }
 
-.minimized>div:nth-child(2),
-.minimized #panelContent,
-.minimized #editActions {
+.minimized .panel-content-container {
     display: none !important;
 }
 
