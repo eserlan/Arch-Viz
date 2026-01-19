@@ -8,6 +8,8 @@ test.describe('Service Panel Minimize/Restore', () => {
         // Clear localStorage to ensure a clean state
         await page.evaluate(() => localStorage.clear());
         await page.reload();
+        // Wait for graph to load
+        await expect(page.locator('#cy')).not.toHaveClass(/cy-loading/, { timeout: 20000 });
     });
 
     test('should minimize and restore the service panel', async ({ page }) => {
@@ -59,6 +61,8 @@ test.describe('Service Panel Minimize/Restore', () => {
 
         // 2. Reload page
         await page.reload();
+        // Wait for graph to load
+        await expect(page.locator('#cy')).not.toHaveClass(/cy-loading/, { timeout: 20000 });
 
         // 3. Select the same node again
         await page.evaluate(() => {
