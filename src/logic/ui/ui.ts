@@ -86,7 +86,7 @@ export function initFloatingPanel(config: PanelConfig): void {
             </div>
           </div>
         </div>
-        <div id="${containerId}" class="flex flex-col gap-2 px-1">
+        <div id="${containerId}" class="panel-content-container flex flex-col gap-2 px-1">
           <!-- Populated by JS -->
         </div>
     `;
