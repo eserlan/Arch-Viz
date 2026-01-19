@@ -34,6 +34,40 @@ test.describe('Focus Mode', () => {
         await expect(page.locator('#focusModeCopyBtn')).toBeHidden();
     });
 
+    test('should trigger viewport export when clicked in focus mode', async ({ page }) => {
+        const toggleBtn = page.locator('#focusModeToggle');
+
+        // 1. Enable Focus Mode
+        await toggleBtn.click();
+        await expect(page.locator('#focusModeCopyBtn')).toBeVisible();
+
+        // 2. Intercept cy.png to verify it's called with viewport-only setting (full: false)
+        const isViewportOnly = await page.evaluate(() => {
+            const cy = (window as Record<string, any>).cy;
+            if (!cy) return false;
+
+            const originalPng = cy.png;
+            let capturedFull = true;
+
+            try {
+                cy.png = (options: { full: boolean }) => {
+                    capturedFull = options.full;
+                    return originalPng.call(cy, options);
+                };
+
+                const btn = document.getElementById('focusModeCopyBtn');
+                if (!btn) return false;
+                btn.click();
+
+                return capturedFull === false;
+            } finally {
+                cy.png = originalPng;
+            }
+        });
+
+        expect(isViewportOnly).toBe(true);
+    });
+
     test('should not re-apply "hidden" class if it was removed by user before toggling', async ({
         page,
     }) => {
