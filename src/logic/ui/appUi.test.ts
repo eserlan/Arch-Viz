@@ -50,6 +50,7 @@ describe('appUi helpers', () => {
         document.body.innerHTML = `
             <button id="downloadCsvBtn"></button>
             <button id="copyImageBtn"></button>
+            <button id="focusModeCopyBtn"></button>
             <button id="saveImageBtn"></button>
             <button id="resetDataBtn"></button>
         `;
@@ -69,6 +70,9 @@ describe('appUi helpers', () => {
         expect(onStatus).toHaveBeenCalledWith('Downloaded updated CSV');
 
         document.getElementById('copyImageBtn')?.click();
+        expect(copyImageToClipboard).toHaveBeenCalledWith(cy);
+
+        document.getElementById('focusModeCopyBtn')?.click();
         expect(copyImageToClipboard).toHaveBeenCalledWith(cy);
 
         document.getElementById('saveImageBtn')?.click();
