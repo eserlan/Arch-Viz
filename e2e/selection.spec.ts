@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Node Selection Behavior', () => {
     test.beforeEach(async ({ page }) => {
-        page.on('console', msg => console.log('BROWSER:', msg.text()));
+        page.on('console', (msg) => console.log('BROWSER:', msg.text()));
         await page.goto('/');
         await expect(page.locator('#cy')).not.toHaveClass(/cy-loading/, { timeout: 20000 });
         await page.waitForTimeout(2000);
@@ -20,7 +20,9 @@ test.describe('Node Selection Behavior', () => {
             n.emit('tap', { originalEvent: { ctrlKey: true } });
         }, nodeId);
 
-        expect(await page.evaluate((id) => window.cy.getElementById(id).selected(), nodeId)).toBe(true);
+        expect(await page.evaluate((id) => window.cy.getElementById(id).selected(), nodeId)).toBe(
+            true
+        );
 
         // Toggle off via programmatic tap with Ctrl
         await page.evaluate((id) => {
@@ -29,7 +31,9 @@ test.describe('Node Selection Behavior', () => {
             n.emit('tap', { originalEvent: { ctrlKey: true } });
         }, nodeId);
 
-        expect(await page.evaluate((id) => window.cy.getElementById(id).selected(), nodeId)).toBe(false);
+        expect(await page.evaluate((id) => window.cy.getElementById(id).selected(), nodeId)).toBe(
+            false
+        );
     });
 
     test('should select a single node on click', async ({ page }) => {
@@ -44,28 +48,48 @@ test.describe('Node Selection Behavior', () => {
         const clickX = cyBoundingBox.x + node.pos.x;
         const clickY = cyBoundingBox.y + node.pos.y;
 
-        const elAtPoint = await page.evaluate((pos) => {
-            const el = document.elementFromPoint(pos.x, pos.y);
-            const result = el ? { id: el.id, className: el.className, tagName: el.tagName } : null;
-            console.log(`Element at (${pos.x}, ${pos.y}):`, JSON.stringify(result));
-            return result;
-        }, { x: clickX, y: clickY });
+        const elAtPoint = await page.evaluate(
+            (pos) => {
+                const el = document.elementFromPoint(pos.x, pos.y);
+                const result = el
+                    ? { id: el.id, className: el.className, tagName: el.tagName }
+                    : null;
+                console.log(`Element at (${pos.x}, ${pos.y}):`, JSON.stringify(result));
+                return result;
+            },
+            { x: clickX, y: clickY }
+        );
 
         console.log(`Clicking node ${node.id} at ${clickX}, ${clickY}`);
         await page.mouse.click(clickX, clickY);
 
         // Wait and check selection
-        await expect.poll(async () => {
-            const isSelected = await page.evaluate((id) => window.cy.getElementById(id).selected(), node.id);
-            const selectedCount = await page.evaluate(() => window.cy.nodes(':selected').length);
-            console.log(`Selection state for ${node.id}: ${isSelected}, count: ${selectedCount}`);
-            return isSelected;
-        }, { timeout: 5000 }).toBe(true);
+        await expect
+            .poll(
+                async () => {
+                    const isSelected = await page.evaluate(
+                        (id) => window.cy.getElementById(id).selected(),
+                        node.id
+                    );
+                    const selectedCount = await page.evaluate(
+                        () => window.cy.nodes(':selected').length
+                    );
+                    console.log(
+                        `Selection state for ${node.id}: ${isSelected}, count: ${selectedCount}`
+                    );
+                    return isSelected;
+                },
+                { timeout: 5000 }
+            )
+            .toBe(true);
     });
 
     test('should multi-select with Ctrl + click', async ({ page }) => {
         const nodes = await page.evaluate(() => {
-            return window.cy.nodes().slice(0, 2).map(n => ({ id: n.id(), pos: n.renderedPosition() }));
+            return window.cy
+                .nodes()
+                .slice(0, 2)
+                .map((n) => ({ id: n.id(), pos: n.renderedPosition() }));
         });
 
         const cyBoundingBox = await page.locator('#cy').boundingBox();
@@ -73,7 +97,9 @@ test.describe('Node Selection Behavior', () => {
 
         // Click first node
         await page.mouse.click(cyBoundingBox.x + nodes[0].pos.x, cyBoundingBox.y + nodes[0].pos.y);
-        await expect(page.evaluate((id) => window.cy.getElementById(id).selected(), nodes[0].id)).resolves.toBe(true);
+        await expect(
+            page.evaluate((id) => window.cy.getElementById(id).selected(), nodes[0].id)
+        ).resolves.toBe(true);
 
         // Ctrl + Click second node
         await page.keyboard.down('Control');
