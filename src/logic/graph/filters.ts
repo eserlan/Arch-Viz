@@ -6,6 +6,7 @@ interface FilterElements {
     clearSearchBtn: HTMLElement | null;
     labelFilterContainer: HTMLElement | null;
     teamFilterContainer: HTMLElement | null;
+    appCodeFilterContainer: HTMLElement | null;
 }
 
 const getElements = (): FilterElements => ({
@@ -13,6 +14,7 @@ const getElements = (): FilterElements => ({
     clearSearchBtn: document.getElementById('clearSearchBtn'),
     labelFilterContainer: document.getElementById('labelFilterContainer'),
     teamFilterContainer: document.getElementById('teamFilterContainer'),
+    appCodeFilterContainer: document.getElementById('appCodeFilterContainer'),
 });
 
 let cyRef: CyInstance | null = null;
@@ -26,8 +28,12 @@ const getSelectedValues = (element: HTMLElement | null): string[] => {
         const select = element as HTMLSelectElement;
         return Array.from(select.selectedOptions).map((opt) => opt.value);
     }
-    // For cloud containers (labels and teams)
-    if (element.id === 'labelFilterContainer' || element.id === 'teamFilterContainer') {
+    // For cloud containers (labels, teams, and app codes)
+    if (
+        element.id === 'labelFilterContainer' ||
+        element.id === 'teamFilterContainer' ||
+        element.id === 'appCodeFilterContainer'
+    ) {
         return Array.from(element.querySelectorAll('button[data-selected="true"]')).map(
             (btn) => (btn as HTMLElement).dataset.value || ''
         );
@@ -50,14 +56,17 @@ export const applyFilters = (cy?: CyInstance): void => {
     const cyInstance = cy || cyRef;
     if (!cyInstance) return;
 
-    const { searchInput, labelFilterContainer, teamFilterContainer } = getElements();
+    const { searchInput, labelFilterContainer, teamFilterContainer, appCodeFilterContainer } =
+        getElements();
 
     const searchTerm = searchInput?.value.toLowerCase() || '';
     const selectedLabels = getSelectedValues(labelFilterContainer);
     const selectedTeams = getSelectedValues(teamFilterContainer);
+    const selectedAppCodes = getSelectedValues(appCodeFilterContainer);
 
     const filterByLabels = selectedLabels.length > 0;
     const filterByTeams = selectedTeams.length > 0;
+    const filterByAppCodes = selectedAppCodes.length > 0;
 
     cyInstance.batch(() => {
         cyInstance.nodes().forEach((node: NodeSingular) => {
@@ -72,8 +81,11 @@ export const applyFilters = (cy?: CyInstance): void => {
                 !filterByLabels || selectedLabels.some((selected) => nodeLabels.includes(selected));
             // Service matches if its owner is in the selected teams
             const matchesTeam = !filterByTeams || selectedTeams.includes(nodeOwner);
+            // Service matches if its app code is in the selected app codes
+            const nodeAppCode: string = node.data('appCode') || '';
+            const matchesAppCode = !filterByAppCodes || selectedAppCodes.includes(nodeAppCode);
 
-            if (matchesSearch && matchesLabel && matchesTeam) {
+            if (matchesSearch && matchesLabel && matchesTeam && matchesAppCode) {
                 node.removeClass('filtered');
             } else {
                 node.addClass('filtered');
@@ -178,6 +190,23 @@ export const populateTeamFilter = (elements: any[]): void => {
 
     const currentSelections = new Set(getSelectedValues(teamFilterContainer));
     populateContainer(teamFilterContainer, teams, currentSelections);
+};
+
+export const populateAppCodeFilter = (elements: any[]): void => {
+    const { appCodeFilterContainer } = getElements();
+    if (!appCodeFilterContainer) return;
+
+    const appCodes = new Set<string>();
+    elements.forEach((el) => {
+        const data = el && typeof el.data === 'function' ? el.data() : el.data || el;
+        const appCode: string | undefined = data?.appCode;
+        if (appCode) {
+            appCodes.add(appCode);
+        }
+    });
+
+    const currentSelections = new Set(getSelectedValues(appCodeFilterContainer));
+    populateContainer(appCodeFilterContainer, appCodes, currentSelections);
 };
 
 export const initFilters = (cy: CyInstance | null): void => {

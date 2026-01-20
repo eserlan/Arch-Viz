@@ -8,6 +8,7 @@ export interface ServiceData {
     owner?: string | null;
     tier?: Tier;
     labels?: string[];
+    appCode?: string;
     repoUrl?: string;
     comment?: string;
     depends_on?: string[];

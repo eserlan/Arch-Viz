@@ -58,6 +58,7 @@ export const initServiceForm = (cy: CyInstance, onNodeAdded?: () => void): void 
                 id: formData.get('id') as string,
                 name: formData.get('name') as string,
                 owner: formData.get('owner') as string,
+                appCode: formData.get('appCode') as string,
                 tier: parseInt(formData.get('tier') as string, 10) as Tier,
             };
 

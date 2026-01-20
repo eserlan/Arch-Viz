@@ -102,17 +102,27 @@ export const initGraphEvents = (cy: CyInstance): void => {
         contextMenuNode = null;
     };
 
-    const highlightConnections = (node: NodeSingular) => {
+    const highlightConnections = (nodes: NodeSingular | NodeSingular[]) => {
         const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
         const depthVal = depthSelect?.value || '1';
-        const highlightCollection = getNodesAtDepth(node, depthVal, cy);
 
+        // Normalize to array
+        const nodeArray = Array.isArray(nodes) ? nodes : [nodes];
+        if (nodeArray.length === 0) return;
+
+        // First dim everything
         cy.elements().addClass('dimmed');
-        highlightCollection.removeClass('dimmed');
-
         cy.elements().removeClass('edge-inbound edge-outbound');
-        node.outgoers('edge').addClass('edge-outbound');
-        node.incomers('edge').addClass('edge-inbound');
+
+        // Accumulate highlights from all nodes
+        nodeArray.forEach(node => {
+            const highlightCollection = getNodesAtDepth(node, depthVal, cy);
+            highlightCollection.removeClass('dimmed');
+
+            // Add edge styling for this node's connections
+            node.outgoers('edge').addClass('edge-outbound');
+            node.incomers('edge').addClass('edge-inbound');
+        });
     };
 
     const getHighlightTarget = (): NodeSingular | null => {
@@ -123,24 +133,54 @@ export const initGraphEvents = (cy: CyInstance): void => {
         return lastFocusedNode;
     };
 
-    cy.on('tap', 'node', (evt: EventObject) => {
-        closeContextMenu();
+    let nodeWasSelectedOnTapStart = false;
+
+    cy.on('tapstart', 'node', (evt: EventObject) => {
         const node = evt.target as NodeSingular;
-        const eventWithOriginal = evt as CytoscapeEventWithOriginal;
+        nodeWasSelectedOnTapStart = node.selected();
+    });
 
-        // Multi-select with Ctrl/Cmd key, otherwise single select
-        if (
-            !eventWithOriginal.originalEvent?.ctrlKey &&
-            !eventWithOriginal.originalEvent?.metaKey
-        ) {
-            cy.nodes().unselect();
+    cy.on('tap', 'node', (evt: EventObject, extraData?: any) => {
+        const node = evt.target as NodeSingular;
+
+        closeContextMenu();
+
+        // Use extraData for programmatic events (E2E)
+        const originalEvent = extraData?.originalEvent || evt.originalEvent;
+        const isMultiSelect = Boolean(originalEvent?.ctrlKey || originalEvent?.metaKey);
+
+        // Defer selection logic to run after Cytoscape's internal event processing
+        setTimeout(() => {
+            if (isMultiSelect) {
+                // Toggle selection with Ctrl/Cmd
+                // We use the state from tapstart to decide the toggle action.
+                if (nodeWasSelectedOnTapStart) {
+                    node.unselect();
+                } else {
+                    node.select();
+                }
+            } else {
+                // Standard single select
+                cy.nodes().unselect();
+                node.select();
+            }
+
             updateSelectionInfo(cy);
-        }
 
-        node.select();
-        lastFocusedNode = node;
-        showPanel(node);
-        highlightConnections(node);
+            const selectedNodes = cy.nodes(':selected');
+            if (selectedNodes.length > 0) {
+                // Focus on the clicked node if it's still selected, otherwise fallback to another selected node
+                const targetNode = node.selected() ? node : selectedNodes[0];
+                lastFocusedNode = targetNode;
+                showPanel(targetNode);
+                // Highlight connections for ALL selected nodes to create a cumulative trail
+                highlightConnections(selectedNodes.toArray());
+            } else {
+                lastFocusedNode = null;
+                hidePanel();
+                cy.elements().removeClass('dimmed edge-inbound edge-outbound');
+            }
+        }, 0);
     });
 
     cy.on('tap', (evt: EventObject) => {

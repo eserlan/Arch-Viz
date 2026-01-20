@@ -13,13 +13,14 @@ export const calculateDynamicZoom = (
     minZoom: number,
     maxZoom: number
 ): number => {
-    // Base sensitivity
-    const baseSensitivity = 0.001;
+    // Base sensitivity (lower = slower)
+    const baseSensitivity = 0.0005;
 
+    // movement speed scales with zoom level, but gently
     // faster movement when zoomed out (zoom < 1)
     // slower movement when zoomed in (zoom > 1)
     const fitFactor = Math.max(0.1, currentZoom);
-    const dynamicFactor = Math.max(0.1, 1 / fitFactor);
+    const dynamicFactor = Math.sqrt(1 / fitFactor);
 
     // Apply delta
     const delta = deltaY * baseSensitivity * dynamicFactor;

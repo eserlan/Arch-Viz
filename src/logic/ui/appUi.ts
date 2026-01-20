@@ -86,17 +86,53 @@ export const initPanelsAndModals = (): void => {
         defaultClasses: ['right-72', 'top-6'],
     });
 
+    initFloatingPanel({
+        panelId: 'floatingAppCodePanel',
+        title: 'App Code',
+        iconKey: 'APP_CODE',
+        menuBtnId: 'appCodePanelMenuBtn',
+        menuId: 'appCodePanelMenu',
+        moveBtnId: 'moveAppCodePanelBtn',
+        containerId: 'appCodeFilterContainer',
+        storageKey: 'app-code-panel-pos',
+        minimizeBtnId: 'minimizeAppCodeBtn',
+        minimizedStorageKey: 'panel-app-code-minimized',
+        defaultClasses: ['right-72', 'top-24'],
+    });
+
     // Initialize panel toggle buttons (minimize/restore from sidebar)
-    const toggleLabelsBtn = document.getElementById('highlightLabelsPanel');
-    const toggleTeamsBtn = document.getElementById('highlightTeamsPanel');
+    const setupSidebarToggle = (btnId: string, panelId: string) => {
+        const btn = document.getElementById(btnId);
+        const panel = document.getElementById(panelId) as any;
+        if (!btn || !panel) return;
 
-    toggleLabelsBtn?.addEventListener('click', () => {
-        document.getElementById('minimizeLabelsBtn')?.click();
-    });
+        const updateBtnState = (minimized: boolean) => {
+            btn.classList.toggle('bg-slate-800/50', minimized);
+            btn.classList.toggle('text-slate-400', minimized);
+            btn.classList.toggle('text-emerald-400', !minimized && panelId === 'floatingFilterPanel');
+            btn.classList.toggle('text-blue-400', !minimized && panelId === 'floatingTeamPanel');
+            btn.classList.toggle('text-amber-400', !minimized && panelId === 'floatingAppCodePanel');
+        };
 
-    toggleTeamsBtn?.addEventListener('click', () => {
-        document.getElementById('minimizeTeamsBtn')?.click();
-    });
+        // Initial state
+        if (panel.minimizeManager) {
+            updateBtnState(panel.minimizeManager.isMinimized());
+        }
+
+        btn.addEventListener('click', () => {
+            if (panel.minimizeManager) {
+                panel.minimizeManager.toggle();
+            }
+        });
+
+        panel.addEventListener('panel-state-change', (e: any) => {
+            updateBtnState(e.detail.minimized);
+        });
+    };
+
+    setupSidebarToggle('highlightLabelsPanel', 'floatingFilterPanel');
+    setupSidebarToggle('highlightTeamsPanel', 'floatingTeamPanel');
+    setupSidebarToggle('highlightAppCodePanel', 'floatingAppCodePanel');
 
     focusModeManager.init();
 };
