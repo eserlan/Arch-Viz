@@ -121,7 +121,7 @@ export const createGraphRenderer = ({
             cy.nodes().unselect();
             onStatus(
                 `Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` +
-                (skipped ? ` (skipped ${skipped} invalid rows)` : '')
+                    (skipped ? ` (skipped ${skipped} invalid rows)` : '')
             );
             onDirtyStateChange(getDirtyState());
         });

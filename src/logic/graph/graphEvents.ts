@@ -115,7 +115,7 @@ export const initGraphEvents = (cy: CyInstance): void => {
         cy.elements().removeClass('edge-inbound edge-outbound');
 
         // Accumulate highlights from all nodes
-        nodeArray.forEach(node => {
+        nodeArray.forEach((node) => {
             const highlightCollection = getNodesAtDepth(node, depthVal, cy);
             highlightCollection.removeClass('dimmed');
 

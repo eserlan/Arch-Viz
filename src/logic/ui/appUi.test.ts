@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions, initSettings } from './appUi';
+import {
+    initDirtyStateIndicator,
+    initPanelsAndModals,
+    initSidebarActions,
+    initSettings,
+} from './appUi';
 import { downloadCSV } from '../core/storage';
 import { copyImageToClipboard, saveImageAsPng } from '../utils/exports';
 import { initFloatingPanel, initModal } from './ui';
