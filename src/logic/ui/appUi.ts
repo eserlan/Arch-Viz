@@ -109,9 +109,15 @@ export const initPanelsAndModals = (): void => {
         const updateBtnState = (minimized: boolean) => {
             btn.classList.toggle('bg-slate-800/50', minimized);
             btn.classList.toggle('text-slate-400', minimized);
-            btn.classList.toggle('text-emerald-400', !minimized && panelId === 'floatingFilterPanel');
+            btn.classList.toggle(
+                'text-emerald-400',
+                !minimized && panelId === 'floatingFilterPanel'
+            );
             btn.classList.toggle('text-blue-400', !minimized && panelId === 'floatingTeamPanel');
-            btn.classList.toggle('text-amber-400', !minimized && panelId === 'floatingAppCodePanel');
+            btn.classList.toggle(
+                'text-amber-400',
+                !minimized && panelId === 'floatingAppCodePanel'
+            );
         };
 
         // Initial state

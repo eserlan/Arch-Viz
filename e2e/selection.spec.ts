@@ -48,18 +48,6 @@ test.describe('Node Selection Behavior', () => {
         const clickX = cyBoundingBox.x + node.pos.x;
         const clickY = cyBoundingBox.y + node.pos.y;
 
-        const elAtPoint = await page.evaluate(
-            (pos) => {
-                const el = document.elementFromPoint(pos.x, pos.y);
-                const result = el
-                    ? { id: el.id, className: el.className, tagName: el.tagName }
-                    : null;
-                console.log(`Element at (${pos.x}, ${pos.y}):`, JSON.stringify(result));
-                return result;
-            },
-            { x: clickX, y: clickY }
-        );
-
         console.log(`Clicking node ${node.id} at ${clickX}, ${clickY}`);
         await page.mouse.click(clickX, clickY);
 

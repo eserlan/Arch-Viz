@@ -323,7 +323,7 @@ describe('Graph Events Logic', () => {
         tapstartHandler({ target: mockNode });
         tapHandler({
             target: mockNode,
-            originalEvent: { ctrlKey: false }
+            originalEvent: { ctrlKey: false },
         });
         vi.advanceTimersByTime(0);
         expect(allNodes.unselect).toHaveBeenCalled();
@@ -335,7 +335,7 @@ describe('Graph Events Logic', () => {
         tapstartHandler({ target: mockNode2 });
         tapHandler({
             target: mockNode2,
-            originalEvent: { ctrlKey: true }
+            originalEvent: { ctrlKey: true },
         });
         vi.advanceTimersByTime(0);
         expect(allNodes.unselect).not.toHaveBeenCalled();
@@ -350,7 +350,7 @@ describe('Graph Events Logic', () => {
         tapstartHandler({ target: mockNode2 });
         tapHandler({
             target: mockNode2,
-            originalEvent: { ctrlKey: true }
+            originalEvent: { ctrlKey: true },
         });
         vi.advanceTimersByTime(0);
         expect(mockNode2.unselect).toHaveBeenCalled();
@@ -378,7 +378,7 @@ describe('Graph Events Logic', () => {
         tapstartHandler({ target: mockNode });
         tapHandler({
             target: mockNode,
-            originalEvent: { ctrlKey: true }
+            originalEvent: { ctrlKey: true },
         });
         vi.advanceTimersByTime(0);
 
