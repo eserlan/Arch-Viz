@@ -1,7 +1,11 @@
 import { CyInstance } from '../../../types';
 import { saveGraphData } from '../../core/storage';
 import { deleteNode } from '../../graph/nodeOperations';
-import { populateLabelFilter, populateTeamFilter } from '../../graph/filters';
+import {
+    populateLabelFilter,
+    populateTeamFilter,
+    populateAppCodeFilter,
+} from '../../graph/filters';
 import {
     getElements,
     getCurrentSelectedNode,
@@ -151,9 +155,10 @@ export const handleSave = (): void => {
     const elements = cyRef.elements().jsons();
     saveGraphData(elements as any);
 
-    // Refresh filter panels with new labels/teams
+    // Refresh filter panels with new labels/teams/app codes
     populateLabelFilter(cyRef.nodes().toArray());
     populateTeamFilter(cyRef.nodes().toArray());
+    populateAppCodeFilter(cyRef.nodes().toArray());
 
     if (updateStatusRef) {
         updateStatusRef(

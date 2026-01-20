@@ -157,7 +157,9 @@ describe('Storage Module', () => {
         const csv = exportToCSV(mockCy);
         const lines = csv.split('\n');
 
-        expect(lines[0]).toBe('id,name,labels,tier,depends_on,owner,repo_url,comment,verified');
+        expect(lines[0]).toBe(
+            'id,name,labels,tier,depends_on,owner,app_code,repo_url,comment,verified'
+        );
         expect(lines[1]).toContain('svc-a');
         expect(lines[1]).toContain('Service A');
         expect(lines[1]).toContain('svc-b'); // depends_on

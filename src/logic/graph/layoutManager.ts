@@ -56,7 +56,7 @@ export const initLayoutManager = (cy: CyInstance): void => {
             name: layoutName,
             animate: true,
             animationDuration: 1000,
-            fit: false,
+            fit: true,
             padding: 160,
             randomize: false,
             nodeDimensionsIncludeLabels: true,
@@ -98,7 +98,7 @@ export const initLayoutManager = (cy: CyInstance): void => {
                 ...layoutConfig,
                 animate: true,
                 animationDuration: 1000,
-                fit: false,
+                fit: true,
                 padding: 160,
             };
 

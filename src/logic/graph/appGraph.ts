@@ -4,7 +4,12 @@ import fcose from 'cytoscape-fcose';
 // @ts-expect-error - cytoscape-dagre lacks type definitions
 import dagre from 'cytoscape-dagre';
 import { layoutConfig, stylesheet } from './graphConfig';
-import { initFilters, populateLabelFilter, populateTeamFilter } from './filters';
+import {
+    initFilters,
+    populateLabelFilter,
+    populateTeamFilter,
+    populateAppCodeFilter,
+} from './filters';
 import { initEdgeEditor } from './edgeEditor';
 import { registerEdgeEditorKeyListener } from './edgeEditorKeyboard';
 import { registerSearchKeyListener } from '../ui/searchKeyboard';
@@ -116,7 +121,7 @@ export const createGraphRenderer = ({
             cy.nodes().unselect();
             onStatus(
                 `Loaded ${cy.nodes().length} nodes and ${cy.edges().length} edges` +
-                    (skipped ? ` (skipped ${skipped} invalid rows)` : '')
+                (skipped ? ` (skipped ${skipped} invalid rows)` : '')
             );
             onDirtyStateChange(getDirtyState());
         });
@@ -134,6 +139,7 @@ export const createGraphRenderer = ({
 
         populateLabelFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
         populateTeamFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
+        populateAppCodeFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
 
         return cy;
     };

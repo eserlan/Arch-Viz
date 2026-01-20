@@ -59,12 +59,6 @@ body {
 }
 
 .minimized {
-    height: auto !important;
-    min-height: 0 !important;
-    padding-bottom: 4px !important;
-}
-
-.minimized .panel-content-container {
     display: none !important;
 }
 

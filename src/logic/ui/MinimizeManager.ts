@@ -31,9 +31,6 @@ export class MinimizeManager {
         this.storageKey = config.storageKey;
     }
 
-    /**
-     * Initialize the manager: restore state from localStorage and attach event listener.
-     */
     init(): void {
         this.minimized = localStorage.getItem(this.storageKey) === 'true';
         this.updateUI();
@@ -41,13 +38,23 @@ export class MinimizeManager {
             e.stopPropagation();
             this.toggle();
         });
+        // Attach manager to panel for external access
+        (this.panel as any).minimizeManager = this;
     }
 
     /**
      * Toggle the minimized state.
      */
     toggle(): void {
-        this.minimized = !this.minimized;
+        this.setMinimized(!this.minimized);
+    }
+
+    /**
+     * Set the minimized state explicitly.
+     */
+    setMinimized(value: boolean): void {
+        if (this.minimized === value) return;
+        this.minimized = value;
         localStorage.setItem(this.storageKey, this.minimized.toString());
         this.updateUI();
     }
@@ -65,5 +72,13 @@ export class MinimizeManager {
     private updateUI(): void {
         this.panel.classList.toggle('minimized', this.minimized);
         this.button.innerHTML = this.minimized ? ICONS.RESTORE : ICONS.MINIMIZE;
+
+        // Dispatch event for external sync
+        this.panel.dispatchEvent(
+            new CustomEvent('panel-state-change', {
+                detail: { minimized: this.minimized, panelId: this.panel.id },
+                bubbles: true,
+            })
+        );
     }
 }

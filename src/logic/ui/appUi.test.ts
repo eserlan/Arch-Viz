@@ -1,13 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-    initDirtyStateIndicator,
-    initPanelsAndModals,
-    initSidebarActions,
-    initSettings,
-} from './appUi';
+import { initDirtyStateIndicator, initPanelsAndModals, initSidebarActions, initSettings } from './appUi';
 import { downloadCSV } from '../core/storage';
 import { copyImageToClipboard, saveImageAsPng } from '../utils/exports';
 import { initFloatingPanel, initModal } from './ui';
+import { MinimizeManager } from './MinimizeManager';
 
 vi.mock('../core/storage', () => ({
     downloadCSV: vi.fn(),
@@ -91,7 +87,7 @@ describe('appUi helpers', () => {
             'closeHelpBtn',
             'helpContent'
         );
-        expect(initFloatingPanel).toHaveBeenCalledTimes(2);
+        expect(initFloatingPanel).toHaveBeenCalledTimes(3);
     });
 
     it('initializes panel highlight buttons', () => {
@@ -103,28 +99,39 @@ describe('appUi helpers', () => {
             
             <button id="highlightLabelsPanel"></button>
             <button id="highlightTeamsPanel"></button>
+            <button id="highlightAppCodePanel"></button>
             <div id="floatingFilterPanel">
                 <button id="minimizeLabelsBtn"></button>
             </div>
             <div id="floatingTeamPanel">
                 <button id="minimizeTeamsBtn"></button>
             </div>
+            <div id="floatingAppCodePanel">
+                <button id="minimizeAppCodeBtn"></button>
+            </div>
         `;
 
-        // Stub minimize button listeners (since initFloatingPanel is mocked)
+        // Initialize minimize managers for panels
         const labelsPanel = document.getElementById('floatingFilterPanel')!;
         const teamsPanel = document.getElementById('floatingTeamPanel')!;
-        document.getElementById('minimizeLabelsBtn')?.addEventListener('click', () => {
-            labelsPanel.classList.toggle('minimized');
-        });
-        document.getElementById('minimizeTeamsBtn')?.addEventListener('click', () => {
-            teamsPanel.classList.toggle('minimized');
-        });
+        const appCodePanel = document.getElementById('floatingAppCodePanel')!;
+
+        const setupManager = (panel: HTMLElement, btnId: string, storageKey: string) => {
+            const button = document.getElementById(btnId)!;
+            const manager = new MinimizeManager({ panel, button, storageKey });
+            manager.init();
+            return manager;
+        };
+
+        setupManager(labelsPanel, 'minimizeLabelsBtn', 'panel-labels-minimized');
+        setupManager(teamsPanel, 'minimizeTeamsBtn', 'panel-teams-minimized');
+        setupManager(appCodePanel, 'minimizeAppCodeBtn', 'panel-app-code-minimized');
 
         initPanelsAndModals();
 
         const labelsBtn = document.getElementById('highlightLabelsPanel');
         const teamsBtn = document.getElementById('highlightTeamsPanel');
+        const appCodeBtn = document.getElementById('highlightAppCodePanel');
 
         // Click labels button - should toggle minimized
         labelsBtn?.click();
@@ -137,6 +144,12 @@ describe('appUi helpers', () => {
         expect(teamsPanel?.classList.contains('minimized')).toBe(true);
         teamsBtn?.click();
         expect(teamsPanel?.classList.contains('minimized')).toBe(false);
+
+        // Click app code button - should toggle minimized
+        appCodeBtn?.click();
+        expect(appCodePanel?.classList.contains('minimized')).toBe(true);
+        appCodeBtn?.click();
+        expect(appCodePanel?.classList.contains('minimized')).toBe(false);
     });
 
     describe('initSettings', () => {

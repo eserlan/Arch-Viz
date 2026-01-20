@@ -52,6 +52,13 @@ describe('Graph Events Logic', () => {
         selectedCollection = {
             length: 0,
             0: undefined,
+            toArray: function () {
+                const arr = [];
+                for (let i = 0; i < this.length; i++) {
+                    arr.push(this[i]);
+                }
+                return arr;
+            },
         };
 
         mockCy = {
@@ -93,20 +100,25 @@ describe('Graph Events Logic', () => {
     });
 
     it('should show panel and highlight connections on node tap', () => {
+        vi.useFakeTimers();
         const outboundEdges = { addClass: vi.fn() };
         const inboundEdges = { addClass: vi.fn() };
         const mockNode = {
             id: () => 'n1',
             select: vi.fn(),
+            selected: vi.fn().mockReturnValue(true),
             outgoers: vi.fn(() => outboundEdges),
             incomers: vi.fn(() => inboundEdges),
         };
         (graphUtils.getNodesAtDepth as any).mockReturnValue(mockElements);
+        selectedCollection.length = 1;
+        selectedCollection[0] = mockNode;
 
         initGraphEvents(mockCy);
         const tapHandlers = eventHandlers['tap:node'];
         // Execute the handler that shows the panel (should be the first one registered for tap:node)
         tapHandlers[0]({ target: mockNode });
+        vi.advanceTimersByTime(0);
 
         expect(panel.showPanel).toHaveBeenCalledWith(mockNode as any);
         expect(mockElements.addClass).toHaveBeenCalledWith('dimmed');
@@ -114,6 +126,7 @@ describe('Graph Events Logic', () => {
         expect(mockElements.removeClass).toHaveBeenCalledWith('edge-inbound edge-outbound');
         expect(outboundEdges.addClass).toHaveBeenCalledWith('edge-outbound');
         expect(inboundEdges.addClass).toHaveBeenCalledWith('edge-inbound');
+        vi.useRealTimers();
     });
 
     it('should hide panel on background tap', () => {
@@ -148,9 +161,11 @@ describe('Graph Events Logic', () => {
     });
 
     it('should refresh highlighted connections when depth changes', () => {
+        vi.useFakeTimers();
         const mockNode = {
             id: () => 'n1',
             select: vi.fn(),
+            selected: vi.fn().mockReturnValue(true),
             outgoers: vi.fn(() => ({ addClass: vi.fn() })),
             incomers: vi.fn(() => ({ addClass: vi.fn() })),
         };
@@ -158,10 +173,13 @@ describe('Graph Events Logic', () => {
             removeClass: vi.fn(),
         };
         (graphUtils.getNodesAtDepth as any).mockReturnValue(highlightCollection);
+        selectedCollection.length = 1;
+        selectedCollection[0] = mockNode;
 
         initGraphEvents(mockCy);
         const tapHandlers = eventHandlers['tap:node'];
         tapHandlers[0]({ target: mockNode });
+        vi.advanceTimersByTime(0);
 
         selectedCollection.length = 0;
         selectedCollection[0] = undefined;
@@ -174,6 +192,7 @@ describe('Graph Events Logic', () => {
         depthSelect.dispatchEvent(new Event('change'));
 
         expect(graphUtils.getNodesAtDepth).toHaveBeenCalledWith(mockNode, '1', mockCy);
+        vi.useRealTimers();
     });
 
     it('should toggle verified state from context menu', () => {
@@ -267,5 +286,105 @@ describe('Graph Events Logic', () => {
             expect.not.arrayContaining(['Verified'])
         );
         expect(mockNode.data).toHaveBeenCalledWith('labelsDisplay', '');
+    });
+
+    it('should support multi-select toggle with Ctrl/Cmd', () => {
+        vi.useFakeTimers();
+        const mockNode = {
+            id: () => 'n1',
+            select: vi.fn(),
+            unselect: vi.fn(),
+            selected: vi.fn().mockReturnValue(false),
+            outgoers: vi.fn(() => ({ addClass: vi.fn() })),
+            incomers: vi.fn(() => ({ addClass: vi.fn() })),
+        };
+        const mockNode2 = {
+            id: () => 'n2',
+            select: vi.fn(),
+            unselect: vi.fn(),
+            selected: vi.fn().mockReturnValue(false),
+            outgoers: vi.fn(() => ({ addClass: vi.fn() })),
+            incomers: vi.fn(() => ({ addClass: vi.fn() })),
+        };
+
+        const allNodes = {
+            unselect: vi.fn(),
+        };
+        mockCy.nodes = vi.fn((selector) => {
+            if (selector === ':selected') return selectedCollection;
+            return allNodes;
+        });
+
+        initGraphEvents(mockCy);
+        const tapstartHandler = eventHandlers['tapstart:node'][0];
+        const tapHandler = eventHandlers['tap:node'][0];
+
+        // 1. Single select (no Ctrl)
+        tapstartHandler({ target: mockNode });
+        tapHandler({
+            target: mockNode,
+            originalEvent: { ctrlKey: false }
+        });
+        vi.advanceTimersByTime(0);
+        expect(allNodes.unselect).toHaveBeenCalled();
+        expect(mockNode.select).toHaveBeenCalled();
+
+        // 2. Toggle ON with Ctrl
+        vi.clearAllMocks();
+        mockNode.selected.mockReturnValue(false);
+        tapstartHandler({ target: mockNode2 });
+        tapHandler({
+            target: mockNode2,
+            originalEvent: { ctrlKey: true }
+        });
+        vi.advanceTimersByTime(0);
+        expect(allNodes.unselect).not.toHaveBeenCalled();
+        expect(mockNode2.select).toHaveBeenCalled();
+
+        // 3. Toggle OFF with Ctrl
+        vi.clearAllMocks();
+        mockNode2.selected.mockReturnValue(true);
+        selectedCollection.length = 1;
+        selectedCollection[0] = mockNode; // Simulate another node selected
+
+        tapstartHandler({ target: mockNode2 });
+        tapHandler({
+            target: mockNode2,
+            originalEvent: { ctrlKey: true }
+        });
+        vi.advanceTimersByTime(0);
+        expect(mockNode2.unselect).toHaveBeenCalled();
+        vi.useRealTimers();
+    });
+
+    it('should hide panel when selection becomes empty after toggle off', () => {
+        vi.useFakeTimers();
+        const mockNode = {
+            id: () => 'n1',
+            select: vi.fn(),
+            unselect: vi.fn(),
+            selected: vi.fn().mockReturnValue(true),
+            outgoers: vi.fn(() => ({ addClass: vi.fn() })),
+            incomers: vi.fn(() => ({ addClass: vi.fn() })),
+        };
+
+        selectedCollection.length = 0; // Empty results after toggle off
+        mockCy.elements = vi.fn().mockReturnValue(mockElements);
+
+        initGraphEvents(mockCy);
+        const tapstartHandler = eventHandlers['tapstart:node'][0];
+        const tapHandler = eventHandlers['tap:node'][0];
+
+        tapstartHandler({ target: mockNode });
+        tapHandler({
+            target: mockNode,
+            originalEvent: { ctrlKey: true }
+        });
+        vi.advanceTimersByTime(0);
+
+        expect(mockNode.unselect).toHaveBeenCalled();
+        expect(panel.hidePanel).toHaveBeenCalled();
+        expect(mockElements.removeClass).toHaveBeenCalledWith('dimmed edge-inbound edge-outbound');
+        vi.useRealTimers();
     });
 });

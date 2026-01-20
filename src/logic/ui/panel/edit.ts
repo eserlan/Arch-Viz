@@ -95,7 +95,7 @@ export const toggleEdit = (editing: boolean): void => {
                       ? textarea.value
                       : htmlEl.textContent || '';
                 // For comments, we want to show placeholder if empty
-                if (key === 'comment' && !val) {
+                if ((key === 'comment' || key === 'appCode') && !val) {
                     htmlEl.innerHTML = '<span class="text-slate-500 italic">Not set</span>';
                 } else {
                     htmlEl.textContent = val;

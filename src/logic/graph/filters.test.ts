@@ -7,6 +7,7 @@ describe('Filters Module', () => {
         document.body.innerHTML = `
       <div id="labelFilterContainer"></div>
       <div id="teamFilterContainer"></div>
+      <div id="appCodeFilterContainer"></div>
       <input id="searchInput" type="text">
       <button id="clearSearchBtn" class="hidden"></button>
     `;
@@ -14,10 +15,15 @@ describe('Filters Module', () => {
         initFilters(null as any); // Reset module state
     });
 
-    const createMockNode = (id: string, labels: string[], owner: string | null) => ({
+    const createMockNode = (
+        id: string,
+        labels: string[],
+        owner: string | null,
+        appCode: string | null = null
+    ) => ({
         id: () => id,
         data: vi.fn((key) => {
-            const d: any = { id, name: `Service ${id}`, labels, owner };
+            const d: any = { id, name: `Service ${id}`, labels, owner, appCode };
             return key ? d[key] : d;
         }),
         hasClass: vi.fn().mockReturnValue(false),
