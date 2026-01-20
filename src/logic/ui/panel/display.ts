@@ -40,7 +40,7 @@ export const showPanel = (node: NodeSingular): void => {
         labels: data.labelsDisplay || '',
         tier: data.tier?.toString() || '',
         owner: data.owner || '',
-        appCode: data.appCode || '', // Renamed from 'status'
+        appCode: data.appCode || '',
         repoUrl: data.repoUrl || '',
         comment: data.comment || '',
         verified: Boolean(data.verified),
@@ -120,11 +120,6 @@ export const showPanel = (node: NodeSingular): void => {
     servicePanel.classList.add('active');
     editBtn?.classList.remove('hidden');
     editActions?.classList.add('hidden');
-
-    // Ensure panel is not minimized when showing a new node
-    if ((servicePanel as any).minimizeManager) {
-        (servicePanel as any).minimizeManager.setMinimized(false);
-    }
 
     // Reset edit mode state
     setIsEditMode(false);

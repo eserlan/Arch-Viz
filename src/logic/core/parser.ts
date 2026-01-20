@@ -22,7 +22,10 @@ export interface ParseResult {
  * Transforms CSV content into Cytoscape-friendly elements.
  *
  * Expected columns (header row, comma-delimited):
- * id,name,labels,tier,depends_on,owner,repo_url,app_code
+ * id,name,labels,tier,depends_on,owner,repo_url[,app_code]
+ *
+ * The optional `app_code` column, when present, is parsed from the CSV and
+ * attached to each node's data.
  */
 export const parseCSV = (csvString: string): ParseResult => {
     const hints: string[] = [];
@@ -98,7 +101,7 @@ export const parseCSV = (csvString: string): ParseResult => {
 
         const tier = row.tier?.toString().trim() || '3';
         const owner = row.owner?.trim();
-        const appCode = row.app_code?.trim() || row.status?.trim(); // Support both for safety during transition
+        const appCode = row.app_code?.trim() || row.status?.trim(); // TODO: Remove 'status' fallback after data migration
         const repoUrl = row.repo_url?.trim();
         const comment = row.comment ? row.comment.replace(/^[ \t]+|[ \t]+$/g, '') : undefined;
         const verified =
