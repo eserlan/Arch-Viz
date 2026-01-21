@@ -29,9 +29,13 @@ vi.mock('./filters', () => ({
 }));
 
 describe('Graph Events Logic', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let mockCy: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let mockElements: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let eventHandlers: Record<string, ((...args: any[]) => any)[]> = {}; // Store multiple handlers
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let selectedCollection: any;
 
     beforeEach(() => {
@@ -386,5 +390,25 @@ describe('Graph Events Logic', () => {
         expect(panel.hidePanel).toHaveBeenCalled();
         expect(mockElements.removeClass).toHaveBeenCalledWith('dimmed edge-inbound edge-outbound');
         vi.useRealTimers();
+    });
+
+    it('should remove all listeners upon cleanup', () => {
+        const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+        mockCy.off = vi.fn();
+
+        const cleanup = initGraphEvents(mockCy);
+        cleanup();
+
+        expect(removeEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('tapstart', 'node', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('tap', 'node', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('tap', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('cxttap', 'node', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('cxttap', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('mouseover', 'node', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('mouseout', 'node', expect.any(Function));
+        expect(mockCy.off).toHaveBeenCalledWith('viewport', expect.any(Function));
+
+        removeEventListenerSpy.mockRestore();
     });
 });
