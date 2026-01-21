@@ -75,8 +75,16 @@ export const initLayoutManager = (cy: CyInstance): void => {
         if (layoutName === 'concentric') {
             (animationOptions as any).concentric = (node: NodeSingular) => {
                 if (selectedNodeId && node.id() === selectedNodeId) return 1000;
-                const tier = node.data('tier') || 4;
-                return (5 - Number(tier)) * 10 + node.degree() / 20;
+                const rawTier = node.data('tier');
+                const numericTier = Number(rawTier);
+                // Use tier 4 as default if missing or invalid (1-4 range)
+                const safeTier =
+                    Number.isFinite(numericTier) && numericTier >= 1 && numericTier <= 4
+                        ? numericTier
+                        : 4;
+                // Lower tier = closer to center (higher concentric value)
+                // Use degree as a subtle tie-breaker within tiers
+                return (5 - safeTier) * 10 + node.degree() / 20;
             };
             (animationOptions as any).levelWidth = () => 3;
         }
