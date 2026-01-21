@@ -63,7 +63,10 @@ export const initLayoutManager = (cy: CyInstance): void => {
             // Dynamic spacing: increase for large graphs so nodes don't overlap
             spacingFactor:
                 layoutName === 'circle' || layoutName === 'concentric'
-                    ? Math.max(0.8, Math.min(layoutName === 'concentric' ? 1.5 : 2.5, cy.nodes().length / 60))
+                    ? Math.max(
+                          0.8,
+                          Math.min(layoutName === 'concentric' ? 1.5 : 2.5, cy.nodes().length / 60)
+                      )
                     : 1,
             rankDir: isHorizontalDagre ? 'LR' : 'TB',
         };
@@ -73,7 +76,7 @@ export const initLayoutManager = (cy: CyInstance): void => {
             (animationOptions as any).concentric = (node: NodeSingular) => {
                 if (selectedNodeId && node.id() === selectedNodeId) return 1000;
                 const tier = node.data('tier') || 4;
-                return (5 - Number(tier)) * 10 + (node.degree() / 20);
+                return (5 - Number(tier)) * 10 + node.degree() / 20;
             };
             (animationOptions as any).levelWidth = () => 3;
         }
@@ -116,11 +119,11 @@ export const initLayoutManager = (cy: CyInstance): void => {
                 (
                     finalConfig as AnimationOptions & { fixedNodeConstraint: any[] }
                 ).fixedNodeConstraint = [
-                        {
-                            nodeId: selectedNodeId,
-                            position: { x: pos.x, y: pos.y },
-                        },
-                    ];
+                    {
+                        nodeId: selectedNodeId,
+                        position: { x: pos.x, y: pos.y },
+                    },
+                ];
             }
         } else {
             finalConfig = animationOptions;

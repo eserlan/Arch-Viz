@@ -28,10 +28,10 @@ describe('Node Operations', () => {
     it('should add a node if ID does not exist', () => {
         vi.mocked(cy.getElementById).mockReturnValue({
             nonempty: () => false,
-        } as any);
+        } as unknown as cytoscape.NodeSingular);
 
-        const data = { id: 'new', name: 'New', tier: '1' as any };
-        addNode(cy, data);
+        const data = { id: 'new', name: 'New', tier: '1' };
+        addNode(cy, data as any); // Cast data if necessary, or better yet, fix the input
 
         expect(cy.add).toHaveBeenCalled();
         expect(saveGraphData).toHaveBeenCalled();
@@ -45,14 +45,14 @@ describe('Node Operations', () => {
     it('should throw error if node exists', () => {
         vi.mocked(cy.getElementById).mockReturnValue({
             nonempty: () => true,
-        } as any);
+        } as unknown as cytoscape.NodeSingular);
 
         expect(() => addNode(cy, { id: 'existing', name: 'Existing' })).toThrow();
     });
 
     it('should delete existing node', () => {
-        const nodeMock = { nonempty: () => true };
-        vi.mocked(cy.getElementById).mockReturnValue(nodeMock as any);
+        const nodeMock = { nonempty: () => true } as unknown as cytoscape.NodeSingular;
+        vi.mocked(cy.getElementById).mockReturnValue(nodeMock);
 
         const res = deleteNode(cy, 'exist');
         expect(cy.remove).toHaveBeenCalledWith(nodeMock);
@@ -62,7 +62,7 @@ describe('Node Operations', () => {
     it('should return false if node to delete does not exist', () => {
         vi.mocked(cy.getElementById).mockReturnValue({
             nonempty: () => false,
-        } as any);
+        } as unknown as cytoscape.NodeSingular);
         const res = deleteNode(cy, 'missing');
         expect(cy.remove).not.toHaveBeenCalled();
         expect(res).toBe(false);
