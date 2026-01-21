@@ -60,7 +60,11 @@ export const initLayoutManager = (cy: CyInstance): void => {
             padding: 160,
             randomize: false,
             nodeDimensionsIncludeLabels: true,
-            spacingFactor: layoutName === 'circle' || layoutName === 'concentric' ? 0.7 : 1,
+            // Dynamic spacing: increase for large graphs so nodes don't overlap
+            spacingFactor:
+                layoutName === 'circle' || layoutName === 'concentric'
+                    ? Math.max(0.7, Math.min(2.5, cy.nodes().length / 50))
+                    : 1,
             rankDir: isHorizontalDagre ? 'LR' : 'TB',
         };
 
