@@ -15,6 +15,9 @@
         "verify": "npm run format && npm run lint && npm test && npx playwright test",
         "prepare": "husky"
     },
+    "engines": {
+        "node": ">=20.17.0"
+    },
     "lint-staged": {
         "src/**/*.{ts,js,json,css,html}": [
             "prettier --write",
@@ -23,6 +26,9 @@
         "e2e/**/*.ts": [
             "prettier --write",
             "eslint --fix"
+        ],
+        "src/**/*.test.ts": [
+            "npm test --"
         ],
         "*.{js,json,html}": [
             "prettier --write"

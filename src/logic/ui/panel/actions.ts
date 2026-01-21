@@ -64,7 +64,7 @@ export const updateSaveButtonState = (): void => {
     let isDirty = false;
 
     inputs.forEach((input) => {
-        const el = input as HTMLInputElement | HTMLSelectElement;
+        const el = input as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
         const key = el.dataset.key;
         const currentValue =
             el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value;
@@ -97,7 +97,7 @@ export const handleSave = (): void => {
     );
     const newData: any = {};
     inputs.forEach((input) => {
-        const el = input as HTMLInputElement | HTMLSelectElement;
+        const el = input as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
         const key = el.dataset.key;
         if (key) {
             newData[key] =

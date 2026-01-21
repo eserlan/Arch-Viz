@@ -36,6 +36,13 @@ export const initSidebarActions = (
         const cy = getCy();
         if (cy) {
             if (getIsEditMode()) {
+                const shouldSaveAndDownload = window.confirm(
+                    'You have unsaved changes. Save them before downloading the CSV? Clicking Cancel will abort the download.'
+                );
+                if (!shouldSaveAndDownload) {
+                    onStatus('CSV download cancelled; changes were not saved.');
+                    return;
+                }
                 handleSave();
             }
 
@@ -126,6 +133,12 @@ export const initPanelsAndModals = (): void => {
         };
         if (!btn || !panel) return;
 
+        const PANEL_COLORS: Record<string, string> = {
+            floatingFilterPanel: 'text-emerald-400',
+            floatingTeamPanel: 'text-blue-400',
+            floatingAppCodePanel: 'text-amber-400',
+        };
+
         const updateBtnState = (minimized: boolean) => {
             btn.classList.toggle('bg-slate-800/50', minimized);
             btn.classList.toggle('text-slate-400', minimized);
@@ -134,12 +147,9 @@ export const initPanelsAndModals = (): void => {
             btn.classList.remove('text-emerald-400', 'text-blue-400', 'text-amber-400');
 
             if (!minimized) {
-                if (panelId === 'floatingFilterPanel') {
-                    btn.classList.add('text-emerald-400');
-                } else if (panelId === 'floatingTeamPanel') {
-                    btn.classList.add('text-blue-400');
-                } else if (panelId === 'floatingAppCodePanel') {
-                    btn.classList.add('text-amber-400');
+                const colorClass = PANEL_COLORS[panelId];
+                if (colorClass) {
+                    btn.classList.add(colorClass);
                 }
             }
         };
