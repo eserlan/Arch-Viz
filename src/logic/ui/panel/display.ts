@@ -121,6 +121,12 @@ export const showPanel = (node: NodeSingular): void => {
     editBtn?.classList.remove('hidden');
     editActions?.classList.add('hidden');
 
+    // Restore panel from minimized state when showing a new node
+    // This provides a way to "restore" a fully hidden minimized panel
+    if ((servicePanel as any).minimizeManager) {
+        (servicePanel as any).minimizeManager.setMinimized(false);
+    }
+
     // Reset edit mode state
     setIsEditMode(false);
 };

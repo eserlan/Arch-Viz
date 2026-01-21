@@ -12,9 +12,8 @@ test.describe('Service Panel Minimize/Restore', () => {
         await expect(page.locator('#cy')).not.toHaveClass(/cy-loading/, { timeout: 20000 });
     });
 
-    test('should minimize and restore the service panel', async ({ page }) => {
+    test('should minimize the service panel when minimize button is clicked', async ({ page }) => {
         // 1. Select a node to open the panel
-        // Using evaluation to trigger Cytoscape logic reliably
         await page.evaluate(() => {
             if ((window as any).cy) {
                 const node = (window as any).cy.nodes()[0];
@@ -24,26 +23,19 @@ test.describe('Service Panel Minimize/Restore', () => {
         });
 
         const panel = page.locator('#servicePanel');
-        const content = page.locator('#panelContent');
         const minimizeBtn = page.locator('#minimizeBtn');
 
         await expect(panel).toBeVisible();
         await expect(panel).toHaveClass(/active/);
         await expect(panel).not.toHaveClass(/minimized/);
-        await expect(content).toBeVisible();
 
-        // 2. Click minimize
+        // 2. Click minimize - panel becomes hidden
         await minimizeBtn.click();
         await expect(panel).toHaveClass(/minimized/);
-        await expect(content).toBeHidden();
-
-        // 3. Click restore
-        await minimizeBtn.click();
-        await expect(panel).not.toHaveClass(/minimized/);
-        await expect(content).toBeVisible();
+        await expect(panel).toBeHidden(); // Panel is fully hidden when minimized
     });
 
-    test('should persist minimized state across refreshes', async ({ page }) => {
+    test('should restore panel when clicking a node after minimizing', async ({ page }) => {
         // 1. Open and minimize panel
         await page.evaluate(() => {
             if ((window as any).cy) {
@@ -59,22 +51,18 @@ test.describe('Service Panel Minimize/Restore', () => {
         await minimizeBtn.click();
         await expect(panel).toHaveClass(/minimized/);
 
-        // 2. Reload page
-        await page.reload();
-        // Wait for graph to load
-        await expect(page.locator('#cy')).not.toHaveClass(/cy-loading/, { timeout: 20000 });
-
-        // 3. Select the same node again
+        // 2. Click another node - this should restore the panel
         await page.evaluate(() => {
             if ((window as any).cy) {
-                const node = (window as any).cy.nodes()[0];
+                const node = (window as any).cy.nodes()[1];
                 node.select();
                 node.trigger('tap');
             }
         });
 
-        // 4. Verify it's still minimized
-        await expect(panel).toHaveClass(/minimized/);
+        // Panel should be visible again (no longer minimized)
+        await expect(panel).toBeVisible();
+        await expect(panel).not.toHaveClass(/minimized/);
     });
 
     test('should integrate correctly with Focus Mode', async ({ page }) => {
@@ -101,6 +89,7 @@ test.describe('Service Panel Minimize/Restore', () => {
         // 3. Toggle Focus Mode OFF
         await focusToggle.click();
         await expect(panel).not.toHaveClass(/focus-mode-hidden/);
+        // Panel should still be minimized
         await expect(panel).toHaveClass(/minimized/);
     });
 });
