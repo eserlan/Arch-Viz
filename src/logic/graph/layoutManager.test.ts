@@ -69,8 +69,8 @@ describe('layoutManager logic', () => {
     });
 
     it('calculates dynamic spacingFactor for circle layout', () => {
-        // Mock 100 nodes -> 100/50 = 2.0
-        mockCollection.length = 100;
+        // Mock 120 nodes -> 120/60 = 2.0
+        mockCollection.length = 120;
         mockCy.nodes.mockReturnValue(mockCollection);
 
         initLayoutManager(mockCy);
@@ -112,5 +112,31 @@ describe('layoutManager logic', () => {
                 spacingFactor: 2.5,
             })
         );
+    });
+    it('configures concentric layout with tier sorting', () => {
+        initLayoutManager(mockCy);
+        const select = document.getElementById('layoutSelect') as HTMLSelectElement;
+
+        const option = document.createElement('option');
+        option.value = 'concentric';
+        select.appendChild(option);
+        select.value = 'concentric';
+
+        // Mock a node with tier 1 (should be center)
+        const mockNode = {
+            id: () => 'srv-1',
+            data: (key: string) => (key === 'tier' ? 1 : null),
+            degree: () => 5,
+        } as any;
+
+        select.dispatchEvent(new Event('change'));
+
+        const callArg = mockCy.layout.mock.calls.at(-1)[0];
+        expect(callArg.name).toBe('concentric');
+        expect(typeof callArg.concentric).toBe('function');
+        expect(callArg.levelWidth()).toBe(3);
+
+        // Verify tier 1 gets a high value
+        expect(callArg.concentric(mockNode)).toBeGreaterThan(10);
     });
 });

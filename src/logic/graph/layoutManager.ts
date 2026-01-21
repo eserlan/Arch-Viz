@@ -63,10 +63,20 @@ export const initLayoutManager = (cy: CyInstance): void => {
             // Dynamic spacing: increase for large graphs so nodes don't overlap
             spacingFactor:
                 layoutName === 'circle' || layoutName === 'concentric'
-                    ? Math.max(0.7, Math.min(2.5, cy.nodes().length / 50))
+                    ? Math.max(0.8, Math.min(layoutName === 'concentric' ? 1.5 : 2.5, cy.nodes().length / 60))
                     : 1,
             rankDir: isHorizontalDagre ? 'LR' : 'TB',
         };
+
+        // Set defaults for concentric layout
+        if (layoutName === 'concentric') {
+            (animationOptions as any).concentric = (node: NodeSingular) => {
+                if (selectedNodeId && node.id() === selectedNodeId) return 1000;
+                const tier = node.data('tier') || 4;
+                return (5 - Number(tier)) * 10 + (node.degree() / 20);
+            };
+            (animationOptions as any).levelWidth = () => 3;
+        }
 
         // Add layout-specific centering options
         if (selectedNodeId) {
@@ -74,12 +84,6 @@ export const initLayoutManager = (cy: CyInstance): void => {
                 // Use selected node as root for tree layouts
                 animationOptions.roots = `#${selectedNodeId}`;
                 animationOptions.directed = true;
-            } else if (layoutName === 'concentric') {
-                // Place selected node at center for concentric layout
-                animationOptions.concentric = (node: NodeSingular) => {
-                    return node.id() === selectedNodeId ? 1000 : node.degree();
-                };
-                animationOptions.levelWidth = () => 2;
             } else if (layoutName === 'dagre') {
                 // Use selected node as root for hierarchical layout
                 animationOptions.roots = `#${selectedNodeId}`;
@@ -112,11 +116,11 @@ export const initLayoutManager = (cy: CyInstance): void => {
                 (
                     finalConfig as AnimationOptions & { fixedNodeConstraint: any[] }
                 ).fixedNodeConstraint = [
-                    {
-                        nodeId: selectedNodeId,
-                        position: { x: pos.x, y: pos.y },
-                    },
-                ];
+                        {
+                            nodeId: selectedNodeId,
+                            position: { x: pos.x, y: pos.y },
+                        },
+                    ];
             }
         } else {
             finalConfig = animationOptions;
