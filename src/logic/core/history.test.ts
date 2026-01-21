@@ -152,4 +152,15 @@ describe('history', () => {
 
         expect(add).not.toHaveBeenCalled();
     });
+
+    it('removes window keydown listener upon cleanup', () => {
+        const { cy } = createCy();
+        const removeSpy = vi.spyOn(window, 'removeEventListener');
+
+        const cleanup = initHistory(cy as any, []);
+        cleanup();
+
+        expect(removeSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
+        removeSpy.mockRestore();
+    });
 });
