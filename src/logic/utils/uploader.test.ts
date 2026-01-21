@@ -12,10 +12,10 @@ vi.mock('../core/storage', () => ({
 }));
 
 describe('uploader', () => {
-    let mockRender: any;
-    let mockUpdateStatus: any;
-    let mockGetCy: any;
-    let mockShowToast: any;
+    let mockRender: () => void;
+    let mockUpdateStatus: (msg: string) => void;
+    let mockGetCy: () => Record<string, any>;
+    let mockShowToast: (msg: string, type: string) => void;
     let mainElem: HTMLElement;
     let dropZoneElem: HTMLElement;
 
@@ -70,7 +70,7 @@ describe('uploader', () => {
 
         // Mock FileReader
         const mockFileReader = {
-            readAsText: vi.fn(function (this: any) {
+            readAsText: vi.fn(function (this: FileReader) {
                 if (this.onload) {
                     this.onload({ target: { result: 'id,name\n1,Test' } });
                 }
@@ -84,7 +84,7 @@ describe('uploader', () => {
             })
         );
 
-        (parseCSV as any).mockReturnValue({
+        vi.mocked(parseCSV).mockReturnValue({
             elements: [{ data: { id: '1' } }],
             skipped: 0,
         });
@@ -106,7 +106,7 @@ describe('uploader', () => {
         Object.defineProperty(dropEvent, 'dataTransfer', { value: { files: mockFiles } });
 
         const mockFileReader = {
-            readAsText: vi.fn(function (this: any) {
+            readAsText: vi.fn(function (this: FileReader) {
                 if (this.onload) {
                     this.onload({ target: { result: 'bad stuff' } });
                 }
@@ -119,7 +119,7 @@ describe('uploader', () => {
             })
         );
 
-        (parseCSV as any).mockReturnValue({
+        vi.mocked(parseCSV).mockReturnValue({
             error: 'Invalid CSV',
             hints: ['Check headers'],
         });

@@ -3,7 +3,7 @@ import { initMiniMap } from './minimap';
 import { CyInstance } from '../../types';
 
 describe('Mini map logic', () => {
-    let eventHandlers: Record<string, (...args: any[]) => any> = {};
+    let eventHandlers: Record<string, (...args: never[]) => unknown> = {};
     let mockCy: CyInstance;
     let extent: { x1: number; y1: number; x2: number; y2: number };
 
@@ -14,7 +14,7 @@ describe('Mini map logic', () => {
             <div id="minimapViewport"></div>
         `;
 
-        vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: any) => {
+        vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
             cb(0);
             return 1;
         });
@@ -33,7 +33,7 @@ describe('Mini map logic', () => {
             zoom: vi.fn(() => 1),
             width: vi.fn(() => 200),
             height: vi.fn(() => 100),
-            on: vi.fn((event: string, handler: (...args: any[]) => any) => {
+            on: vi.fn((event: string, handler: (...args: never[]) => unknown) => {
                 eventHandlers[event] = handler;
             }),
             off: vi.fn(),
@@ -117,7 +117,7 @@ describe('Mini map logic', () => {
         window.dispatchEvent(new MouseEvent('pointermove', { clientX: 110, clientY: 80 }));
 
         expect(mockCy.pan).toHaveBeenCalled();
-        const lastCall = (mockCy.pan as any).mock.calls.at(-1)[0];
+        const lastCall = vi.mocked(mockCy.pan).mock.calls.at(-1)![0];
         expect(lastCall.x).toBeCloseTo(50, 5);
         expect(lastCall.y).toBeCloseTo(0, 5);
     });

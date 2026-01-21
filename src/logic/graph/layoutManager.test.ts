@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { initLayoutManager } from './layoutManager';
 
 describe('layoutManager logic', () => {
-    let mockCy: any;
-    let mockLayout: any;
-    let mockCollection: any;
+    let mockCy: Record<string, any>;
+    let mockLayout: Record<string, any>;
+    let mockCollection: Record<string, any>;
 
     beforeEach(() => {
         document.body.innerHTML = `

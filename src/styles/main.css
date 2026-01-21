@@ -58,6 +58,12 @@ body {
     pointer-events: auto;
 }
 
+/* 
+ * Minimized panels are now completely hidden.
+ * Previously, minimized panels were visually collapsed but still partially visible.
+ * This change is intentional (verified by E2E tests) and affects UX by fully
+ * removing minimized content from the layout and interaction.
+ */
 .minimized {
     display: none !important;
 }
