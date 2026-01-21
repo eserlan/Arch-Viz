@@ -330,4 +330,38 @@ describe('Panel Module', () => {
         const panel = document.getElementById('servicePanel')!;
         expect(panel.classList.contains('minimized')).toBe(true);
     });
+
+    it('should harvest comment from textarea during handleSave', () => {
+        const mockNode = createMockNode({ comment: 'Old' });
+        initPanel(mockCy, vi.fn());
+        showPanel(mockNode);
+        document.getElementById('editBtn')!.click();
+
+        const textarea = document.querySelector(
+            'textarea[data-key="comment"]'
+        ) as HTMLTextAreaElement;
+        textarea.value = 'New Comment Content';
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+
+        document.getElementById('saveBtn')!.click();
+
+        // Verify it was updated in node data
+        expect(mockNode.data).toHaveBeenCalledWith(
+            expect.objectContaining({
+                comment: 'New Comment Content',
+            })
+        );
+    });
+
+    it('should keep comment empty if not set', () => {
+        const mockNode = createMockNode({ comment: '' });
+        initPanel(mockCy, vi.fn());
+        showPanel(mockNode);
+        document.getElementById('editBtn')!.click();
+
+        const textarea = document.querySelector(
+            'textarea[data-key="comment"]'
+        ) as HTMLTextAreaElement;
+        expect(textarea.value).toBe('');
+    });
 });

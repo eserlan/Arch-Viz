@@ -130,6 +130,7 @@ describe('Storage Module', () => {
                         return key ? d[key] : d;
                     },
                     id: () => 'svc-a',
+                    isParent: () => false,
                 },
                 {
                     data: (key?: string) => {
@@ -144,6 +145,7 @@ describe('Storage Module', () => {
                         return key ? d[key] : d;
                     },
                     id: () => 'svc-b',
+                    isParent: () => false,
                 },
             ],
             edges: () => [
@@ -158,7 +160,7 @@ describe('Storage Module', () => {
         const lines = csv.split('\n');
 
         expect(lines[0]).toBe(
-            'id,name,labels,tier,depends_on,owner,app_code,repo_url,comment,verified'
+            'id,name,labels,tier,depends_on,owner,repo_url,app_code,comment,verified'
         );
         expect(lines[1]).toContain('svc-a');
         expect(lines[1]).toContain('Service A');
@@ -170,6 +172,7 @@ describe('Storage Module', () => {
             nodes: () => [
                 {
                     id: () => 'node1',
+                    isParent: () => false,
                     data: () => ({
                         id: 'node1',
                         name: 'Node 1',
@@ -193,6 +196,7 @@ describe('Storage Module', () => {
             nodes: () => [
                 {
                     id: () => 'node1',
+                    isParent: () => false,
                     data: () => ({
                         id: 'node1',
                         name: 'Node 1',

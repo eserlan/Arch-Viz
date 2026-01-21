@@ -22,7 +22,7 @@ export interface ParseResult {
  * Transforms CSV content into Cytoscape-friendly elements.
  *
  * Expected columns (header row, comma-delimited):
- * id,name,labels,tier,depends_on,owner,repo_url[,app_code]
+ * id,name,labels,tier,depends_on,owner,repo_url,app_code,comment,verified
  *
  * The optional `app_code` column, when present, is parsed from the CSV and
  * attached to each node's data.
