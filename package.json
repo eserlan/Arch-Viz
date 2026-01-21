@@ -19,7 +19,7 @@
         "node": ">=20.17.0"
     },
     "lint-staged": {
-        "src/**/*.{ts,js,json,css,html}": [
+        "src/**/!(*.test).ts": [
             "prettier --write",
             "eslint --fix"
         ],
@@ -28,7 +28,12 @@
             "eslint --fix"
         ],
         "src/**/*.test.ts": [
+            "prettier --write",
+            "eslint --fix",
             "npm test --"
+        ],
+        "src/**/*.{json,css,html}": [
+            "prettier --write"
         ],
         "*.{js,json,html}": [
             "prettier --write"

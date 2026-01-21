@@ -136,7 +136,9 @@ export const parseCSV = (csvString: string): Promise<ParseResult> => {
                             labelDisplay: getNodeLabelDisplay(name),
                             labelsDisplay: labels.join(', '),
                             labels,
-                            tier: Number(tier) as any, // Cast via any to handle string->Tier match
+                            tier: [1, 2, 3, 4].includes(Number(tier))
+                                ? (Number(tier) as Tier)
+                                : undefined,
                             owner,
                             appCode,
                             repoUrl,
