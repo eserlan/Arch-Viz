@@ -159,8 +159,8 @@ describe('appUi helpers', () => {
 
     describe('initSettings', () => {
         let toggle: HTMLInputElement;
-        let mockNodes: any[];
-        let cy: any;
+        let mockNodes: Record<string, any>[];
+        let cy: Record<string, any>;
 
         beforeEach(() => {
             document.body.innerHTML = '<input type="checkbox" id="showVerifiedToggle">';
@@ -187,17 +187,17 @@ describe('appUi helpers', () => {
         });
 
         it('loads default state when no saved state exists', () => {
-            (localStorage.getItem as any).mockReturnValue(null);
+            vi.mocked(localStorage.getItem).mockReturnValue(null);
             initSettings(() => cy);
             expect(toggle.checked).toBe(true);
         });
 
         it('loads saved state from localStorage', () => {
-            (localStorage.getItem as any).mockReturnValue('false');
+            vi.mocked(localStorage.getItem).mockReturnValue('false');
             initSettings(() => cy);
             expect(toggle.checked).toBe(false);
 
-            (localStorage.getItem as any).mockReturnValue('true');
+            vi.mocked(localStorage.getItem).mockReturnValue('true');
             initSettings(() => cy);
             expect(toggle.checked).toBe(true);
         });

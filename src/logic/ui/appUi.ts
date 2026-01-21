@@ -55,7 +55,7 @@ export const initSidebarActions = (
                 fit: { padding: 160 },
                 duration: 800,
                 easing: 'ease-in-out-cubic',
-            } as any);
+            } as cytoscape.AnimationOptions);
             onStatus('Fitted graph to viewport');
         }
     });
@@ -116,7 +116,7 @@ export const initPanelsAndModals = (): void => {
     const setupSidebarToggle = (btnId: string, panelId: string) => {
         const btn = document.getElementById(btnId);
         const panel = document.getElementById(panelId) as HTMLElement & {
-            minimizeManager?: any;
+            minimizeManager?: import('./MinimizeManager').MinimizeManager;
         };
         if (!btn || !panel) return;
 
@@ -149,8 +149,9 @@ export const initPanelsAndModals = (): void => {
             }
         });
 
-        panel.addEventListener('panel-state-change', (e: any) => {
-            updateBtnState(e.detail.minimized);
+        panel.addEventListener('panel-state-change', (e: Event) => {
+            const customEvent = e as CustomEvent;
+            updateBtnState(customEvent.detail.minimized);
         });
     };
 

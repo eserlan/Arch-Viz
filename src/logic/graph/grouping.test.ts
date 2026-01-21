@@ -7,8 +7,8 @@ vi.mock('../ui/ui', () => ({
 }));
 
 describe('Grouping Module', () => {
-    let mockCy: any;
-    let mockNodes: any[];
+    let mockCy: Record<string, any>;
+    let mockNodes: Record<string, any>[];
 
     beforeEach(() => {
         document.body.innerHTML = `
@@ -58,13 +58,13 @@ describe('Grouping Module', () => {
         ];
 
         const mockCollection = {
-            forEach: (fn: (...args: any[]) => any) => mockNodes.forEach(fn),
-            filter: (fn: (...args: any[]) => any) => {
+            forEach: (fn: (node: any) => void) => mockNodes.forEach(fn),
+            filter: (fn: (node: any) => boolean) => {
                 const filtered = mockNodes.filter(fn);
                 return {
-                    forEach: (f: (...args: any[]) => any) => filtered.forEach(f),
-                    filter: (f: (...args: any[]) => any) => ({
-                        forEach: (ff: (...args: any[]) => any) => filtered.filter(f).forEach(ff),
+                    forEach: (f: (node: any) => void) => filtered.forEach(f),
+                    filter: (f: (node: any) => boolean) => ({
+                        forEach: (ff: (node: any) => void) => filtered.filter(f).forEach(ff),
                         length: filtered.filter(f).length,
                     }),
                     length: filtered.length,
@@ -97,7 +97,7 @@ describe('Grouping Module', () => {
             const addCalls = mockCy.add.mock.calls;
 
             // Check that team-group class is applied
-            const teamACall = addCalls.find((call: any) => call[0].data.label === 'Team A');
+            const teamACall = addCalls.find((call: any[]) => call[0].data.label === 'Team A');
             expect(teamACall).toBeDefined();
             expect(teamACall[0].classes).toContain('team-group');
         });
@@ -119,7 +119,7 @@ describe('Grouping Module', () => {
             const addCalls = mockCy.add.mock.calls;
 
             // Check for Core, API, and Unlabeled groups
-            const coreCall = addCalls.find((call: any) => call[0].data.label === 'Core');
+            const coreCall = addCalls.find((call: any[]) => call[0].data.label === 'Core');
             expect(coreCall).toBeDefined();
         });
 

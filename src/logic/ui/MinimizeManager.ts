@@ -39,7 +39,7 @@ export class MinimizeManager {
             this.toggle();
         });
         // Attach manager to panel for external access
-        (this.panel as any).minimizeManager = this;
+        (this.panel as HTMLElement & { minimizeManager?: MinimizeManager }).minimizeManager = this;
     }
 
     /**
