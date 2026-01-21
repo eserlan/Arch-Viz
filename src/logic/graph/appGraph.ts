@@ -57,7 +57,7 @@ export const createGraphRenderer = ({
             userZoomingEnabled: true,
             wheelSensitivity: 0,
             selectionType: 'additive',
-            minZoom: 0.1,
+            minZoom: 0.02,
             maxZoom: 2.5,
         }) as CyInstance;
 
