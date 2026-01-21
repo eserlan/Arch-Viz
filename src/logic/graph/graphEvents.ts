@@ -241,10 +241,12 @@ export const initGraphEvents = (cy: CyInstance): (() => void) => {
 
     // Depth select interaction
     const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
+    let actualSelectForCleanup: HTMLSelectElement | null = null;
     let depthChangeListener: (() => void) | undefined;
     if (depthSelect && depthSelect.parentNode) {
         const newSelect = depthSelect.cloneNode(true) as HTMLSelectElement;
         depthSelect.parentNode.replaceChild(newSelect, depthSelect);
+        actualSelectForCleanup = newSelect;
 
         depthChangeListener = () => {
             const highlightTarget = getHighlightTarget();
@@ -295,8 +297,8 @@ export const initGraphEvents = (cy: CyInstance): (() => void) => {
 
     return () => {
         document.removeEventListener('click', handleGlobalClick);
-        if (depthSelect && depthChangeListener) {
-            depthSelect.removeEventListener('change', depthChangeListener);
+        if (actualSelectForCleanup && depthChangeListener) {
+            actualSelectForCleanup.removeEventListener('change', depthChangeListener);
         }
         cy.off('tapstart', 'node', handleTapStart);
         cy.off('tap', 'node', handleTapNode);
