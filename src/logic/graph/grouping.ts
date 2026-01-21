@@ -144,6 +144,78 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
 };
 
 /**
+ * Create parent nodes for AppCode grouping
+ */
+export const enableAppCodeGrouping = (cy: CyInstance): void => {
+    const nodes = cy
+        .nodes()
+        .filter(
+            (node) =>
+                !node.data('isTeamGroup') &&
+                !node.data('isLabelGroup') &&
+                !node.data('isAppCodeGroup')
+        );
+    const appCodes = new Set<string>();
+
+    // Collect all unique AppCodes
+    nodes.forEach((node) => {
+        const appCode = node.data('appCode');
+        if (appCode) {
+            appCodes.add(appCode);
+        }
+    });
+
+    // Create parent nodes for each AppCode
+    appCodes.forEach((appCode) => {
+        const appCodeId = `app-code-${appCode.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
+        // Check if parent already exists
+        if (cy.getElementById(appCodeId).length === 0) {
+            cy.add({
+                group: 'nodes',
+                data: {
+                    id: appCodeId,
+                    label: appCode,
+                    labelDisplay: getNodeLabelDisplay(appCode),
+                    isAppCodeGroup: true,
+                },
+                classes: 'app-code-group team-group',
+            });
+        }
+
+        // Assign children to parent
+        nodes.forEach((node) => {
+            if (node.data('appCode') === appCode) {
+                node.move({ parent: appCodeId });
+            }
+        });
+    });
+
+    // Handle nodes without AppCode - group them as "No App Code"
+    const unassignedNodes = nodes.filter((node) => !node.data('appCode'));
+    if (unassignedNodes.length > 0) {
+        const unassignedId = 'app-code-none';
+        if (cy.getElementById(unassignedId).length === 0) {
+            cy.add({
+                group: 'nodes',
+                data: {
+                    id: unassignedId,
+                    label: 'No App Code',
+                    labelDisplay: getNodeLabelDisplay('No App Code'),
+                    isAppCodeGroup: true,
+                },
+                classes: 'app-code-group team-group',
+            });
+        }
+        unassignedNodes.forEach((node) => {
+            node.move({ parent: unassignedId });
+        });
+    }
+
+    showToast(`Grouped services into ${appCodes.size + 1} App Code groups`, 'success');
+};
+
+/**
  * Remove all grouping - move all nodes back to root level
  */
 export const disableGrouping = (cy: CyInstance): void => {
@@ -151,7 +223,12 @@ export const disableGrouping = (cy: CyInstance): void => {
 
     // Move all child nodes to root level
     nodes.forEach((node) => {
-        if (!node.data('isTeamGroup') && !node.data('isLabelGroup') && node.parent().length > 0) {
+        if (
+            !node.data('isTeamGroup') &&
+            !node.data('isLabelGroup') &&
+            !node.data('isAppCodeGroup') &&
+            node.parent().length > 0
+        ) {
             node.move({ parent: null });
         }
     });
@@ -159,6 +236,7 @@ export const disableGrouping = (cy: CyInstance): void => {
     // Remove all group parent nodes
     cy.nodes('.team-group').remove();
     cy.nodes('.label-group').remove();
+    cy.nodes('.app-code-group').remove();
 
     showToast('Grouping disabled', 'info');
 };
@@ -207,6 +285,8 @@ export const initGrouping = (cy: CyInstance): void => {
             enableTeamGrouping(cyRef);
         } else if (value === 'label') {
             enableLabelGrouping(cyRef);
+        } else if (value === 'app-code') {
+            enableAppCodeGrouping(cyRef);
         }
 
         // Re-run layout

@@ -58,7 +58,9 @@ export const updateSaveButtonState = (): void => {
     const { saveBtn, panelContent } = getElements();
     if (!saveBtn || !panelContent) return;
 
-    const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
+    const inputs = panelContent.querySelectorAll(
+        'input[data-key], select[data-key], textarea[data-key]'
+    );
     let isDirty = false;
 
     inputs.forEach((input) => {
@@ -90,7 +92,9 @@ export const handleSave = (): void => {
         return;
     }
 
-    const inputs = panelContent.querySelectorAll('input[data-key], select[data-key]');
+    const inputs = panelContent.querySelectorAll(
+        'input[data-key], select[data-key], textarea[data-key]'
+    );
     const newData: any = {};
     inputs.forEach((input) => {
         const el = input as HTMLInputElement | HTMLSelectElement;

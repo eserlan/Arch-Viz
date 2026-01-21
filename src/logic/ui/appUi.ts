@@ -3,6 +3,8 @@ import { downloadCSV } from '../core/storage';
 import { copyImageToClipboard, saveImageAsPng } from '../utils/exports';
 import { focusModeManager } from './focusMode';
 import { initFloatingPanel, initModal } from './ui';
+import { handleSave } from './panel/actions';
+import { getIsEditMode } from './panel/state';
 
 type StatusHandler = (message: string) => void;
 
@@ -33,6 +35,10 @@ export const initSidebarActions = (
     downloadCsvBtn?.addEventListener('click', () => {
         const cy = getCy();
         if (cy) {
+            if (getIsEditMode()) {
+                handleSave();
+            }
+
             downloadCSV(cy);
             onStatus('Downloaded updated CSV');
         }

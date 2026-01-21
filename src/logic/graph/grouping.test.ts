@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { enableTeamGrouping, enableLabelGrouping, disableGrouping, initGrouping } from './grouping';
+import {
+    enableTeamGrouping,
+    enableAppCodeGrouping,
+    disableGrouping,
+    initGrouping,
+} from './grouping';
 
 // Mock the ui module
 vi.mock('../ui/ui', () => ({
@@ -16,6 +21,7 @@ describe('Grouping Module', () => {
                 <option value="none">No Grouping</option>
                 <option value="team">By Team</option>
                 <option value="label">By First Label</option>
+                <option value="app-code">By App Code</option>
             </select>
             <select id="layoutSelect">
                 <option value="fcose">fCoSE</option>
@@ -25,7 +31,12 @@ describe('Grouping Module', () => {
         mockNodes = [
             {
                 data: vi.fn((key?: string) => {
-                    const d: any = { id: 'svc-a', owner: 'Team A', labels: ['Core', 'Auth'] };
+                    const d: any = {
+                        id: 'svc-a',
+                        owner: 'Team A',
+                        labels: ['Core', 'Auth'],
+                        appCode: 'APP-1',
+                    };
                     return key ? d[key] : d;
                 }),
                 move: vi.fn(),
@@ -33,7 +44,12 @@ describe('Grouping Module', () => {
             },
             {
                 data: vi.fn((key?: string) => {
-                    const d: any = { id: 'svc-b', owner: 'Team A', labels: ['Core'] };
+                    const d: any = {
+                        id: 'svc-b',
+                        owner: 'Team A',
+                        labels: ['Core'],
+                        appCode: 'APP-1',
+                    };
                     return key ? d[key] : d;
                 }),
                 move: vi.fn(),
@@ -41,7 +57,12 @@ describe('Grouping Module', () => {
             },
             {
                 data: vi.fn((key?: string) => {
-                    const d: any = { id: 'svc-c', owner: 'Team B', labels: ['API'] };
+                    const d: any = {
+                        id: 'svc-c',
+                        owner: 'Team B',
+                        labels: ['API'],
+                        appCode: 'APP-2',
+                    };
                     return key ? d[key] : d;
                 }),
                 move: vi.fn(),
@@ -75,7 +96,11 @@ describe('Grouping Module', () => {
 
         mockCy = {
             nodes: vi.fn((selector?: string) => {
-                if (selector === '.team-group' || selector === '.label-group') {
+                if (
+                    selector === '.team-group' ||
+                    selector === '.label-group' ||
+                    selector === '.app-code-group'
+                ) {
                     return { remove: vi.fn() };
                 }
                 return mockCollection;
@@ -111,24 +136,32 @@ describe('Grouping Module', () => {
         });
     });
 
-    describe('enableLabelGrouping', () => {
-        it('should create label group nodes', () => {
-            enableLabelGrouping(mockCy);
+    describe('enableAppCodeGrouping', () => {
+        it('should create app code group nodes', () => {
+            enableAppCodeGrouping(mockCy);
 
             expect(mockCy.add).toHaveBeenCalled();
             const addCalls = mockCy.add.mock.calls;
 
-            // Check for Core, API, and Unlabeled groups
-            const coreCall = addCalls.find((call: any[]) => call[0].data.label === 'Core');
-            expect(coreCall).toBeDefined();
+            // Check for APP-1, APP-2, and No App Code groups
+            const app1Call = addCalls.find((call: any[]) => call[0].data.label === 'APP-1');
+            expect(app1Call).toBeDefined();
+            expect(app1Call[0].classes).toContain('app-code-group');
         });
 
-        it('should group nodes without labels under Unlabeled', () => {
-            enableLabelGrouping(mockCy);
+        it('should move nodes to their app code parent', () => {
+            enableAppCodeGrouping(mockCy);
+
+            const movedNodes = mockNodes.filter((n) => n.move.mock.calls.length > 0);
+            expect(movedNodes.length).toBeGreaterThan(0);
+        });
+
+        it('should group nodes without app code under No App Code', () => {
+            enableAppCodeGrouping(mockCy);
 
             const addCalls = mockCy.add.mock.calls;
-            const unlabeledCall = addCalls.find((call: any) => call[0].data.label === 'Unlabeled');
-            expect(unlabeledCall).toBeDefined();
+            const noAppCall = addCalls.find((call: any) => call[0].data.label === 'No App Code');
+            expect(noAppCall).toBeDefined();
         });
     });
 
@@ -139,6 +172,7 @@ describe('Grouping Module', () => {
             // Should call nodes with selectors to remove groups
             expect(mockCy.nodes).toHaveBeenCalledWith('.team-group');
             expect(mockCy.nodes).toHaveBeenCalledWith('.label-group');
+            expect(mockCy.nodes).toHaveBeenCalledWith('.app-code-group');
         });
     });
 
@@ -170,6 +204,16 @@ describe('Grouping Module', () => {
 
             const selector = document.getElementById('groupingSelect') as HTMLSelectElement;
             selector.value = 'label';
+            selector.dispatchEvent(new Event('change'));
+
+            expect(mockCy.add).toHaveBeenCalled();
+        });
+
+        it('should handle selector change to app code grouping', () => {
+            initGrouping(mockCy);
+
+            const selector = document.getElementById('groupingSelect') as HTMLSelectElement;
+            selector.value = 'app-code';
             selector.dispatchEvent(new Event('change'));
 
             expect(mockCy.add).toHaveBeenCalled();

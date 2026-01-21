@@ -71,10 +71,14 @@ export const setDirty = (value: boolean): void => {
 export const getDirtyState = (): boolean => isDirty;
 
 export const exportToCSV = (cy: CyInstance): string => {
-    const nodes = cy.nodes();
+    // Filter out parent nodes (groups) created by the grouping logic
+    const nodes = cy.nodes().filter((node) => {
+        const data = node.data();
+        return !data.isTeamGroup && !data.isLabelGroup && !data.isAppCodeGroup && !node.isParent();
+    });
     const edges = cy.edges();
 
-    // Build header
+    // Build header - matches original services.csv order + new fields
     const headers = [
         'id',
         'name',
@@ -82,8 +86,8 @@ export const exportToCSV = (cy: CyInstance): string => {
         'tier',
         'depends_on',
         'owner',
-        'app_code',
         'repo_url',
+        'app_code',
         'comment',
         'verified',
     ];
@@ -102,14 +106,14 @@ export const exportToCSV = (cy: CyInstance): string => {
             data.tier || '',
             dependsOn,
             data.owner || '',
-            data.appCode || '',
             data.repoUrl || '',
+            data.appCode || '',
             data.comment || '',
             data.verified ? 'true' : 'false',
         ]
             .map((val) => {
                 // Escape commas and quotes in values
-                const valStr = val.toString();
+                const valStr = val === null || val === undefined ? '' : val.toString();
                 if (valStr.includes(',') || valStr.includes('"') || valStr.includes('\n')) {
                     return `"${valStr.replace(/"/g, '""')}"`;
                 }
