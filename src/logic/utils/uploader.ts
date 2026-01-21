@@ -57,39 +57,42 @@ export const initUploader = (
                         const csvText = event.target?.result as string;
                         updateStatus(`Parsing ${file.name}…`);
 
-                        const result: ParseResult = parseCSV(csvText);
-
-                        // Check for errors
-                        if (result.error) {
-                            // Show error toast
-                            if (showToast) {
-                                showToast(`Error: ${result.error}`, 'error');
-                                // Show hints as separate toasts
-                                if (result.hints) {
-                                    result.hints.forEach((hint, i) => {
-                                        setTimeout(() => showToast(hint, 'warning'), (i + 1) * 500);
-                                    });
+                        parseCSV(csvText).then((result: ParseResult) => {
+                            // Check for errors
+                            if (result.error) {
+                                // Show error toast
+                                if (showToast) {
+                                    showToast(`Error: ${result.error}`, 'error');
+                                    // Show hints as separate toasts
+                                    if (result.hints) {
+                                        result.hints.forEach((hint, i) => {
+                                            setTimeout(
+                                                () => showToast(hint, 'warning'),
+                                                (i + 1) * 500
+                                            );
+                                        });
+                                    }
+                                } else {
+                                    updateStatus(`Error: ${result.error}`);
                                 }
-                            } else {
-                                updateStatus(`Error: ${result.error}`);
+                                return;
                             }
-                            return;
-                        }
 
-                        const { elements, skipped, hints } = result;
+                            const { elements, skipped, hints } = result;
 
-                        const cy = getCyInstance();
-                        if (cy) cy.destroy();
+                            const cy = getCyInstance();
+                            if (cy) cy.destroy();
 
-                        renderCallback(elements, skipped);
-                        saveGraphData(elements as ElementDefinition[]);
+                            renderCallback(elements, skipped);
+                            saveGraphData(elements as ElementDefinition[]);
 
-                        // Show any warnings/hints
-                        if (hints && hints.length > 0 && showToast) {
-                            hints.forEach((hint, i) => {
-                                setTimeout(() => showToast(hint, 'warning'), (i + 1) * 300);
-                            });
-                        }
+                            // Show any warnings/hints
+                            if (hints && hints.length > 0 && showToast) {
+                                hints.forEach((hint, i) => {
+                                    setTimeout(() => showToast(hint, 'warning'), (i + 1) * 300);
+                                });
+                            }
+                        });
                     };
                     reader.readAsText(file);
                 } else {

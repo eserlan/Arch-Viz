@@ -43,9 +43,10 @@ const loadData = async (): Promise<void> => {
         const { elements, skipped } = await loadGraphElements(csvUrl);
         cy = renderGraph(elements, skipped);
         cyContainer?.classList.remove('cy-loading');
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error);
-        updateStatus(error.message || 'Failed to load graph');
+        const message = error instanceof Error ? error.message : 'Failed to load graph';
+        updateStatus(message);
         cyContainer?.classList.remove('cy-loading');
     }
 };

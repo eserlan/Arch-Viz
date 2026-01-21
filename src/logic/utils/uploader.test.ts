@@ -84,23 +84,27 @@ describe('uploader', () => {
             })
         );
 
-        vi.mocked(parseCSV).mockReturnValue({
+        vi.mocked(parseCSV).mockResolvedValue({
             elements: [{ data: { id: '1' } }],
             skipped: 0,
-        });
+        } as any);
 
         initUploader(mockRender, mockUpdateStatus, mockGetCy, mockShowToast);
         mainElem.dispatchEvent(dropEvent);
 
-        expect(mockUpdateStatus).toHaveBeenCalledWith(expect.stringContaining('Parsing test.csv'));
-        expect(parseCSV).toHaveBeenCalledWith('id,name\n1,Test');
-        expect(mockRender).toHaveBeenCalled();
-        expect(saveGraphData).toHaveBeenCalled();
+        await vi.waitFor(() => {
+            expect(mockUpdateStatus).toHaveBeenCalledWith(
+                expect.stringContaining('Parsing test.csv')
+            );
+            expect(parseCSV).toHaveBeenCalledWith('id,name\n1,Test');
+            expect(mockRender).toHaveBeenCalled();
+            expect(saveGraphData).toHaveBeenCalled();
+        });
 
         vi.unstubAllGlobals();
     });
 
-    it('should handle parse errors', () => {
+    it('should handle parse errors', async () => {
         const mockFiles = [{ name: 'error.csv' }];
         const dropEvent = new Event('drop');
         Object.defineProperty(dropEvent, 'dataTransfer', { value: { files: mockFiles } });
@@ -119,17 +123,20 @@ describe('uploader', () => {
             })
         );
 
-        vi.mocked(parseCSV).mockReturnValue({
+        vi.mocked(parseCSV).mockResolvedValue({
             error: 'Invalid CSV',
             hints: ['Check headers'],
-        });
+        } as any);
 
         vi.useFakeTimers();
         initUploader(mockRender, mockUpdateStatus, mockGetCy, mockShowToast);
         mainElem.dispatchEvent(dropEvent);
-        vi.runAllTimers();
 
-        expect(mockShowToast).toHaveBeenCalledWith('Error: Invalid CSV', 'error');
+        await vi.waitFor(() => {
+            expect(mockShowToast).toHaveBeenCalledWith('Error: Invalid CSV', 'error');
+        });
+
+        vi.runAllTimers();
         expect(mockShowToast).toHaveBeenCalledWith('Check headers', 'warning');
 
         vi.useRealTimers();
