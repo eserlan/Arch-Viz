@@ -10,22 +10,30 @@ let cyRef: CyInstance | null = null;
 export const enableTeamGrouping = (cy: CyInstance): void => {
     const nodes = cy
         .nodes()
-        .filter((node) => !node.data('isTeamGroup') && !node.data('isLabelGroup'));
-    const teams = new Set<string>();
+        .filter(
+            (node) =>
+                !node.data('isTeamGroup') &&
+                !node.data('isLabelGroup') &&
+                !node.data('isAppCodeGroup')
+        );
 
-    // Collect all unique teams/owners
+    // Group nodes by owner
+    const nodesByTeam = new Map<string, any[]>();
     nodes.forEach((node) => {
-        const owner = node.data('owner');
-        if (owner) {
-            teams.add(owner);
+        const team = node.data('owner') || 'Unassigned';
+        if (!nodesByTeam.has(team)) {
+            nodesByTeam.set(team, []);
         }
+        nodesByTeam.get(team)!.push(node);
     });
 
-    // Create parent nodes for each team
-    teams.forEach((team) => {
-        const teamId = `team-${team.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    // Create parent nodes and move children
+    nodesByTeam.forEach((groupedNodes, team) => {
+        const teamId =
+            team === 'Unassigned'
+                ? 'team-unassigned'
+                : `team-${team.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
-        // Check if parent already exists
         if (cy.getElementById(teamId).length === 0) {
             cy.add({
                 group: 'nodes',
@@ -39,36 +47,10 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
             });
         }
 
-        // Assign children to parent
-        nodes.forEach((node) => {
-            if (node.data('owner') === team) {
-                node.move({ parent: teamId });
-            }
-        });
+        groupedNodes.forEach((node) => node.move({ parent: teamId }));
     });
 
-    // Handle nodes without owner - group them as "Unassigned"
-    const unassignedNodes = nodes.filter((node) => !node.data('owner'));
-    if (unassignedNodes.length > 0) {
-        const unassignedId = 'team-unassigned';
-        if (cy.getElementById(unassignedId).length === 0) {
-            cy.add({
-                group: 'nodes',
-                data: {
-                    id: unassignedId,
-                    label: 'Unassigned',
-                    labelDisplay: getNodeLabelDisplay('Unassigned'),
-                    isTeamGroup: true,
-                },
-                classes: 'team-group',
-            });
-        }
-        unassignedNodes.forEach((node) => {
-            node.move({ parent: unassignedId });
-        });
-    }
-
-    showToast(`Grouped services into ${teams.size + 1} team groups`, 'success');
+    showToast(`Grouped services into ${nodesByTeam.size} team groups`, 'success');
 };
 
 /**
@@ -77,22 +59,31 @@ export const enableTeamGrouping = (cy: CyInstance): void => {
 export const enableLabelGrouping = (cy: CyInstance): void => {
     const nodes = cy
         .nodes()
-        .filter((node) => !node.data('isTeamGroup') && !node.data('isLabelGroup'));
-    const labelGroups = new Set<string>();
+        .filter(
+            (node) =>
+                !node.data('isTeamGroup') &&
+                !node.data('isLabelGroup') &&
+                !node.data('isAppCodeGroup')
+        );
 
-    // Collect all unique first labels
+    // Group nodes by first label
+    const nodesByLabel = new Map<string, any[]>();
     nodes.forEach((node) => {
         const labels = node.data('labels') || [];
-        if (Array.isArray(labels) && labels.length > 0) {
-            labelGroups.add(labels[0]);
+        const label = Array.isArray(labels) && labels.length > 0 ? labels[0] : 'Unlabeled';
+        if (!nodesByLabel.has(label)) {
+            nodesByLabel.set(label, []);
         }
+        nodesByLabel.get(label)!.push(node);
     });
 
-    // Create parent nodes for each label
-    labelGroups.forEach((label) => {
-        const labelId = `label-group-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    // Create parent nodes and move children
+    nodesByLabel.forEach((groupedNodes, label) => {
+        const labelId =
+            label === 'Unlabeled'
+                ? 'label-group-unlabeled'
+                : `label-group-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
-        // Check if parent already exists
         if (cy.getElementById(labelId).length === 0) {
             cy.add({
                 group: 'nodes',
@@ -106,41 +97,10 @@ export const enableLabelGrouping = (cy: CyInstance): void => {
             });
         }
 
-        // Assign children to parent (based on first label)
-        nodes.forEach((node) => {
-            const nodeLabels = node.data('labels') || [];
-            if (Array.isArray(nodeLabels) && nodeLabels[0] === label) {
-                node.move({ parent: labelId });
-            }
-        });
+        groupedNodes.forEach((node) => node.move({ parent: labelId }));
     });
 
-    // Handle nodes without labels - group them as "Unlabeled"
-    const unlabeledNodes = nodes.filter((node) => {
-        const labels = node.data('labels') || [];
-        return !Array.isArray(labels) || labels.length === 0;
-    });
-
-    if (unlabeledNodes.length > 0) {
-        const unlabeledId = 'label-group-unlabeled';
-        if (cy.getElementById(unlabeledId).length === 0) {
-            cy.add({
-                group: 'nodes',
-                data: {
-                    id: unlabeledId,
-                    label: 'Unlabeled',
-                    labelDisplay: getNodeLabelDisplay('Unlabeled'),
-                    isLabelGroup: true,
-                },
-                classes: 'label-group team-group',
-            });
-        }
-        unlabeledNodes.forEach((node) => {
-            node.move({ parent: unlabeledId });
-        });
-    }
-
-    showToast(`Grouped services into ${labelGroups.size + 1} label groups`, 'success');
+    showToast(`Grouped services into ${nodesByLabel.size} label groups`, 'success');
 };
 
 /**
@@ -155,21 +115,24 @@ export const enableAppCodeGrouping = (cy: CyInstance): void => {
                 !node.data('isLabelGroup') &&
                 !node.data('isAppCodeGroup')
         );
-    const appCodes = new Set<string>();
 
-    // Collect all unique AppCodes
+    // Group nodes by AppCode
+    const nodesByAppCode = new Map<string, any[]>();
     nodes.forEach((node) => {
-        const appCode = node.data('appCode');
-        if (appCode) {
-            appCodes.add(appCode);
+        const appCode = node.data('appCode') || 'No App Code';
+        if (!nodesByAppCode.has(appCode)) {
+            nodesByAppCode.set(appCode, []);
         }
+        nodesByAppCode.get(appCode)!.push(node);
     });
 
-    // Create parent nodes for each AppCode
-    appCodes.forEach((appCode) => {
-        const appCodeId = `app-code-${appCode.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    // Create parent nodes and move children
+    nodesByAppCode.forEach((groupedNodes, appCode) => {
+        const appCodeId =
+            appCode === 'No App Code'
+                ? 'app-code-none'
+                : `app-code-${appCode.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
-        // Check if parent already exists
         if (cy.getElementById(appCodeId).length === 0) {
             cy.add({
                 group: 'nodes',
@@ -183,36 +146,10 @@ export const enableAppCodeGrouping = (cy: CyInstance): void => {
             });
         }
 
-        // Assign children to parent
-        nodes.forEach((node) => {
-            if (node.data('appCode') === appCode) {
-                node.move({ parent: appCodeId });
-            }
-        });
+        groupedNodes.forEach((node) => node.move({ parent: appCodeId }));
     });
 
-    // Handle nodes without AppCode - group them as "No App Code"
-    const unassignedNodes = nodes.filter((node) => !node.data('appCode'));
-    if (unassignedNodes.length > 0) {
-        const unassignedId = 'app-code-none';
-        if (cy.getElementById(unassignedId).length === 0) {
-            cy.add({
-                group: 'nodes',
-                data: {
-                    id: unassignedId,
-                    label: 'No App Code',
-                    labelDisplay: getNodeLabelDisplay('No App Code'),
-                    isAppCodeGroup: true,
-                },
-                classes: 'app-code-group team-group',
-            });
-        }
-        unassignedNodes.forEach((node) => {
-            node.move({ parent: unassignedId });
-        });
-    }
-
-    showToast(`Grouped services into ${appCodes.size + 1} App Code groups`, 'success');
+    showToast(`Grouped services into ${nodesByAppCode.size} App Code groups`, 'success');
 };
 
 /**

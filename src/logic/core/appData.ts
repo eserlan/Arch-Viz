@@ -23,6 +23,6 @@ export const loadGraphElements = async (
     }
 
     const csvText = await response.text();
-    const { elements, skipped } = parseCSV(csvText);
+    const { elements, skipped } = await parseCSV(csvText);
     return { elements, skipped, fromStorage: false };
 };

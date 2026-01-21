@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     enableTeamGrouping,
+    enableLabelGrouping,
     enableAppCodeGrouping,
     disableGrouping,
     initGrouping,
@@ -133,6 +134,35 @@ describe('Grouping Module', () => {
             // At least some nodes should have move called
             const movedNodes = mockNodes.filter((n) => n.move.mock.calls.length > 0);
             expect(movedNodes.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('enableLabelGrouping', () => {
+        it('should create label group nodes using the first label', () => {
+            enableLabelGrouping(mockCy);
+
+            expect(mockCy.add).toHaveBeenCalled();
+            const addCalls = mockCy.add.mock.calls;
+
+            // Check for Core and API groups (svc-a/b have Core, svc-c has API)
+            const coreCall = addCalls.find((call: any[]) => call[0].data.label === 'Core');
+            expect(coreCall).toBeDefined();
+            expect(coreCall[0].classes).toContain('label-group');
+        });
+
+        it('should move nodes to their label parent', () => {
+            enableLabelGrouping(mockCy);
+
+            const movedNodes = mockNodes.filter((n) => n.move.mock.calls.length > 0);
+            expect(movedNodes.length).toBeGreaterThan(0);
+        });
+
+        it('should group nodes without labels under Unlabeled', () => {
+            enableLabelGrouping(mockCy);
+
+            const addCalls = mockCy.add.mock.calls;
+            const unlabeledCall = addCalls.find((call: any) => call[0].data.label === 'Unlabeled');
+            expect(unlabeledCall).toBeDefined();
         });
     });
 

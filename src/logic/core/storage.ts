@@ -74,7 +74,9 @@ export const exportToCSV = (cy: CyInstance): string => {
     // Filter out parent nodes (groups) created by the grouping logic
     const nodes = cy.nodes().filter((node) => {
         const data = node.data();
-        return !data.isTeamGroup && !data.isLabelGroup && !data.isAppCodeGroup && !node.isParent();
+        const isGroupingNode = data.isTeamGroup || data.isLabelGroup || data.isAppCodeGroup;
+        const isGroupingParentNode = isGroupingNode && node.isParent();
+        return !isGroupingParentNode;
     });
     const edges = cy.edges();
 

@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { parseCSV } from './parser';
 
 describe('CSV Parser', () => {
-    it('should parse a basic CSV with all required fields', () => {
+    it('should parse a basic CSV with all required fields', async () => {
         const csv = `id,name,labels,tier,depends_on,owner,repo_url
 service-a,Service A,Label A,1,service-b,Owner A,http://repo-a`;
 
-        const { elements, skipped, error } = parseCSV(csv);
+        const { elements, skipped, error } = await parseCSV(csv);
 
         expect(error).toBeUndefined();
         expect(skipped).toBe(0);
@@ -20,11 +20,11 @@ service-a,Service A,Label A,1,service-b,Owner A,http://repo-a`;
         expect(node.classes).toContain('label-label-a');
     });
 
-    it('should handle multi-label services', () => {
+    it('should handle multi-label services', async () => {
         const csv = `id,name,labels,tier,depends_on
 auth,Auth Service,Security;Identity,1,`;
 
-        const { elements } = parseCSV(csv);
+        const { elements } = await parseCSV(csv);
         const node = (elements as any[])[0];
 
         expect(node.data.labels).toEqual(['Security', 'Identity']);
@@ -32,12 +32,12 @@ auth,Auth Service,Security;Identity,1,`;
         expect(node.classes).toContain('label-identity');
     });
 
-    it('should detect database nodes', () => {
+    it('should detect database nodes', async () => {
         const csv = `id,name,labels,tier
 user-db,User Storage,Database,1
 payment-proxy,Payments,Payment,2`;
 
-        const { elements } = parseCSV(csv);
+        const { elements } = await parseCSV(csv);
 
         const dbNode = (elements as any[]).find((n) => n.data.id === 'user-db');
         const normalNode = (elements as any[]).find((n) => n.data.id === 'payment-proxy');
@@ -46,22 +46,22 @@ payment-proxy,Payments,Payment,2`;
         expect(normalNode.classes).not.toContain('is-database');
     });
 
-    it('should skip invalid rows missing required fields', () => {
+    it('should skip invalid rows missing required fields', async () => {
         const csv = `id,name,labels,tier
 service-valid,Label,Tags,1
 ,,Missing,3`;
 
-        const { elements, skipped } = parseCSV(csv);
+        const { elements, skipped } = await parseCSV(csv);
 
         expect(elements).toHaveLength(1);
         expect(skipped).toBe(1);
     });
 
-    it('should handle multiple dependencies', () => {
+    it('should handle multiple dependencies', async () => {
         const csv = `id,name,labels,tier,depends_on
 service-a,A,D,1,service-b;service-c`;
 
-        const { elements } = parseCSV(csv);
+        const { elements } = await parseCSV(csv);
         const edges = (elements as any[]).filter((el) => el.group === 'edges');
 
         expect(edges).toHaveLength(2);
@@ -69,11 +69,11 @@ service-a,A,D,1,service-b;service-c`;
         expect(edges[1].data.target).toBe('service-c');
     });
 
-    it('should support legacy column names (label, domain)', () => {
+    it('should support legacy column names (label, domain)', async () => {
         const csv = `id,label,domain,tier,depends_on
 legacy-srv,Legacy Service,OldDomain,2,`;
 
-        const { elements, skipped, error } = parseCSV(csv);
+        const { elements, skipped, error } = await parseCSV(csv);
 
         expect(error).toBeUndefined();
         expect(skipped).toBe(0);
@@ -82,18 +82,18 @@ legacy-srv,Legacy Service,OldDomain,2,`;
         expect(node.data.labels).toEqual(['OldDomain']);
     });
 
-    it('should return error for empty CSV', () => {
-        const { error, hints } = parseCSV('');
+    it('should return error for empty CSV', async () => {
+        const { error, hints } = await parseCSV('');
 
         expect(error).toBe('Empty or invalid file');
         expect(hints as string[]).toContain('The file appears to be empty.');
     });
 
-    it('should return error for missing required columns', () => {
+    it('should return error for missing required columns', async () => {
         const csv = `foo,bar,baz
 1,2,3`;
 
-        const { error, hints, elements } = parseCSV(csv);
+        const { error, hints, elements } = await parseCSV(csv);
 
         expect(error).toBe('Missing required columns');
         expect(hints as string[]).toContain(
@@ -105,24 +105,24 @@ legacy-srv,Legacy Service,OldDomain,2,`;
         expect(elements).toHaveLength(0);
     });
 
-    it('should return error when all rows are skipped', () => {
+    it('should return error when all rows are skipped', async () => {
         const csv = `id,name,labels,tier
 ,,NoId,1
 ,NoName,,2`;
 
-        const { error, hints, skipped } = parseCSV(csv);
+        const { error, hints, skipped } = await parseCSV(csv);
 
         expect(error).toBe('No valid services found');
         expect(skipped).toBe(2);
         expect(hints as string[]).toContain("Each row needs at least 'id' and 'name' values.");
     });
 
-    it('should parse comments correctly', () => {
+    it('should parse comments correctly', async () => {
         const csv = `id,name,comment
 service-a,Service A,"This is a comment"
 service-b,Service B,"Multiline
 comment"`;
-        const { elements } = parseCSV(csv);
+        const { elements } = await parseCSV(csv);
 
         expect(elements).toHaveLength(2);
         const nodeA = (elements as any[]).find((n) => n.data.id === 'service-a');

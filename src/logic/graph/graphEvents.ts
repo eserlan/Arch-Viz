@@ -14,15 +14,14 @@ interface CytoscapeEventWithOriginal extends EventObject {
 /**
  * Graph interaction events and UI feedback
  */
-export const initGraphEvents = (cy: CyInstance): void => {
-    if (!cy) return;
+export const initGraphEvents = (cy: CyInstance): (() => void) => {
+    if (!cy) return () => {};
 
     let lastFocusedNode: NodeSingular | null = null;
     let contextMenuNode: NodeSingular | null = null;
     const contextMenuId = 'nodeContextMenu';
     const toggleVerifiedId = 'toggleVerifiedBtn';
     const CONTEXT_MENU_VIEWPORT_PADDING = 8;
-    let globalClickListenerAdded = false;
 
     const ensureContextMenu = (): HTMLElement => {
         let menu = document.getElementById(contextMenuId) as HTMLElement | null;
@@ -135,32 +134,25 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
     let nodeWasSelectedOnTapStart = false;
 
-    cy.on('tapstart', 'node', (evt: EventObject) => {
+    const handleTapStart = (evt: EventObject) => {
         const node = evt.target as NodeSingular;
         nodeWasSelectedOnTapStart = node.selected();
-    });
+    };
 
-    cy.on('tap', 'node', (evt: EventObject, extraData?: any) => {
+    const handleTapNode = (evt: EventObject, extraData?: any) => {
         const node = evt.target as NodeSingular;
-
         closeContextMenu();
-
-        // Use extraData for programmatic events (E2E)
         const originalEvent = extraData?.originalEvent || evt.originalEvent;
         const isMultiSelect = Boolean(originalEvent?.ctrlKey || originalEvent?.metaKey);
 
-        // Defer selection logic to run after Cytoscape's internal event processing
         setTimeout(() => {
             if (isMultiSelect) {
-                // Toggle selection with Ctrl/Cmd
-                // We use the state from tapstart to decide the toggle action.
                 if (nodeWasSelectedOnTapStart) {
                     node.unselect();
                 } else {
                     node.select();
                 }
             } else {
-                // Standard single select
                 cy.nodes().unselect();
                 node.select();
             }
@@ -169,11 +161,9 @@ export const initGraphEvents = (cy: CyInstance): void => {
 
             const selectedNodes = cy.nodes(':selected');
             if (selectedNodes.length > 0) {
-                // Focus on the clicked node if it's still selected, otherwise fallback to another selected node
                 const targetNode = node.selected() ? node : selectedNodes[0];
                 lastFocusedNode = targetNode;
                 showPanel(targetNode);
-                // Highlight connections for ALL selected nodes to create a cumulative trail
                 highlightConnections(selectedNodes.toArray());
             } else {
                 lastFocusedNode = null;
@@ -181,9 +171,9 @@ export const initGraphEvents = (cy: CyInstance): void => {
                 cy.elements().removeClass('dimmed edge-inbound edge-outbound');
             }
         }, 0);
-    });
+    };
 
-    cy.on('tap', (evt: EventObject) => {
+    const handleTapCy = (evt: EventObject) => {
         if (evt.target === cy) {
             closeContextMenu();
             hidePanel();
@@ -192,9 +182,9 @@ export const initGraphEvents = (cy: CyInstance): void => {
             cy.elements().removeClass('dimmed edge-inbound edge-outbound');
             lastFocusedNode = null;
         }
-    });
+    };
 
-    cy.on('cxttap', 'node', (evt: EventObject) => {
+    const handleCxtTapNode = (evt: EventObject) => {
         const node = evt.target as NodeSingular;
         const eventWithOriginal = evt as CytoscapeEventWithOriginal;
         eventWithOriginal.originalEvent?.preventDefault();
@@ -235,38 +225,45 @@ export const initGraphEvents = (cy: CyInstance): void => {
             menu.style.left = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
         if (top < CONTEXT_MENU_VIEWPORT_PADDING)
             menu.style.top = `${CONTEXT_MENU_VIEWPORT_PADDING}px`;
-    });
+    };
 
-    cy.on('cxttap', (evt: EventObject) => {
+    const handleCxtTapCy = (evt: EventObject) => {
         if (evt.target === cy) {
             closeContextMenu();
         }
-    });
+    };
+
+    cy.on('tapstart', 'node', handleTapStart);
+    cy.on('tap', 'node', handleTapNode);
+    cy.on('tap', handleTapCy);
+    cy.on('cxttap', 'node', handleCxtTapNode);
+    cy.on('cxttap', handleCxtTapCy);
 
     // Depth select interaction
     const depthSelect = document.getElementById('depthSelect') as HTMLSelectElement | null;
+    let depthChangeListener: (() => void) | undefined;
     if (depthSelect && depthSelect.parentNode) {
-        // Simple way to ensure only one listener
         const newSelect = depthSelect.cloneNode(true) as HTMLSelectElement;
         depthSelect.parentNode.replaceChild(newSelect, depthSelect);
 
-        newSelect.addEventListener('change', () => {
+        depthChangeListener = () => {
             const highlightTarget = getHighlightTarget();
             if (highlightTarget) {
                 highlightConnections(highlightTarget);
             }
-        });
+        };
+        newSelect.addEventListener('change', depthChangeListener);
     }
 
     // Tooltip Logic
     const tooltip = document.getElementById('graphTooltip');
-    if (tooltip) {
-        cy.on('mouseover', 'node', (evt: EventObject) => {
-            const node = evt.target as NodeSingular;
-            const name = node.data('name') || node.data('label') || node.id();
-            const labels = node.data('labels') || [];
-            const labelsText = Array.isArray(labels) && labels.length > 0 ? labels.join(', ') : '';
+    const handleMouseOver = (evt: EventObject) => {
+        const node = evt.target as NodeSingular;
+        const name = node.data('name') || node.data('label') || node.id();
+        const labels = node.data('labels') || [];
+        const labelsText = Array.isArray(labels) && labels.length > 0 ? labels.join(', ') : '';
 
+        if (tooltip) {
             tooltip.innerHTML = labelsText
                 ? `<strong>${name}</strong><br><span class="text-slate-400 text-[10px]">${labelsText}</span>`
                 : `<strong>${name}</strong>`;
@@ -276,21 +273,38 @@ export const initGraphEvents = (cy: CyInstance): void => {
             tooltip.style.top = `${pos.y - 20}px`;
             tooltip.style.transform = 'translate(-50%, -100%)';
             tooltip.style.opacity = '1';
-        });
+        }
+    };
 
-        cy.on('mouseout', 'node', () => {
-            tooltip.style.opacity = '0';
-        });
+    const handleMouseOut = () => {
+        if (tooltip) tooltip.style.opacity = '0';
+    };
 
-        cy.on('viewport', () => {
-            tooltip.style.opacity = '0';
-        });
-    }
+    const handleViewport = () => {
+        if (tooltip) tooltip.style.opacity = '0';
+    };
 
-    if (!globalClickListenerAdded) {
-        document.addEventListener('click', () => {
-            closeContextMenu();
-        });
-        globalClickListenerAdded = true;
-    }
+    cy.on('mouseover', 'node', handleMouseOver);
+    cy.on('mouseout', 'node', handleMouseOut);
+    cy.on('viewport', handleViewport);
+
+    const handleGlobalClick = () => {
+        closeContextMenu();
+    };
+    document.addEventListener('click', handleGlobalClick);
+
+    return () => {
+        document.removeEventListener('click', handleGlobalClick);
+        if (depthSelect && depthChangeListener) {
+            depthSelect.removeEventListener('change', depthChangeListener);
+        }
+        cy.off('tapstart', 'node', handleTapStart);
+        cy.off('tap', 'node', handleTapNode);
+        cy.off('tap', handleTapCy);
+        cy.off('cxttap', 'node', handleCxtTapNode);
+        cy.off('cxttap', handleCxtTapCy);
+        cy.off('mouseover', 'node', handleMouseOver);
+        cy.off('mouseout', 'node', handleMouseOut);
+        cy.off('viewport', handleViewport);
+    };
 };
