@@ -48,6 +48,18 @@ export const initSidebarActions = (
         .getElementById('saveImageBtn')
         ?.addEventListener('click', () => saveImageAsPng(getCy() || null));
 
+    document.getElementById('fitViewportBtn')?.addEventListener('click', () => {
+        const cy = getCy();
+        if (cy) {
+            cy.animate({
+                fit: { padding: 160 },
+                duration: 800,
+                easing: 'ease-in-out-cubic',
+            } as any);
+            onStatus('Fitted graph to viewport');
+        }
+    });
+
     document.getElementById('resetDataBtn')?.addEventListener('click', () => {
         if (confirm('Clear all local edits and reset to the default services.csv?')) {
             onReset();
