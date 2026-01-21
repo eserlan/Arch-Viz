@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { populateLabelFilter, populateTeamFilter, initFilters } from './filters';
+import {
+    populateLabelFilter,
+    populateTeamFilter,
+    populateAppCodeFilter,
+    initFilters,
+} from './filters';
 import { CyInstance } from '../../types';
 
 describe('Filters Module', () => {
@@ -22,8 +27,8 @@ describe('Filters Module', () => {
         appCode: string | null = null
     ) => ({
         id: () => id,
-        data: vi.fn((key) => {
-            const d: any = { id, name: `Service ${id}`, labels, owner, appCode };
+        data: vi.fn((key?: string) => {
+            const d: Record<string, any> = { id, name: `Service ${id}`, labels, owner, appCode };
             return key ? d[key] : d;
         }),
         hasClass: vi.fn().mockReturnValue(false),
@@ -33,9 +38,9 @@ describe('Filters Module', () => {
 
     const createMockCy = (elements: any[] = []) =>
         ({
-            batch: vi.fn((cb) => cb()),
+            batch: vi.fn((cb: () => void) => cb()),
             nodes: vi.fn().mockReturnValue({
-                forEach: (cb: any) => elements.forEach(cb),
+                forEach: (cb: (el: any) => void) => elements.forEach(cb),
                 length: elements.length,
                 addClass: vi.fn(),
                 removeClass: vi.fn(),
@@ -157,5 +162,35 @@ describe('Filters Module', () => {
         // Check if S2 was filtered
         expect(elements[1].addClass).toHaveBeenCalledWith('filtered');
         expect(elements[0].removeClass).toHaveBeenCalledWith('filtered');
+    });
+
+    it('should populate app code filter with unique sorted values', () => {
+        const elements = [
+            createMockNode('s1', [], null, 'ABC'),
+            createMockNode('s2', [], null, 'XYZ'),
+            createMockNode('s3', [], null, 'ABC'),
+        ] as any;
+
+        populateAppCodeFilter(elements);
+
+        const container = document.getElementById('appCodeFilterContainer')!;
+        const buttons = Array.from(container.querySelectorAll('button')).map(
+            (btn) => (btn as HTMLButtonElement).dataset.value
+        );
+
+        expect(buttons).toEqual(['ABC', 'XYZ']);
+    });
+
+    it('should update filters on app code button click', () => {
+        const elements = [createMockNode('s1', [], null, 'TEST')] as any;
+        const cy = createMockCy(elements);
+        initFilters(cy);
+        populateAppCodeFilter(elements);
+
+        const btn = document.querySelector('button[data-value="TEST"]') as HTMLButtonElement;
+        btn.click();
+
+        expect(btn.dataset.selected).toBe('true');
+        expect(cy.batch).toHaveBeenCalled();
     });
 });

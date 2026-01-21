@@ -101,7 +101,7 @@ export const parseCSV = (csvString: string): ParseResult => {
 
         const tier = row.tier?.toString().trim() || '3';
         const owner = row.owner?.trim();
-        const appCode = row.app_code?.trim() || row.status?.trim(); // TODO: Remove 'status' fallback after data migration
+        const appCode = row.app_code?.trim();
         const repoUrl = row.repo_url?.trim();
         const comment = row.comment ? row.comment.replace(/^[ \t]+|[ \t]+$/g, '') : undefined;
         const verified =

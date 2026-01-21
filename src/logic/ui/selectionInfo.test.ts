@@ -3,9 +3,9 @@ import { updateSelectionInfo, initSelectionInfo } from './selectionInfo';
 import { CyInstance } from '../../types';
 
 describe('selectionInfo', () => {
-    let mockCy: any;
-    let mockNodes: any;
-    let eventHandlers: Record<string, ((...args: any[]) => any)[]> = {};
+    let mockCy: Record<string, unknown>;
+    let mockNodes: { length: number; nodes: Record<string, unknown>[] };
+    let eventHandlers: Record<string, (() => void)[]> = {};
 
     beforeEach(() => {
         // Create selection info panel element
@@ -19,11 +19,11 @@ describe('selectionInfo', () => {
 
         mockNodes = {
             length: 0,
-            nodes: [] as any[],
+            nodes: [] as Record<string, unknown>[],
         };
 
         mockCy = {
-            on: vi.fn((event, ...args) => {
+            on: vi.fn((event: string, ...args: any[]) => {
                 const selector = typeof args[0] === 'string' ? args[0] : null;
                 const handler = selector ? args[1] : args[0];
                 const key = selector ? `${event}:${selector}` : event;

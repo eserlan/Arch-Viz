@@ -115,21 +115,27 @@ export const initPanelsAndModals = (): void => {
     // Initialize panel toggle buttons (minimize/restore from sidebar)
     const setupSidebarToggle = (btnId: string, panelId: string) => {
         const btn = document.getElementById(btnId);
-        const panel = document.getElementById(panelId) as any;
+        const panel = document.getElementById(panelId) as HTMLElement & {
+            minimizeManager?: any;
+        };
         if (!btn || !panel) return;
 
         const updateBtnState = (minimized: boolean) => {
             btn.classList.toggle('bg-slate-800/50', minimized);
             btn.classList.toggle('text-slate-400', minimized);
-            btn.classList.toggle(
-                'text-emerald-400',
-                !minimized && panelId === 'floatingFilterPanel'
-            );
-            btn.classList.toggle('text-blue-400', !minimized && panelId === 'floatingTeamPanel');
-            btn.classList.toggle(
-                'text-amber-400',
-                !minimized && panelId === 'floatingAppCodePanel'
-            );
+
+            // Ensure only one color class is applied at a time
+            btn.classList.remove('text-emerald-400', 'text-blue-400', 'text-amber-400');
+
+            if (!minimized) {
+                if (panelId === 'floatingFilterPanel') {
+                    btn.classList.add('text-emerald-400');
+                } else if (panelId === 'floatingTeamPanel') {
+                    btn.classList.add('text-blue-400');
+                } else if (panelId === 'floatingAppCodePanel') {
+                    btn.classList.add('text-amber-400');
+                }
+            }
         };
 
         // Initial state

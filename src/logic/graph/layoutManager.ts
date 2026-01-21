@@ -52,11 +52,11 @@ export const initLayoutManager = (cy: CyInstance): void => {
 
         updateStatus(`Switching to ${layoutName} layout…`);
 
-        const animationOptions: any = {
+        const animationOptions: AnimationOptions & { name: string; randomize: boolean } = {
             name: layoutName,
             animate: true,
             animationDuration: 1000,
-            fit: true,
+            fit: false,
             padding: 160,
             randomize: false,
             nodeDimensionsIncludeLabels: true,
@@ -102,14 +102,16 @@ export const initLayoutManager = (cy: CyInstance): void => {
                 ...layoutConfig,
                 animate: true,
                 animationDuration: 1000,
-                fit: true,
+                fit: false,
                 padding: 160,
             };
 
             // For force-directed layouts, fix the selected node position
             if (selectedNode) {
                 const pos = selectedNode.position();
-                (finalConfig as any).fixedNodeConstraint = [
+                (
+                    finalConfig as AnimationOptions & { fixedNodeConstraint: any[] }
+                ).fixedNodeConstraint = [
                     {
                         nodeId: selectedNodeId,
                         position: { x: pos.x, y: pos.y },

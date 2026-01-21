@@ -26,7 +26,9 @@ describe('Node Operations', () => {
     });
 
     it('should add a node if ID does not exist', () => {
-        (cy.getElementById as any).mockReturnValue({ nonempty: () => false }); // Empty collection
+        vi.mocked(cy.getElementById).mockReturnValue({
+            nonempty: () => false,
+        } as any);
 
         const data = { id: 'new', name: 'New', tier: '1' as any };
         addNode(cy, data);
@@ -34,21 +36,23 @@ describe('Node Operations', () => {
         expect(cy.add).toHaveBeenCalled();
         expect(saveGraphData).toHaveBeenCalled();
 
-        const callArg = (cy.add as any).mock.calls[0][0];
+        const callArg = vi.mocked(cy.add).mock.calls[0][0];
         expect(callArg.data.id).toBe('new');
         expect(callArg.data.tier).toBe(1);
         expect(callArg.classes).toBe('tier-1');
     });
 
     it('should throw error if node exists', () => {
-        (cy.getElementById as any).mockReturnValue({ nonempty: () => true });
+        vi.mocked(cy.getElementById).mockReturnValue({
+            nonempty: () => true,
+        } as any);
 
         expect(() => addNode(cy, { id: 'existing', name: 'Existing' })).toThrow();
     });
 
     it('should delete existing node', () => {
         const nodeMock = { nonempty: () => true };
-        (cy.getElementById as any).mockReturnValue(nodeMock);
+        vi.mocked(cy.getElementById).mockReturnValue(nodeMock as any);
 
         const res = deleteNode(cy, 'exist');
         expect(cy.remove).toHaveBeenCalledWith(nodeMock);
@@ -56,7 +60,9 @@ describe('Node Operations', () => {
     });
 
     it('should return false if node to delete does not exist', () => {
-        (cy.getElementById as any).mockReturnValue({ nonempty: () => false });
+        vi.mocked(cy.getElementById).mockReturnValue({
+            nonempty: () => false,
+        } as any);
         const res = deleteNode(cy, 'missing');
         expect(cy.remove).not.toHaveBeenCalled();
         expect(res).toBe(false);

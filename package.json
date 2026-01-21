@@ -9,7 +9,7 @@
         "preview": "vite preview",
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",
-        "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" --max-warnings 210",
+        "lint": "eslint \"src/**/*.ts\" \"e2e/**/*.ts\" --max-warnings 200",
         "format": "prettier --write \"src/**/*.{ts,js,json,css,html}\" \"e2e/**/*.ts\" \"*.{js,json,html}\""
     },
     "dependencies": {

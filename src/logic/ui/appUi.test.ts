@@ -56,7 +56,7 @@ describe('appUi helpers', () => {
             <button id="resetDataBtn"></button>
         `;
 
-        const cy = {} as any;
+        const cy = {} as Record<string, any>;
         const onStatus = vi.fn();
         const onReset = vi.fn();
         vi.stubGlobal(
