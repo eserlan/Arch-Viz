@@ -16,6 +16,25 @@ export interface ServiceData {
     labelDisplay?: string;
 }
 
+/**
+ * Raw CSV structure based on expected headers:
+ * id,name,labels,tier,depends_on,owner,repo_url,app_code,comment,verified
+ */
+export interface CsvServiceRow {
+    id: string;
+    name?: string;
+    label?: string; // legacy support for name
+    labels?: string;
+    domain?: string; // legacy support for labels
+    tier?: string;
+    owner?: string;
+    depends_on?: string;
+    app_code?: string;
+    repo_url?: string;
+    comment?: string;
+    verified?: string;
+}
+
 export interface GraphNode {
     data: ServiceData;
 }

@@ -104,7 +104,7 @@ export const initHistory = (
     cy: CyInstance,
     initialElements: ElementDefinition[],
     options?: { onStatus?: StatusHandler; onPersist?: PersistHandler }
-): void => {
+): (() => void) => {
     cyRef = cy;
     statusHandler = options?.onStatus ?? null;
     persistHandler = options?.onPersist ?? null;
@@ -114,6 +114,7 @@ export const initHistory = (
     historyFuture = [];
     historyEnabled = true;
     registerKeyListener();
+    return cleanupHistory;
 };
 
 /**

@@ -29,7 +29,7 @@ describe('loadGraphElements', () => {
 
     it('fetches and parses csv when no saved data exists', async () => {
         vi.mocked(loadGraphData).mockReturnValue(null);
-        vi.mocked(parseCSV).mockReturnValue({
+        vi.mocked(parseCSV).mockResolvedValue({
             elements: [{ data: { id: 'b' } }],
             skipped: 2,
         } as any);

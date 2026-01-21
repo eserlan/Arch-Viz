@@ -41,11 +41,19 @@ export const createGraphRenderer = ({
     onStatus,
     onDirtyStateChange,
 }: GraphRendererOptions) => {
+    let currentCleanup: (() => void) | undefined;
+
     return (
         elements: ElementsDefinition | ElementDefinition[],
         skipped: number
     ): CyInstance | undefined => {
         if (!container) return undefined;
+
+        // Cleanup previous instance if exists
+        if (currentCleanup) {
+            currentCleanup();
+            currentCleanup = undefined;
+        }
 
         onStatus('Rendering graph…');
 
@@ -71,11 +79,13 @@ export const createGraphRenderer = ({
         const processVerifiedBatch = () => {
             const end = Math.min(verifiedIndex + BATCH_SIZE, verifiedNodes.length);
 
-            for (let i = verifiedIndex; i < end; i++) {
-                const node = verifiedNodes[i];
-                const isVerified = Boolean(node.data('verified'));
-                node.toggleClass('is-verified', isVerified && showVerifiedSettings);
-            }
+            cy.batch(() => {
+                for (let i = verifiedIndex; i < end; i++) {
+                    const node = verifiedNodes[i];
+                    const isVerified = Boolean(node.data('verified'));
+                    node.toggleClass('is-verified', isVerified && showVerifiedSettings);
+                }
+            });
             verifiedIndex = end;
 
             if (verifiedIndex < verifiedNodes.length) {
@@ -89,29 +99,22 @@ export const createGraphRenderer = ({
 
         processVerifiedBatch();
 
-        container.addEventListener(
-            'wheel',
-            (e: WheelEvent) => {
-                e.preventDefault();
-                const currentZoom = cy.zoom();
-                const newZoom = calculateDynamicZoom(
-                    currentZoom,
-                    e.deltaY,
-                    cy.minZoom(),
-                    cy.maxZoom()
-                );
-                const rect = container.getBoundingClientRect();
-                cy.zoom({
-                    level: newZoom,
-                    renderedPosition: { x: e.clientX - rect.left, y: e.clientY - rect.top },
-                });
-            },
-            { passive: false }
-        );
+        const handleWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            const currentZoom = cy.zoom();
+            const newZoom = calculateDynamicZoom(currentZoom, e.deltaY, cy.minZoom(), cy.maxZoom());
+            const rect = container.getBoundingClientRect();
+            cy.zoom({
+                level: newZoom,
+                renderedPosition: { x: e.clientX - rect.left, y: e.clientY - rect.top },
+            });
+        };
+
+        container.addEventListener('wheel', handleWheel, { passive: false });
 
         (window as any).cy = cy;
 
-        initHistory(cy, cy.elements().jsons() as ElementDefinition[], {
+        const historyCleanup = initHistory(cy, cy.elements().jsons() as ElementDefinition[], {
             onStatus,
             onPersist: (graphElements) => saveGraphData(graphElements, { skipHistory: true }),
         });
@@ -131,7 +134,7 @@ export const createGraphRenderer = ({
         registerEdgeEditorKeyListener(onStatus);
         registerSearchKeyListener();
         initLayoutManager(cy);
-        initGraphEvents(cy);
+        const eventsCleanup = initGraphEvents(cy);
         initServiceForm(cy, () => onDirtyStateChange(true));
         initGrouping(cy);
         initMiniMap(cy);
@@ -140,6 +143,13 @@ export const createGraphRenderer = ({
         populateLabelFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
         populateTeamFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
         populateAppCodeFilter(elements as (cytoscape.NodeDefinition | cytoscape.EdgeDefinition)[]);
+
+        currentCleanup = () => {
+            container.removeEventListener('wheel', handleWheel);
+            if (typeof historyCleanup === 'function') (historyCleanup as any)();
+            if (typeof eventsCleanup === 'function') (eventsCleanup as any)();
+            cy.destroy();
+        };
 
         return cy;
     };
