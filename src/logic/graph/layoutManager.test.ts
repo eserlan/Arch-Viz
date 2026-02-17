@@ -182,7 +182,7 @@ describe('layoutManager logic', () => {
         select.dispatchEvent(new Event('change'));
 
         const callArg = mockCy.layout.mock.calls.at(-1)[0];
-        expect(callArg.concentric(centerNode)).toBe(110);
+        expect(callArg.concentric(centerNode)).toBe(200);
     });
 
     it('configures concentric layout with proximity based on distance from selected node', () => {
@@ -234,14 +234,14 @@ describe('layoutManager logic', () => {
 
         const callArg = mockCy.layout.mock.calls.at(-1)[0];
         expect(callArg.name).toBe('concentric');
-        expect(callArg.levelWidth()).toBe(10);
+        expect(callArg.levelWidth()).toBe(1);
 
-        // Root node: return 110
-        expect(callArg.concentric(rootNode)).toBe(110);
-        // Neighbor node: 100 - 1*10 + (10/20) = 90.5
-        expect(callArg.concentric(neighborNode)).toBeCloseTo(90.5);
-        // Unreachable node: 5 + (4/20) = 5.2
-        expect(callArg.concentric(unreachableNode)).toBeCloseTo(5.2);
+        // Root node: return 200
+        expect(callArg.concentric(rootNode)).toBe(200);
+        // Neighbor node: 190 - 1*2 = 188
+        expect(callArg.concentric(neighborNode)).toBe(188);
+        // Unreachable node: 0
+        expect(callArg.concentric(unreachableNode)).toBe(0);
     });
 
     it('caps concentric spacingFactor at 1.5', () => {
