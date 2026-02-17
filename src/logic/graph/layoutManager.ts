@@ -1,6 +1,6 @@
 import { CyInstance } from '../../types';
 import { layoutConfig } from './graphConfig';
-import { updateStatus, showToast } from '../ui/ui';
+import { showToast } from '../ui/ui';
 import { LayoutOptions, NodeSingular } from 'cytoscape';
 import { disableGrouping } from './grouping';
 
@@ -54,14 +54,6 @@ export const runLayout = (cy: CyInstance, layoutValue: string, immediate = false
     const hasSelectedNode = selectedNodes.length > 0;
     const selectedNode: NodeSingular | null = hasSelectedNode ? selectedNodes[0] : null;
     const selectedNodeId = selectedNode?.id();
-
-    if (hasSelectedNode && selectedNode && !immediate) {
-        showToast(`Layout centered on: ${selectedNode.data('name') || selectedNodeId}`, 'info');
-    }
-
-    if (!immediate) {
-        updateStatus(`Switching to ${layoutName} layout…`);
-    }
 
     const animationOptions: AnimationOptions & { name: string; randomize: boolean } = {
         name: layoutName,
@@ -191,9 +183,7 @@ export const runLayout = (cy: CyInstance, layoutValue: string, immediate = false
             duration: 800,
             easing: 'ease-in-out-cubic',
         } as any);
-        updateStatus(`Layout: ${layoutName} applied`);
     };
-
     layout.one('layoutstop', onStop);
     layout.run();
 
