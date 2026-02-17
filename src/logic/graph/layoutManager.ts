@@ -63,7 +63,7 @@ export const runLayout = (cy: CyInstance, layoutValue: string): void => {
             layoutName === 'circle' || layoutName === 'concentric'
                 ? Math.max(
                       0.8,
-                      Math.min(layoutName === 'concentric' ? 1.5 : 2.5, cy.nodes().length / 60)
+                      Math.min(layoutName === 'concentric' ? 1.2 : 2.5, cy.nodes().length / 60)
                   )
                 : 1,
         rankDir: isHorizontalDagre ? 'LR' : 'TB',
@@ -79,6 +79,9 @@ export const runLayout = (cy: CyInstance, layoutValue: string): void => {
                 root: selectedNode,
                 directed: false,
             });
+
+            // Tighten spacing specifically for the proximity-based layout
+            animationOptions.spacingFactor = 0.9;
         }
 
         (animationOptions as any).concentric = (node: NodeSingular) => {
