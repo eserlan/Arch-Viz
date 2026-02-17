@@ -11,9 +11,9 @@ const COMPOUND_COMPATIBLE_LAYOUTS = ['fcose', 'dagre', 'dagre-horizontal', 'dagr
 // These ensure each "hop" from the selected node maps to its own distinct ring.
 const CONCENTRIC_PROXIMITY = {
     ROOT_VALUE: 200, // Highest value = absolute center
-    NEIGHBOR_BASE: 190, // Starting value for neighbors (dist=1 is 188)
-    DISTANCE_STEP: 2, // Decrease per jump level
-    LEVEL_WIDTH: 1, // Combined with STEP=2, ensures 1 ring per jump level
+    NEIGHBOR_BASE: 198, // Starting value for neighbors (dist=1 is 197)
+    DISTANCE_STEP: 1, // Decrease per jump level
+    LEVEL_WIDTH: 1, // Combined with STEP, ensures 1 ring per jump level
 };
 
 /**
@@ -81,7 +81,7 @@ export const runLayout = (cy: CyInstance, layoutValue: string): void => {
             });
 
             // Tighten spacing specifically for the proximity-based layout
-            animationOptions.spacingFactor = 0.9;
+            animationOptions.spacingFactor = 0.75;
         }
 
         (animationOptions as any).concentric = (node: NodeSingular) => {

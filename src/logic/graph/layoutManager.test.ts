@@ -238,8 +238,8 @@ describe('layoutManager logic', () => {
 
         // Root node: return 200
         expect(callArg.concentric(rootNode)).toBe(200);
-        // Neighbor node: 190 - 1*2 = 188
-        expect(callArg.concentric(neighborNode)).toBe(188);
+        // Neighbor node: 198 - 1*1 = 197
+        expect(callArg.concentric(neighborNode)).toBe(197);
         // Unreachable node: 0
         expect(callArg.concentric(unreachableNode)).toBe(0);
     });
@@ -266,7 +266,7 @@ describe('layoutManager logic', () => {
         );
     });
 
-    it('uses tighter spacingFactor of 0.9 for proximity layout', () => {
+    it('uses tighter spacingFactor of 0.75 for proximity layout', () => {
         const rootNode = {
             id: () => 'srv-center',
             data: vi.fn(),
@@ -290,7 +290,7 @@ describe('layoutManager logic', () => {
         expect(mockCy.layout).toHaveBeenCalledWith(
             expect.objectContaining({
                 name: 'concentric',
-                spacingFactor: 0.9,
+                spacingFactor: 0.75,
             })
         );
     });
