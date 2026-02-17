@@ -7,6 +7,13 @@ import { saveGraphData } from '../core/storage';
 import { showToast } from '../ui/ui';
 import { populateLabelFilter } from './filters';
 
+import * as layoutManager from './layoutManager';
+
+vi.mock('./layoutManager', () => ({
+    runLayout: vi.fn(),
+    initLayoutManager: vi.fn(),
+}));
+
 vi.mock('../ui/panel/index', () => ({
     showPanel: vi.fn(),
     hidePanel: vi.fn(),
@@ -410,5 +417,34 @@ describe('Graph Events Logic', () => {
         expect(mockCy.off).toHaveBeenCalledWith('viewport', expect.any(Function));
 
         removeEventListenerSpy.mockRestore();
+    });
+
+    it('should re-run layout when in concentric mode and a node is tapped', () => {
+        vi.useFakeTimers();
+        document.body.innerHTML += `
+            <select id="layoutSelect">
+                <option value="fcose">fCoSE</option>
+                <option value="concentric" selected>Concentric</option>
+            </select>
+        `;
+
+        const mockNode = {
+            id: () => 'n1',
+            select: vi.fn(),
+            selected: vi.fn().mockReturnValue(true),
+            outgoers: vi.fn(() => ({ addClass: vi.fn() })),
+            incomers: vi.fn(() => ({ addClass: vi.fn() })),
+        };
+        selectedCollection.length = 1;
+        selectedCollection[0] = mockNode;
+
+        initGraphEvents(mockCy);
+        const tapHandler = eventHandlers['tap:node'][0];
+
+        tapHandler({ target: mockNode });
+        vi.advanceTimersByTime(0);
+
+        expect(layoutManager.runLayout).toHaveBeenCalledWith(mockCy, 'concentric');
+        vi.useRealTimers();
     });
 });
