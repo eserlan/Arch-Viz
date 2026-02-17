@@ -83,19 +83,16 @@ export const initLayoutManager = (cy: CyInstance): void => {
             }
 
             (animationOptions as any).concentric = (node: NodeSingular) => {
-                if (selectedNodeId && node.id() === selectedNodeId) return bfs ? 110 : 1000;
+                if (selectedNodeId && node.id() === selectedNodeId) return 200;
 
                 if (bfs) {
                     const dist = bfs.distanceTo(node);
-                    // dist is finite if reachable, otherwise undefined or Infinity
                     if (dist !== undefined && Number.isFinite(dist)) {
-                        // Return a value that decreases as distance increases
-                        // Using a large base (100) to ensure it stays above non-connected nodes
-                        // Each step in distance reduces value by 10
-                        return 100 - dist * 10 + node.degree() / 20;
+                        // Each jump level gets its own ring by using a step of 2
+                        // with levelWidth of 1.
+                        return 190 - dist * 2;
                     }
-                    // Unreachable nodes go to the outermost ring
-                    return 5 + node.degree() / 20;
+                    return 0;
                 }
 
                 const rawTier = node.data('tier');
@@ -109,7 +106,7 @@ export const initLayoutManager = (cy: CyInstance): void => {
                 // Use degree as a subtle tie-breaker within tiers
                 return (5 - safeTier) * 10 + node.degree() / 20;
             };
-            (animationOptions as any).levelWidth = () => (bfs ? 10 : 3);
+            (animationOptions as any).levelWidth = () => (bfs ? 1 : 3);
         }
 
         // Add layout-specific centering options
