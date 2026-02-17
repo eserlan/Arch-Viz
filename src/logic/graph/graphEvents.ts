@@ -168,11 +168,13 @@ export const initGraphEvents = (cy: CyInstance): (() => void) => {
                 highlightConnections(selectedNodes.toArray());
 
                 // If in concentric layout, re-run layout to center on the new selection
+
                 const layoutSelect = document.getElementById(
                     'layoutSelect'
                 ) as HTMLSelectElement | null;
+
                 if (layoutSelect && layoutSelect.value === 'concentric') {
-                    runLayout(cy, 'concentric');
+                    runLayout(cy, 'concentric', false);
                 }
             } else {
                 lastFocusedNode = null;

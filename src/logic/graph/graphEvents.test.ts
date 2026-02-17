@@ -444,7 +444,7 @@ describe('Graph Events Logic', () => {
         tapHandler({ target: mockNode });
         vi.advanceTimersByTime(0);
 
-        expect(layoutManager.runLayout).toHaveBeenCalledWith(mockCy, 'concentric');
+        expect(layoutManager.runLayout).toHaveBeenCalledWith(mockCy, 'concentric', false);
         vi.useRealTimers();
     });
 });

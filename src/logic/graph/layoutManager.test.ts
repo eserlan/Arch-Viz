@@ -15,6 +15,14 @@ describe('layoutManager logic', () => {
             <select id="groupingSelect">
                 <option value="none" selected>None</option>
             </select>
+            <div id="concentricSettings" class="hidden">
+                <span id="baseValueDisplay"></span>
+                <input type="range" id="baseValueRange" value="198">
+                <span id="stepValueDisplay"></span>
+                <input type="range" id="stepValueRange" value="1">
+                <span id="spacingValueDisplay"></span>
+                <input type="range" id="spacingValueRange" value="0.75">
+            </div>
         `;
 
         mockLayout = {
@@ -242,6 +250,41 @@ describe('layoutManager logic', () => {
         expect(callArg.concentric(neighborNode)).toBe(197);
         // Unreachable node: 0
         expect(callArg.concentric(unreachableNode)).toBe(0);
+    });
+
+    it('toggles concentric settings panel visibility', () => {
+        initLayoutManager(mockCy);
+        const select = document.getElementById('layoutSelect') as HTMLSelectElement;
+        const panel = document.getElementById('concentricSettings')!;
+
+        // 1. Show when concentric
+        const option = document.createElement('option');
+        option.value = 'concentric';
+        select.appendChild(option);
+        select.value = 'concentric';
+        select.dispatchEvent(new Event('change'));
+        expect(panel.classList.contains('hidden')).toBe(false);
+
+        // 2. Hide when fcose
+        select.value = 'fcose';
+        select.dispatchEvent(new Event('change'));
+        expect(panel.classList.contains('hidden')).toBe(true);
+    });
+
+    it('updates CONCENTRIC_PROXIMITY values from sliders', () => {
+        initLayoutManager(mockCy);
+        const baseRange = document.getElementById('baseValueRange') as HTMLInputElement;
+        const stepRange = document.getElementById('stepValueRange') as HTMLInputElement;
+
+        baseRange.value = '250';
+        baseRange.dispatchEvent(new Event('input'));
+        // Note: We'd need to export CONCENTRIC_PROXIMITY to check its value directly,
+        // but we can check if it triggers a layout.
+        expect(mockCy.layout).toHaveBeenCalled();
+
+        stepRange.value = '2.5';
+        stepRange.dispatchEvent(new Event('input'));
+        expect(mockCy.layout).toHaveBeenCalled();
     });
 
     it('caps concentric spacingFactor at 1.2', () => {

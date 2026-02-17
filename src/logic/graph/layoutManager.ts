@@ -19,8 +19,19 @@ const CONCENTRIC_PROXIMITY = {
 /**
  * Layout Transition Management
  */
-export const runLayout = (cy: CyInstance, layoutValue: string): void => {
+export const runLayout = (cy: CyInstance, layoutValue: string, immediate = false): void => {
     if (!cy) return;
+
+    // Toggle concentric settings panel visibility
+    const concentricPanel = document.getElementById('concentricSettings');
+    if (concentricPanel) {
+        if (layoutValue === 'concentric') {
+            concentricPanel.classList.remove('hidden');
+        } else {
+            concentricPanel.classList.add('hidden');
+        }
+    }
+
     const isHorizontalDagre = layoutValue === 'dagre-horizontal';
     const isVerticalDagre = layoutValue === 'dagre-vertical' || layoutValue === 'dagre';
     const layoutName = isHorizontalDagre || isVerticalDagre ? 'dagre' : layoutValue;
@@ -44,16 +55,18 @@ export const runLayout = (cy: CyInstance, layoutValue: string): void => {
     const selectedNode: NodeSingular | null = hasSelectedNode ? selectedNodes[0] : null;
     const selectedNodeId = selectedNode?.id();
 
-    if (hasSelectedNode && selectedNode) {
+    if (hasSelectedNode && selectedNode && !immediate) {
         showToast(`Layout centered on: ${selectedNode.data('name') || selectedNodeId}`, 'info');
     }
 
-    updateStatus(`Switching to ${layoutName} layout…`);
+    if (!immediate) {
+        updateStatus(`Switching to ${layoutName} layout…`);
+    }
 
     const animationOptions: AnimationOptions & { name: string; randomize: boolean } = {
         name: layoutName,
-        animate: true,
-        animationDuration: 1000,
+        animate: !immediate,
+        animationDuration: immediate ? 0 : 1000,
         fit: false,
         padding: 160,
         randomize: false,
@@ -81,7 +94,10 @@ export const runLayout = (cy: CyInstance, layoutValue: string): void => {
             });
 
             // Tighten spacing specifically for the proximity-based layout
-            animationOptions.spacingFactor = 0.75;
+            const spacingRange = document.getElementById(
+                'spacingValueRange'
+            ) as HTMLInputElement | null;
+            animationOptions.spacingFactor = spacingRange ? parseFloat(spacingRange.value) : 0.75;
         }
 
         (animationOptions as any).concentric = (node: NodeSingular) => {
@@ -197,4 +213,41 @@ export const initLayoutManager = (cy: CyInstance): void => {
         const target = e.target as HTMLSelectElement;
         runLayout(cy, target.value);
     });
+
+    // Proximity Slider Listeners
+    const baseValueRange = document.getElementById('baseValueRange') as HTMLInputElement | null;
+    const baseValueDisplay = document.getElementById('baseValueDisplay');
+    const stepValueRange = document.getElementById('stepValueRange') as HTMLInputElement | null;
+    const stepValueDisplay = document.getElementById('stepValueDisplay');
+    const spacingValueRange = document.getElementById(
+        'spacingValueRange'
+    ) as HTMLInputElement | null;
+    const spacingValueDisplay = document.getElementById('spacingValueDisplay');
+
+    if (baseValueRange && baseValueDisplay) {
+        baseValueRange.addEventListener('input', () => {
+            const val = parseInt(baseValueRange.value);
+            CONCENTRIC_PROXIMITY.NEIGHBOR_BASE = val;
+            baseValueDisplay.textContent = val.toString();
+            runLayout(cy, 'concentric', true);
+        });
+    }
+
+    if (stepValueRange && stepValueDisplay) {
+        stepValueRange.addEventListener('input', () => {
+            const val = parseFloat(stepValueRange.value);
+            CONCENTRIC_PROXIMITY.DISTANCE_STEP = val;
+            stepValueDisplay.textContent = val.toString();
+            runLayout(cy, 'concentric', true);
+        });
+    }
+
+    if (spacingValueRange && spacingValueDisplay) {
+        spacingValueRange.addEventListener('input', () => {
+            const val = parseFloat(spacingValueRange.value);
+            spacingValueDisplay.textContent = val.toString();
+            // Note: spacingFactor is applied in runLayout via animationOptions
+            runLayout(cy, 'concentric', true);
+        });
+    }
 };
