@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" type="image/png" href="/Arch-Viz/favicon.png" />
         <title>Arch Viz - Mapping the Chaos</title>
-      <script type="module" crossorigin src="/Arch-Viz/assets/index-BseEXjYo.js"></script>
-      <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-5R88td8F.css">
+      <script type="module" crossorigin src="/Arch-Viz/assets/index-CtxEAH8d.js"></script>
+      <link rel="stylesheet" crossorigin href="/Arch-Viz/assets/index-sNmnoTyp.css">
     </head>
 
     <body class="bg-slate-950 text-slate-100">
@@ -93,6 +93,68 @@
                         <option value="concentric">Concentric Layers</option>
                         <option value="breadthfirst">Breadth-First</option>
                     </select>
+                </div>
+
+                <!-- Concentric Layout Settings -->
+                <div
+                    id="concentricSettings"
+                    class="hidden flex flex-col gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700"
+                >
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        Concentric Settings
+                    </h3>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px]">
+                            <label class="text-slate-400">Base Value</label>
+                            <span id="baseValueDisplay" class="text-emerald-400 font-mono"
+                                >198</span
+                            >
+                        </div>
+                        <input
+                            type="range"
+                            id="baseValueRange"
+                            min="100"
+                            max="500"
+                            value="198"
+                            step="1"
+                            class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                        />
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px]">
+                            <label class="text-slate-400">Distance Step</label>
+                            <span id="stepValueDisplay" class="text-emerald-400 font-mono">1</span>
+                        </div>
+                        <input
+                            type="range"
+                            id="stepValueRange"
+                            min="0.1"
+                            max="10"
+                            value="1"
+                            step="0.1"
+                            class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                        />
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px]">
+                            <label class="text-slate-400">Spacing Factor</label>
+                            <span id="spacingValueDisplay" class="text-emerald-400 font-mono"
+                                >0.75</span
+                            >
+                        </div>
+                        <input
+                            type="range"
+                            id="spacingValueRange"
+                            min="0.05"
+                            max="3"
+                            value="0.75"
+                            step="0.01"
+                            class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                        />
+                    </div>
                 </div>
 
                 <!-- Connection Depth -->
