@@ -7,6 +7,15 @@ import { disableGrouping } from './grouping';
 // Layouts that properly support compound/grouped nodes
 const COMPOUND_COMPATIBLE_LAYOUTS = ['fcose', 'dagre', 'dagre-horizontal', 'dagre-vertical'];
 
+// Concentric layout constants for proximity-based rings
+// These ensure each "hop" from the selected node maps to its own distinct ring.
+const CONCENTRIC_PROXIMITY = {
+    ROOT_VALUE: 200, // Highest value = absolute center
+    NEIGHBOR_BASE: 190, // Starting value for neighbors (dist=1 is 188)
+    DISTANCE_STEP: 2, // Decrease per jump level
+    LEVEL_WIDTH: 1, // Combined with STEP=2, ensures 1 ring per jump level
+};
+
 /**
  * Layout Transition Management
  */
@@ -62,24 +71,30 @@ export const runLayout = (cy: CyInstance, layoutValue: string): void => {
 
     // Set defaults for concentric layout
     if (layoutName === 'concentric') {
-        let dijkstra: any = null;
+        let distanceCalculator: any = null;
         if (selectedNode) {
-            // Pre-calculate distances for the whole graph from the selected node
-            dijkstra = cy.elements().dijkstra({
+            // Pre-calculate distances for the whole graph from the selected node.
+            // Using dijkstra on unweighted edges effectively gives BFS distances.
+            distanceCalculator = cy.elements().dijkstra({
                 root: selectedNode,
                 directed: false,
             });
         }
 
         (animationOptions as any).concentric = (node: NodeSingular) => {
-            if (selectedNodeId && node.id() === selectedNodeId) return 200;
+            if (selectedNodeId && node.id() === selectedNodeId) {
+                return CONCENTRIC_PROXIMITY.ROOT_VALUE;
+            }
 
-            if (dijkstra) {
-                const dist = dijkstra.distanceTo(node);
+            if (distanceCalculator) {
+                const dist = distanceCalculator.distanceTo(node);
                 if (dist !== undefined && Number.isFinite(dist)) {
-                    // Each jump level gets its own ring by using a step of 2
-                    // with levelWidth of 1.
-                    return 190 - dist * 2;
+                    // Use a base value so that neighbors are placed just inside the root.
+                    // Each integer jump level gets its own ring by decreasing the value by STEP.
+                    return (
+                        CONCENTRIC_PROXIMITY.NEIGHBOR_BASE -
+                        dist * CONCENTRIC_PROXIMITY.DISTANCE_STEP
+                    );
                 }
                 return 0;
             }
@@ -95,7 +110,8 @@ export const runLayout = (cy: CyInstance, layoutValue: string): void => {
             // Use degree as a subtle tie-breaker within tiers
             return (5 - safeTier) * 10 + node.degree() / 20;
         };
-        (animationOptions as any).levelWidth = () => (dijkstra ? 1 : 3);
+        (animationOptions as any).levelWidth = () =>
+            distanceCalculator ? CONCENTRIC_PROXIMITY.LEVEL_WIDTH : 3;
     }
 
     // Add layout-specific centering options
