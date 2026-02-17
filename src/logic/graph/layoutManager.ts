@@ -4,6 +4,17 @@ import { showToast } from '../ui/ui';
 import { LayoutOptions, NodeSingular } from 'cytoscape';
 import { disableGrouping } from './grouping';
 
+/**
+ * Simple debounce helper
+ */
+const debounce = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return (...args: Parameters<T>) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
+
 // Layouts that properly support compound/grouped nodes
 const COMPOUND_COMPATIBLE_LAYOUTS = ['fcose', 'dagre', 'dagre-horizontal', 'dagre-vertical'];
 
@@ -205,39 +216,54 @@ export const initLayoutManager = (cy: CyInstance): void => {
     });
 
     // Proximity Slider Listeners
+
     const baseValueRange = document.getElementById('baseValueRange') as HTMLInputElement | null;
+
     const baseValueDisplay = document.getElementById('baseValueDisplay');
+
     const stepValueRange = document.getElementById('stepValueRange') as HTMLInputElement | null;
+
     const stepValueDisplay = document.getElementById('stepValueDisplay');
+
     const spacingValueRange = document.getElementById(
         'spacingValueRange'
     ) as HTMLInputElement | null;
+
     const spacingValueDisplay = document.getElementById('spacingValueDisplay');
+
+    const debouncedLayout = debounce(() => runLayout(cy, 'concentric', true), 150);
 
     if (baseValueRange && baseValueDisplay) {
         baseValueRange.addEventListener('input', () => {
             const val = parseInt(baseValueRange.value);
+
             CONCENTRIC_PROXIMITY.NEIGHBOR_BASE = val;
+
             baseValueDisplay.textContent = val.toString();
-            runLayout(cy, 'concentric', true);
+
+            debouncedLayout();
         });
     }
 
     if (stepValueRange && stepValueDisplay) {
         stepValueRange.addEventListener('input', () => {
             const val = parseFloat(stepValueRange.value);
+
             CONCENTRIC_PROXIMITY.DISTANCE_STEP = val;
+
             stepValueDisplay.textContent = val.toString();
-            runLayout(cy, 'concentric', true);
+
+            debouncedLayout();
         });
     }
 
     if (spacingValueRange && spacingValueDisplay) {
         spacingValueRange.addEventListener('input', () => {
             const val = parseFloat(spacingValueRange.value);
+
             spacingValueDisplay.textContent = val.toString();
-            // Note: spacingFactor is applied in runLayout via animationOptions
-            runLayout(cy, 'concentric', true);
+
+            debouncedLayout();
         });
     }
 };

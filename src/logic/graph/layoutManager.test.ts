@@ -272,21 +272,22 @@ describe('layoutManager logic', () => {
     });
 
     it('updates CONCENTRIC_PROXIMITY values from sliders', () => {
+        vi.useFakeTimers();
         initLayoutManager(mockCy);
         const baseRange = document.getElementById('baseValueRange') as HTMLInputElement;
         const stepRange = document.getElementById('stepValueRange') as HTMLInputElement;
 
         baseRange.value = '250';
         baseRange.dispatchEvent(new Event('input'));
-        // Note: We'd need to export CONCENTRIC_PROXIMITY to check its value directly,
-        // but we can check if it triggers a layout.
+        vi.advanceTimersByTime(150);
         expect(mockCy.layout).toHaveBeenCalled();
 
         stepRange.value = '2.5';
         stepRange.dispatchEvent(new Event('input'));
+        vi.advanceTimersByTime(150);
         expect(mockCy.layout).toHaveBeenCalled();
+        vi.useRealTimers();
     });
-
     it('caps concentric spacingFactor at 1.2', () => {
         // Mock 120 nodes -> 120/60 = 2.0, but should be capped at 1.2 for concentric
         mockCollection.length = 120;
