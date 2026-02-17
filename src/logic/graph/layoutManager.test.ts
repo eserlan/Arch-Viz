@@ -244,8 +244,8 @@ describe('layoutManager logic', () => {
         expect(callArg.concentric(unreachableNode)).toBe(0);
     });
 
-    it('caps concentric spacingFactor at 1.5', () => {
-        // Mock 120 nodes -> 120/60 = 2.0, but should be capped at 1.5 for concentric
+    it('caps concentric spacingFactor at 1.2', () => {
+        // Mock 120 nodes -> 120/60 = 2.0, but should be capped at 1.2 for concentric
         mockCollection.length = 120;
         mockCy.nodes.mockReturnValue(mockCollection);
 
@@ -261,7 +261,36 @@ describe('layoutManager logic', () => {
         expect(mockCy.layout).toHaveBeenCalledWith(
             expect.objectContaining({
                 name: 'concentric',
-                spacingFactor: 1.5,
+                spacingFactor: 1.2,
+            })
+        );
+    });
+
+    it('uses tighter spacingFactor of 0.9 for proximity layout', () => {
+        const rootNode = {
+            id: () => 'srv-center',
+            data: vi.fn(),
+            position: vi.fn().mockReturnValue({ x: 0, y: 0 }),
+        } as any;
+        mockCy.nodes = vi.fn((selector) => {
+            if (selector === ':selected')
+                return { length: 1, 0: rootNode, toArray: () => [rootNode] };
+            return { ...mockCollection, length: 200 };
+        });
+
+        initLayoutManager(mockCy);
+        const select = document.getElementById('layoutSelect') as HTMLSelectElement;
+        const option = document.createElement('option');
+        option.value = 'concentric';
+        select.appendChild(option);
+        select.value = 'concentric';
+
+        select.dispatchEvent(new Event('change'));
+
+        expect(mockCy.layout).toHaveBeenCalledWith(
+            expect.objectContaining({
+                name: 'concentric',
+                spacingFactor: 0.9,
             })
         );
     });
