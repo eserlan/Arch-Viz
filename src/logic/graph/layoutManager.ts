@@ -73,10 +73,10 @@ export const initLayoutManager = (cy: CyInstance): void => {
 
         // Set defaults for concentric layout
         if (layoutName === 'concentric') {
-            let bfs: any = null;
+            let dijkstra: any = null;
             if (selectedNode) {
                 // Pre-calculate distances for the whole graph from the selected node
-                bfs = cy.elements().bfs({
+                dijkstra = cy.elements().dijkstra({
                     root: selectedNode,
                     directed: false,
                 });
@@ -85,8 +85,8 @@ export const initLayoutManager = (cy: CyInstance): void => {
             (animationOptions as any).concentric = (node: NodeSingular) => {
                 if (selectedNodeId && node.id() === selectedNodeId) return 200;
 
-                if (bfs) {
-                    const dist = bfs.distanceTo(node);
+                if (dijkstra) {
+                    const dist = dijkstra.distanceTo(node);
                     if (dist !== undefined && Number.isFinite(dist)) {
                         // Each jump level gets its own ring by using a step of 2
                         // with levelWidth of 1.
@@ -106,7 +106,7 @@ export const initLayoutManager = (cy: CyInstance): void => {
                 // Use degree as a subtle tie-breaker within tiers
                 return (5 - safeTier) * 10 + node.degree() / 20;
             };
-            (animationOptions as any).levelWidth = () => (bfs ? 1 : 3);
+            (animationOptions as any).levelWidth = () => (dijkstra ? 1 : 3);
         }
 
         // Add layout-specific centering options

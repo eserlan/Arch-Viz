@@ -38,7 +38,7 @@ describe('layoutManager logic', () => {
             nodes: vi.fn().mockReturnValue(mockCollection),
             elements: vi.fn().mockReturnValue({
                 ...mockCollection,
-                bfs: vi.fn().mockReturnValue({ distanceTo: () => Infinity }),
+                dijkstra: vi.fn().mockReturnValue({ distanceTo: () => Infinity }),
             }),
         };
     });
@@ -203,7 +203,7 @@ describe('layoutManager logic', () => {
             degree: () => 4,
         } as any;
 
-        const mockBfs = {
+        const mockDijkstra = {
             distanceTo: vi.fn((node) => {
                 if (node.id() === selectedNodeId) return 0;
                 if (node.id() === 'srv-neighbor') return 1;
@@ -219,7 +219,7 @@ describe('layoutManager logic', () => {
         });
 
         mockCy.elements.mockReturnValue({
-            bfs: vi.fn().mockReturnValue(mockBfs),
+            dijkstra: vi.fn().mockReturnValue(mockDijkstra),
         });
 
         initLayoutManager(mockCy);
