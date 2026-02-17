@@ -6,6 +6,7 @@ import { saveGraphData } from '../core/storage';
 import { showToast } from '../ui/ui';
 import { updateSelectionInfo } from '../ui/selectionInfo';
 import { populateLabelFilter } from './filters';
+import { runLayout } from './layoutManager';
 
 interface CytoscapeEventWithOriginal extends EventObject {
     originalEvent?: MouseEvent;
@@ -165,6 +166,14 @@ export const initGraphEvents = (cy: CyInstance): (() => void) => {
                 lastFocusedNode = targetNode;
                 showPanel(targetNode);
                 highlightConnections(selectedNodes.toArray());
+
+                // If in concentric layout, re-run layout to center on the new selection
+                const layoutSelect = document.getElementById(
+                    'layoutSelect'
+                ) as HTMLSelectElement | null;
+                if (layoutSelect && layoutSelect.value === 'concentric') {
+                    runLayout(cy, 'concentric');
+                }
             } else {
                 lastFocusedNode = null;
                 hidePanel();
