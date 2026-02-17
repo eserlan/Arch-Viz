@@ -36,7 +36,10 @@ describe('layoutManager logic', () => {
             layout: vi.fn().mockReturnValue(mockLayout),
             animate: vi.fn(),
             nodes: vi.fn().mockReturnValue(mockCollection),
-            elements: vi.fn().mockReturnValue(mockCollection),
+            elements: vi.fn().mockReturnValue({
+                ...mockCollection,
+                bfs: vi.fn().mockReturnValue({ distanceTo: () => Infinity }),
+            }),
         };
     });
 
@@ -179,7 +182,66 @@ describe('layoutManager logic', () => {
         select.dispatchEvent(new Event('change'));
 
         const callArg = mockCy.layout.mock.calls.at(-1)[0];
-        expect(callArg.concentric(centerNode)).toBe(1000);
+        expect(callArg.concentric(centerNode)).toBe(110);
+    });
+
+    it('configures concentric layout with proximity based on distance from selected node', () => {
+        const selectedNodeId = 'srv-root';
+        const rootNode = {
+            id: () => selectedNodeId,
+            data: vi.fn(),
+            degree: () => 0,
+        } as any;
+        const neighborNode = {
+            id: () => 'srv-neighbor',
+            data: vi.fn(),
+            degree: () => 10,
+        } as any;
+        const unreachableNode = {
+            id: () => 'srv-far',
+            data: vi.fn(),
+            degree: () => 4,
+        } as any;
+
+        const mockBfs = {
+            distanceTo: vi.fn((node) => {
+                if (node.id() === selectedNodeId) return 0;
+                if (node.id() === 'srv-neighbor') return 1;
+                return Infinity;
+            }),
+        };
+
+        mockCy.nodes = vi.fn((selector) => {
+            if (selector === ':selected') {
+                return { length: 1, 0: rootNode, toArray: () => [rootNode] };
+            }
+            return { ...mockCollection, length: 50 }; // some arbitrary node count
+        });
+
+        mockCy.elements.mockReturnValue({
+            bfs: vi.fn().mockReturnValue(mockBfs),
+        });
+
+        initLayoutManager(mockCy);
+        const select = document.getElementById('layoutSelect') as HTMLSelectElement;
+
+        const option = document.createElement('option');
+        option.value = 'concentric';
+        select.appendChild(option);
+        select.value = 'concentric';
+
+        select.dispatchEvent(new Event('change'));
+
+        const callArg = mockCy.layout.mock.calls.at(-1)[0];
+        expect(callArg.name).toBe('concentric');
+        expect(callArg.levelWidth()).toBe(10);
+
+        // Root node: return 110
+        expect(callArg.concentric(rootNode)).toBe(110);
+        // Neighbor node: 100 - 1*10 + (10/20) = 90.5
+        expect(callArg.concentric(neighborNode)).toBeCloseTo(90.5);
+        // Unreachable node: 5 + (4/20) = 5.2
+        expect(callArg.concentric(unreachableNode)).toBeCloseTo(5.2);
     });
 
     it('caps concentric spacingFactor at 1.5', () => {
